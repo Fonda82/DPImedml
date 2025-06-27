@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Documentation and Implementation Notes (SENSITIVE)
+*.md
+!README.md
+!DEPLOYMENT.md
+chatlog*
+chat.md
+implementation_checklist.md
+dashboard_redesign_checklist.md
+demo_improvement_checklist.md
+ui.md
+
+# Sources folder (contains sensitive business documents)
+sources/
+TSOFT_MALI_Proposal_HI.md
+
+# Project-specific exclusions
+10x-Tool-Calls-main/
+10x-Tool-Calls-main.zip
+db_backup_*.sqlite3
+*.png
+*.jpg
+*.jpeg
+*.gif
+check_encoding.py
+fix_encoding.py
+modified_image*
+
+# Keep only essential deployment files
+!requirements.txt
+!runtime.txt
+!build.sh
+!render.yaml 
