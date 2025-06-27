@@ -7,16 +7,16 @@
 <div class="container-fluid">
     <!-- Clean Header -->
     <div class="detail-header">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
             <div>
                 <h1 class="detail-title">
                     <i class="fa-solid fa-file-medical me-2"></i>Dossier Médical
                 </h1>
                 <p class="detail-subtitle">{{ patient.first_name }} {{ patient.last_name }} • {{ patient.patient_id }}</p>
             </div>
-            <div class="detail-actions">
+            <div class="detail-actions d-flex flex-wrap gap-2">
                 <button type="button" class="btn-secondary-create" data-bs-toggle="modal" data-bs-target="#addRecordModal">
-                    <i class="fa-solid fa-plus"></i>Nouvelle consultation
+                    <i class="fa-solid fa-plus"></i><span class="d-none d-md-inline"> Nouvelle consultation</span>
                 </button>
                 <button type="button" class="btn-primary-create" onclick="window.print()">
                     <i class="fa-solid fa-print"></i>Imprimer
@@ -27,7 +27,7 @@
 
     <div class="row">
         <!-- Patient Information Card -->
-        <div class="col-lg-4">
+        <div class="col-xl-4 col-lg-5 col-md-12">
             <div class="entity-info-card">
                 <div class="text-center mb-4">
                     <div class="entity-avatar entity-avatar-large">
@@ -112,7 +112,7 @@
         </div>
 
         <!-- Medical Records Section -->
-        <div class="col-lg-8">
+        <div class="col-xl-8 col-lg-7 col-md-12">
             <div class="form-section">
                 <div class="form-section-header">
                     <i class="fa-solid fa-notes-medical form-section-icon"></i>

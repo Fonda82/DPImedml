@@ -141,22 +141,48 @@ def medical_profile(request, pk):
     # Get medical records for this patient
     medical_history = MedicalRecord.objects.filter(patient=patient).order_by('-date')
     
-    # Get prescriptions (if prescription model exists)
+        # Get prescriptions (if prescription model exists)
     prescriptions = []
     try:
-        from prescriptions.models import Prescription
-        prescriptions = Prescription.objects.filter(patient=patient).order_by('-prescribed_date')
+        from prescriptions.models import Prescription, PrescriptionMedication
+        raw_prescriptions = Prescription.objects.filter(patient=patient).order_by('-prescribed_date')
+        
+        # Transform prescription data to match template expectations
+        for prescription in raw_prescriptions:
+            # Get first medication as primary (simplified for display)
+            first_medication = prescription.prescriptionmedication_set.first()
+            
+            prescriptions.append({
+                'date': prescription.prescribed_date.strftime('%d/%m/%Y'),
+                'medication': first_medication.medication.name if first_medication else 'Non spécifié',
+                'dosage': f"{first_medication.dose} {first_medication.dose_unit} - {first_medication.frequency}" if first_medication else 'Non spécifié',
+                'status': prescription.get_status_display(),
+                'prescription_id': prescription.prescription_id,
+                'doctor': prescription.prescribing_doctor,
+                'id': prescription.id
+            })
     except ImportError:
         pass
-    
+
     # Get rehabilitation sessions
     rehabilitation_sessions = []
     try:
         from rehabilitation.models import RehabilitationSession, RehabilitationPlan
-        rehab_plans = RehabilitationPlan.objects.filter(patient=patient)
-        for plan in rehab_plans:
-            sessions = RehabilitationSession.objects.filter(rehabilitation_plan=plan)
-            rehabilitation_sessions.extend(sessions)
+        raw_sessions = RehabilitationSession.objects.filter(
+            rehabilitation_plan__patient=patient
+        ).order_by('-session_date')
+        
+        # Transform session data to match template expectations
+        for session in raw_sessions:
+            rehabilitation_sessions.append({
+                'date': session.session_date.strftime('%d/%m/%Y'),
+                'type': session.get_session_type_display(),
+                'focus': session.next_session_recommendations or session.notes or 'Séance de réadaptation',
+                'therapist': session.therapist,
+                'status': session.get_status_display(),
+                'duration': session.duration_minutes,
+                'id': session.id
+            })
     except ImportError:
         pass
     
