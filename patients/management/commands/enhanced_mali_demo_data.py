@@ -234,7 +234,7 @@ class Command(BaseCommand):
                 
                 user_profile = UserProfile.objects.get(user=user)
                 user_profile.user_type = 'doctor'
-                user_profile.phone_number = f'+223 7{random.randint(0, 9)} {random.randint(10, 99)} {random.randint(10, 99)} {random.randint(10, 99)}'
+                user_profile.phone_number = f'+223 7{random.randint(0, 9)}{random.randint(10, 99)}{random.randint(10, 99)}{random.randint(10, 99)}'
                 
                 # Assign to facility with preference for rehabilitation centers (HI focus)
                 rehabilitation_facilities = [f for f in facilities if f.facility_type == 'CR']
@@ -273,7 +273,7 @@ class Command(BaseCommand):
                 
                 user_profile = UserProfile.objects.get(user=user)
                 user_profile.user_type = 'pharmacist'
-                user_profile.phone_number = f'+223 6{random.randint(0, 9)} {random.randint(10, 99)} {random.randint(10, 99)} {random.randint(10, 99)}'
+                user_profile.phone_number = f'+223 6{random.randint(0, 9)}{random.randint(10, 99)}{random.randint(10, 99)}{random.randint(10, 99)}'
                 user_profile.facility = random.choice(facilities)
                 user_profile.save()
                 
@@ -464,7 +464,7 @@ class Command(BaseCommand):
                 guardian_first_name = random.choice(['Adama', 'Fatoumata', 'Ibrahim', 'Mariam'])
             
             guardian_name = f"{guardian_first_name} {last_name}"
-            guardian_phone = f'+223 7{random.randint(0, 9)} {random.randint(10, 99)} {random.randint(10, 99)} {random.randint(10, 99)}'
+            guardian_phone = f'+223 7{random.randint(0, 9)}{random.randint(10, 99)}{random.randint(10, 99)}{random.randint(10, 99)}'
             
             # Create user for patient
             username = f"patient.{first_name.lower()}.{last_name.lower()}.{i+1}"
