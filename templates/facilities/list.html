@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Liste des Établissements | Système de Réhabilitation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-building-columns me-2"></i>Liste des Établissements
+                </h1>
+                <p class="list-subtitle">Gérez les structures sanitaires du système</p>
+            </div>
+            <div class="list-actions">
+                <span class="badge bg-light text-dark">{{ facilities.count }} établissements</span>
+                <a href="{% url 'facilities:create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Ajouter un établissement
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ facilities.count }}</div>
+            <div class="stats-card-label">Total Établissements</div>
+        </div>
+        
+        <div class="stats-card stats-card-success">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ facilities_active_count|default:15 }}</div>
+            <div class="stats-card-label">Actifs</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ csref_count|default:8 }}</div>
+            <div class="stats-card-label">CSRef</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ rehab_centers_count|default:5 }}</div>
+            <div class="stats-card-label">Centres Réhabilitation</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" id="facility-search" class="filter-input" 
+                       placeholder="Nom, ville, téléphone..." 
+                       value="{{ search_query }}">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Type</label>
+                <select id="type-filter" class="filter-select">
+                    <option value="">Tous types</option>
+                    <option value="CSCom">Centre de Santé Communautaire</option>
+                    <option value="CSRef">Centre de Santé de Référence</option>
+                    <option value="CR">Centre de Réadaptation</option>
+                    <option value="H">Hôpital</option>
+                    <option value="P">Poste de Santé</option>
+                    <option value="A">Autre</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Ville</label>
+                <select id="city-filter" class="filter-select">
+                    <option value="">Toutes villes</option>
+                    <option value="Bamako">Bamako</option>
+                    <option value="Sikasso">Sikasso</option>
+                    <option value="Koutiala">Koutiala</option>
+                    <option value="Kayes">Kayes</option>
+                    <option value="Mopti">Mopti</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select id="status-filter" class="filter-select">
+                    <option value="">Tous statuts</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Inactif</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-map"></i>Carte
+                </button>
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-file-excel"></i>Export
+                </button>
+            </div>
+        </div>
+        
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button type="button" class="quick-filter-btn" data-type="CSRef">
+                <i class="fa-solid fa-hospital"></i>CSRef
+            </button>
+            <button type="button" class="quick-filter-btn" data-type="CR">
+                <i class="fa-solid fa-dumbbell"></i>Réhabilitation
+            </button>
+            <button type="button" class="quick-filter-btn" data-city="Bamako">
+                <i class="fa-solid fa-city"></i>Bamako
+            </button>
+            <button type="button" class="quick-filter-btn" id="clear-all-filters">
+                <i class="fa-solid fa-times"></i>Effacer
+            </button>
+        </div>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Établissements
+            </h6>
+        </div>
+        
+        {% if facilities %}
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Établissement</th>
+                        <th>Type</th>
+                        <th>Localisation</th>
+                        <th>Contact</th>
+                        <th>Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for facility in facilities %}
+                    <tr>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ facility.name }}</div>
+                                    {% if facility.year_established %}
+                                    <div class="item-user-meta">Établi en {{ facility.year_established }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ facility.get_facility_type_display }}</div>
+                                <div class="item-user-meta">{{ facility.facility_type }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ facility.city|default:"—" }}</div>
+                                {% if facility.address %}
+                                <div class="item-user-meta">{{ facility.address|truncatechars:40 }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                {% if facility.phone %}
+                                <div class="item-user-name">{{ facility.phone }}</div>
+                                {% endif %}
+                                {% if facility.email %}
+                                <div class="item-user-meta">{{ facility.email }}</div>
+                                {% endif %}
+                                {% if not facility.phone and not facility.email %}
+                                <span class="text-muted">—</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if facility.is_active %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check-circle"></i>Actif
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-badge-secondary">
+                                <i class="fa-solid fa-pause-circle"></i>Inactif
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'facilities:detail' facility.id %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{% url 'facilities:edit' facility.id %}" 
+                                   class="action-btn" 
+                                   title="Modifier">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
+                                <button class="action-btn action-btn-info" 
+                                        title="Localisation" 
+                                        onclick="showComingSoon('Localisation sur carte')">
+                                    <i class="fa-solid fa-map-marker-alt"></i>
+                                </button>
+                                <button class="action-btn action-btn-warning" 
+                                        title="Communications" 
+                                        onclick="showComingSoon('Gestion des communications')">
+                                    <i class="fa-solid fa-comments"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <h6 class="empty-state-title">Aucun établissement trouvé</h6>
+            <p class="empty-state-description">
+                {% if search_query %}
+                    Aucun résultat pour "{{ search_query }}"
+                {% else %}
+                    Commencez par ajouter votre premier établissement
+                {% endif %}
+            </p>
+            <a href="{% url 'facilities:create' %}" class="btn-primary">
+                <i class="fa-solid fa-plus"></i>Ajouter un établissement
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    let filterTimeout;
+    
+    // DOM Elements
+    const $searchInput = $('#facility-search');
+    const $typeFilter = $('#type-filter');
+    const $cityFilter = $('#city-filter');
+    const $statusFilter = $('#status-filter');
+    
+    // Search Input Handler
+    $searchInput.on('input', function() {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(function() {
+            applyFilters();
+        }, 300);
+    });
+    
+    // Quick Filter Buttons
+    $('.quick-filter-btn').on('click', function() {
+        const $this = $(this);
+        const type = $this.data('type');
+        const city = $this.data('city');
+        
+        $('.quick-filter-btn').removeClass('active');
+        
+        if (type) {
+            $typeFilter.val(type);
+            $this.addClass('active');
+        } else if (city) {
+            $cityFilter.val(city);
+            $this.addClass('active');
+        }
+        
+        applyFilters();
+    });
+    
+    // Clear All Filters
+    $('#clear-all-filters').on('click', function() {
+        $searchInput.val('');
+        $typeFilter.val('');
+        $cityFilter.val('');
+        $statusFilter.val('');
+        $('.quick-filter-btn').removeClass('active');
+        
+        window.location.href = window.location.pathname;
+    });
+    
+    // Apply filters function (simplified for now)
+    function applyFilters() {
+        console.log('Applying filters...');
+        // Filter logic will be implemented when backend is updated
+    }
+    
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
+// Coming soon placeholder
+function showComingSoon(feature) {
+    alert(`${feature} - Fonctionnalité en développement`);
+}
+</script>
+{% endblock %} 

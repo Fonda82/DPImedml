@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Data Storytelling Demo | DPImedml{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/data-storytelling.css' %}">
+<style>
+.comparison-container {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: center;
+}
+
+.section-title {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.before-title {
+    background: #dc3545;
+    color: white;
+}
+
+.after-title {
+    background: #0C7C59;
+    color: white;
+}
+
+.old-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.old-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.old-label {
+    font-size: 16px;
+    color: #7f8c8d;
+}
+
+.arrow {
+    text-align: center;
+    font-size: 48px;
+    color: #0C7C59;
+    align-self: center;
+}
+
+@media (max-width: 768px) {
+    .before-after {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .arrow {
+        font-size: 24px;
+        transform: rotate(90deg);
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="mb-4">
+                <h1 class="page-title">🎨 Data Storytelling Demo</h1>
+                <p class="text-muted">Transformation de données statiques en histoires visuelles captivantes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SuperAdmin Example -->
+    <div class="comparison-container">
+        <h3 style="color: #0C7C59; margin-bottom: 30px;">📊 Tableau de bord Super Admin</h3>
+        
+        <div class="before-after">
+            <div>
+                <div class="section-title before-title">❌ AVANT - Données statiques</div>
+                <div class="old-card">
+                    <div class="old-number">127</div>
+                    <div class="old-label">Patients</div>
+                </div>
+            </div>
+            
+            <div class="arrow">→</div>
+            
+            <div>
+                <div class="section-title after-title">✅ APRÈS - Histoire visuelle</div>
+                <div class="story-card" data-percentage="85">
+                    <div class="story-header">
+                        <div class="story-icon">
+                            <i class="fa-solid fa-user-injured"></i>
+                        </div>
+                        <h6 class="story-title">Enfants pris en charge</h6>
+                    </div>
+                    
+                    <div class="story-value" data-target="127">127</div>
+                    <div class="story-context">enfants handicapés de 0-14 ans traités</div>
+                    
+                    <div class="story-progress">
+                        <div class="story-progress-bar success" data-percentage="85"></div>
+                    </div>
+                    
+                    <div class="target-achievement">
+                        <span class="target-text">Objectif annuel: 150</span>
+                        <span class="target-badge">85%</span>
+                    </div>
+                    
+                    <div class="status-grid">
+                        <div class="status-item success">
+                            <span class="status-number">89</span>
+                            <span class="status-label">Progrès</span>
+                        </div>
+                        <div class="status-item warning">
+                            <span class="status-number">25</span>
+                            <span class="status-label">Suivi</span>
+                        </div>
+                        <div class="status-item danger">
+                            <span class="status-number">13</span>
+                            <span class="status-label">Critiques</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Example -->
+    <div class="comparison-container">
+        <h3 style="color: #0C7C59; margin-bottom: 30px;">👨‍⚕️ Tableau de bord Médecin</h3>
+        
+        <div class="before-after">
+            <div>
+                <div class="section-title before-title">❌ AVANT - Nombres simples</div>
+                <div class="old-card">
+                    <div class="old-number">42</div>
+                    <div class="old-label">Patients</div>
+                </div>
+            </div>
+            
+            <div class="arrow">→</div>
+            
+            <div>
+                <div class="section-title after-title">✅ APRÈS - Contexte médical</div>
+                <div class="story-card" data-percentage="84">
+                    <div class="story-header">
+                        <div class="story-icon">
+                            <i class="fa-solid fa-stethoscope"></i>
+                        </div>
+                        <h6 class="story-title">Mes patients</h6>
+                    </div>
+                    
+                    <div class="story-value" data-target="42">42</div>
+                    <div class="story-context">patients sous ma supervision directe</div>
+                    
+                    <div class="story-progress">
+                        <div class="story-progress-bar success" data-percentage="84"></div>
+                    </div>
+                    
+                    <div class="target-achievement">
+                        <span class="target-text">Capacité: 50 patients</span>
+                        <span class="target-badge">84%</span>
+                    </div>
+                    
+                    <div class="status-grid">
+                        <div class="status-item success">
+                            <span class="status-number">32</span>
+                            <span class="status-label">Progrès</span>
+                        </div>
+                        <div class="status-item warning">
+                            <span class="status-number">8</span>
+                            <span class="status-label">Stable</span>
+                        </div>
+                        <div class="status-item danger">
+                            <span class="status-number">2</span>
+                            <span class="status-label">Attention</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mini-chart-container" data-chart-data='[28, 35, 32, 38, 42]' data-chart-type="line">
+                        <canvas class="mini-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voucher Example -->
+    <div class="comparison-container">
+        <h3 style="color: #0C7C59; margin-bottom: 30px;">🎫 Système de bons</h3>
+        
+        <div class="before-after">
+            <div>
+                <div class="section-title before-title">❌ AVANT - Chiffre isolé</div>
+                <div class="old-card">
+                    <div class="old-number">156</div>
+                    <div class="old-label">Bons actifs</div>
+                </div>
+            </div>
+            
+            <div class="arrow">→</div>
+            
+            <div>
+                <div class="section-title after-title">✅ APRÈS - Impact social</div>
+                <div class="story-card" data-percentage="78">
+                    <div class="story-header">
+                        <div class="story-icon">
+                            <i class="fa-solid fa-ticket"></i>
+                        </div>
+                        <h6 class="story-title">Bons de service</h6>
+                    </div>
+                    
+                    <div class="story-value" data-target="156">156</div>
+                    <div class="story-context">familles bénéficiaires de soins gratuits</div>
+                    
+                    <div class="story-progress">
+                        <div class="story-progress-bar warning" data-percentage="78"></div>
+                    </div>
+                    
+                    <div class="target-achievement">
+                        <span class="target-text">Budget mensuel: 200 bons</span>
+                        <span class="target-badge">78%</span>
+                    </div>
+                    
+                    <div class="status-grid">
+                        <div class="status-item success">
+                            <span class="status-number">89</span>
+                            <span class="status-label">Utilisés</span>
+                        </div>
+                        <div class="status-item warning">
+                            <span class="status-number">67</span>
+                            <span class="status-label">En attente</span>
+                        </div>
+                        <div class="status-item danger">
+                            <span class="status-number">12</span>
+                            <span class="status-label">Expirés</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Implementation Steps -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="widget">
+                <div class="widget-header">
+                    <h5>🚀 Comment implémenter Data Storytelling</h5>
+                </div>
+                <div class="widget-body">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="icon-circle bg-primary text-white mb-3">
+                                    <i class="fa-solid fa-database"></i>
+                                </div>
+                                <h6>1. Données contextuelles</h6>
+                                <p class="small text-muted">Ajouter des cibles, des comparaisons et des périodes de référence</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="icon-circle bg-success text-white mb-3">
+                                    <i class="fa-solid fa-chart-pie"></i>
+                                </div>
+                                <h6>2. Visualisations</h6>
+                                <p class="small text-muted">Barres de progression, graphiques et indicateurs visuels</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="icon-circle bg-info text-white mb-3">
+                                    <i class="fa-solid fa-palette"></i>
+                                </div>
+                                <h6>3. Code couleur</h6>
+                                <p class="small text-muted">Vert (succès), Jaune (attention), Rouge (critique)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <div class="icon-circle bg-warning text-white mb-3">
+                                    <i class="fa-solid fa-magic-wand-sparkles"></i>
+                                </div>
+                                <h6>4. Animations</h6>
+                                <p class="small text-muted">Compteurs animés et transitions fluides</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/data-storytelling.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize data storytelling after a short delay to show the effect
+    setTimeout(() => {
+        const storytelling = new DataStorytelling();
+        storytelling.animateProgressBars();
+    }, 500);
+});
+</script>
+{% endblock %} 

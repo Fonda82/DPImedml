@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sélectionner un Patient - Prescription{% endblock %}
+
+{% block extra_css %}
+<style>
+.mali-header {
+    background: linear-gradient(135deg, #0C7C59 0%, #14A085 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.patient-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.patient-card:hover {
+    box-shadow: 0 4px 12px rgba(12, 124, 89, 0.1);
+    transform: translateY(-2px);
+    border-color: #0C7C59;
+}
+
+.search-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.age-badge {
+    background-color: #e8f4f8;
+    color: #0c5460;
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.patient-id-badge {
+    background-color: #0C7C59;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mali-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-user-plus me-3"></i>
+                    Nouvelle Prescription
+                </h1>
+                <p class="mb-0 opacity-90">
+                    <i class="fas fa-search me-2"></i>Sélectionnez un patient pour commencer
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'prescriptions:list' %}" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Retour aux prescriptions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Search Form -->
+    <div class="search-card">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">
+                    <i class="fas fa-search me-2"></i>Rechercher un patient
+                </label>
+                <input type="text" 
+                       name="search" 
+                       class="form-control form-control-lg" 
+                       placeholder="Nom, prénom ou numéro d'identification..." 
+                       value="{{ search_query }}"
+                       autofocus>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary btn-lg me-2">
+                    <i class="fas fa-search me-2"></i>Rechercher
+                </button>
+                <a href="{% url 'prescriptions:create' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-times me-2"></i>Effacer
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search Results -->
+    {% if search_query %}
+        <div class="mb-3">
+            <h5 class="text-muted">
+                <i class="fas fa-search me-2"></i>
+                Résultats pour "{{ search_query }}" ({{ patients|length }} patient{{ patients|length|pluralize }})
+            </h5>
+        </div>
+    {% endif %}
+
+    <!-- Patients List -->
+    {% if patients %}
+        <div class="row">
+            {% for patient in patients %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="patient-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="card-title mb-1">
+                                        {{ patient.first_name }} {{ patient.last_name }}
+                                    </h5>
+                                    <span class="patient-id-badge">{{ patient.patient_id }}</span>
+                                </div>
+                                <span class="age-badge">
+                                    {% if patient.date_of_birth %}
+                                        {{ patient.date_of_birth|timesince|truncatewords:1 }}
+                                    {% else %}
+                                        Âge non renseigné
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                {% if patient.date_of_birth %}
+                                    <p class="mb-1">
+                                        <i class="fas fa-birthday-cake me-2 text-info"></i>
+                                        <small class="text-muted">{{ patient.date_of_birth|date:"d/m/Y" }}</small>
+                                    </p>
+                                {% endif %}
+                                
+                                {% if patient.phone_number %}
+                                    <p class="mb-1">
+                                        <i class="fas fa-phone me-2 text-success"></i>
+                                        <small class="text-muted">{{ patient.phone_number }}</small>
+                                    </p>
+                                {% endif %}
+                                
+                                {% if patient.guardian_name %}
+                                    <p class="mb-1">
+                                        <i class="fas fa-user-friends me-2 text-warning"></i>
+                                        <small class="text-muted">Tuteur: {{ patient.guardian_name }}</small>
+                                    </p>
+                                {% endif %}
+                                
+                                {% if patient.city %}
+                                    <p class="mb-1">
+                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                        <small class="text-muted">{{ patient.city }}</small>
+                                    </p>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Recent Medical Activity -->
+                            {% with patient.medicalrecord_set.first as latest_record %}
+                                {% if latest_record %}
+                                    <div class="border-top pt-2 mb-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-notes-medical me-2"></i>
+                                            Dernière consultation: {{ latest_record.date|date:"d/m/Y" }}
+                                        </small>
+                                        {% if latest_record.diagnosis %}
+                                            <br>
+                                            <small class="text-info">{{ latest_record.diagnosis|truncatechars:40 }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <div class="d-grid">
+                                <a href="{% url 'prescriptions:create_for_patient' patient.pk %}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-prescription-bottle-alt me-2"></i>
+                                    Créer une prescription
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                {% if search_query %}
+                    <i class="fas fa-search fa-4x text-muted"></i>
+                {% else %}
+                    <i class="fas fa-users fa-4x text-muted"></i>
+                {% endif %}
+            </div>
+            <h3 class="text-muted mb-3">
+                {% if search_query %}
+                    Aucun patient trouvé
+                {% else %}
+                    Rechercher un patient
+                {% endif %}
+            </h3>
+            <p class="text-muted mb-4">
+                {% if search_query %}
+                    Aucun patient ne correspond à "{{ search_query }}". Vérifiez l'orthographe ou essayez un autre terme.
+                {% else %}
+                    Utilisez le champ de recherche ci-dessus pour trouver un patient et créer une prescription.
+                {% endif %}
+            </p>
+            {% if not search_query %}
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="bg-light p-4 rounded">
+                            <h6 class="mb-3">
+                                <i class="fas fa-lightbulb me-2 text-warning"></i>
+                                Conseils de recherche
+                            </h6>
+                            <ul class="text-start text-muted small">
+                                <li>Utilisez le nom ou prénom du patient</li>
+                                <li>Recherchez par numéro d'identification patient</li>
+                                <li>Les recherches ne sont pas sensibles à la casse</li>
+                                <li>Utilisez au moins 2 caractères pour la recherche</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <!-- Quick Access to Recent Patients -->
+    {% if not search_query %}
+        <div class="mt-5">
+            <h5 class="mb-3">
+                <i class="fas fa-history me-2 text-primary"></i>
+                Patients récemment consultés
+            </h5>
+            <div class="row">
+                <!-- This would be populated with recently accessed patients in a real implementation -->
+                <div class="col-12">
+                    <div class="bg-light p-3 rounded text-center">
+                        <i class="fas fa-info-circle me-2 text-info"></i>
+                        <small class="text-muted">Les patients récemment consultés apparaîtront ici</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-focus search input
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput && !searchInput.value) {
+        searchInput.focus();
+    }
+    
+    // Live search functionality
+    let searchTimeout;
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    this.form.submit();
+                }, 500);
+            }
+        });
+    }
+    
+    // Add hover effects to patient cards
+    const patientCards = document.querySelectorAll('.patient-card');
+    patientCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.borderColor = '#0C7C59';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.borderColor = '#e0e0e0';
+        });
+    });
+});
+</script>
+{% endblock %} 

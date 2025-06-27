@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block title %}Détails du rendez-vous{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="detail-title">
+                    <i class="fa-solid fa-calendar-days me-2"></i>Détails du rendez-vous
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard:index' %}">Tableau de bord</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'appointments:list' %}">Rendez-vous</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Détails</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'appointments:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+                <button class="btn-secondary-create me-2">
+                    <i class="fa-solid fa-pencil"></i>Modifier
+                </button>
+                <button class="btn-danger-create">
+                    <i class="fa-solid fa-xmark"></i>Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Appointment Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-calendar form-section-icon"></i>
+                    <h5 class="form-section-title">Informations du rendez-vous</h5>
+                    <div class="form-section-actions">
+                        {% if appointment.status == 'scheduled' %}
+                        <span class="status-badge status-badge-primary">{{ appointment.get_status_display }}</span>
+                        {% elif appointment.status == 'confirmed' %}
+                        <span class="status-badge status-badge-success">{{ appointment.get_status_display }}</span>
+                        {% elif appointment.status == 'completed' %}
+                        <span class="status-badge status-badge-info">{{ appointment.get_status_display }}</span>
+                        {% elif appointment.status == 'cancelled' %}
+                        <span class="status-badge status-badge-danger">{{ appointment.get_status_display }}</span>
+                        {% elif appointment.status == 'no_show' %}
+                        <span class="status-badge status-badge-warning">{{ appointment.get_status_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-hashtag entity-detail-icon"></i>
+                                    <span class="entity-detail-label">ID du rendez-vous:</span>
+                                    <span class="entity-detail-value">#{{ appointment.id }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-clock entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Date et heure:</span>
+                                    <span class="entity-detail-value">{{ appointment.appointment_date|date:"d/m/Y" }} à {{ appointment.appointment_date|date:"H:i" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-user entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Patient:</span>
+                                    <span class="entity-detail-value">{{ appointment.patient }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-user-doctor entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Médecin:</span>
+                                    <span class="entity-detail-value">{{ appointment.doctor }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-building entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Établissement:</span>
+                                    <span class="entity-detail-value">{{ appointment.facility }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-clipboard entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Motif:</span>
+                                    <span class="entity-detail-value">{{ appointment.reason }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% if appointment.notes %}
+                        <div class="col-12">
+                            <div class="form-info">
+                                <div class="form-info-header">
+                                    <i class="fa-solid fa-sticky-note"></i>
+                                    Notes
+                                </div>
+                                <div class="form-info-content">
+                                    {{ appointment.notes }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Patient Info Card -->
+            <div class="entity-info-card mb-4">
+                <div class="entity-details">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-user me-2"></i>Patient
+                    </h6>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="entity-avatar me-3">
+                            {{ appointment.patient.first_name.0 }}{{ appointment.patient.last_name.0 }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ appointment.patient }}</h6>
+                            <small class="text-muted">ID: {{ appointment.patient.patient_id }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="entity-detail-item">
+                                <span class="entity-detail-label">Âge:</span>
+                                <span class="entity-detail-value">{{ appointment.patient.age }} ans</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="entity-detail-item">
+                                <span class="entity-detail-label">Sexe:</span>
+                                <span class="entity-detail-value">{{ appointment.patient.get_gender_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="btn-primary-create w-100">
+                        <i class="fa-solid fa-user"></i>Voir profil
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-bolt form-section-icon"></i>
+                    <h5 class="form-section-title">Actions Rapides</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="d-grid gap-2">
+                        <button class="quick-action-card">
+                            <div class="quick-action-content">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-notes-medical"></i>
+                                </div>
+                                <div class="quick-action-title">Créer un plan de réhabilitation</div>
+                            </div>
+                        </button>
+                        <button class="quick-action-card">
+                            <div class="quick-action-content">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-ticket"></i>
+                                </div>
+                                <div class="quick-action-title">Générer un bon</div>
+                            </div>
+                        </button>
+                        <button class="quick-action-card">
+                            <div class="quick-action-content">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-calendar"></i>
+                                </div>
+                                <div class="quick-action-title">Planifier un suivi</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Previous Appointments -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-history form-section-icon"></i>
+                    <h5 class="form-section-title">Historique des rendez-vous</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="table-responsive">
+                        <table class="list-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Médecin</th>
+                                    <th>Motif</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>10/03/2025</td>
+                                    <td>Dr. Traoré</td>
+                                    <td>Première consultation</td>
+                                    <td>Évaluation initiale</td>
+                                </tr>
+                                <tr>
+                                    <td>25/03/2025</td>
+                                    <td>Dr. Ballo</td>
+                                    <td>Consultation de suivi</td>
+                                    <td>Progrès satisfaisants</td>
+                                </tr>
+                                <tr>
+                                    <td>15/04/2025</td>
+                                    <td>Dr. Traoré</td>
+                                    <td>Consultation de suivi</td>
+                                    <td>Ajustement du plan de traitement</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-item {
+        margin-bottom: 10px;
+    }
+    
+    .detail-label {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 2px;
+    }
+    
+    .detail-value {
+        font-weight: 500;
+    }
+    
+    .avatar-md {
+        width: 50px;
+        height: 50px;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .avatar-placeholder {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--primary-light);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+</style>
+{% endblock %} 

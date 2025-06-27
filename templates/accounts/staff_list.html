@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Personnel | DPImedml{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-user-tie me-2"></i>Personnel de Santé
+                </h1>
+                <p class="list-subtitle">Gestion de l'équipe médicale</p>
+            </div>
+            <div class="list-actions">
+                <a href="{% url 'accounts:staff_create' %}" class="btn-primary">
+                    <i class="fa-solid fa-user-plus"></i>Nouveau Membre
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ staff|length }}</div>
+            <div class="stats-card-label">Total Personnel</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-stethoscope"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ staff|length|add:"-2" }}</div>
+            <div class="stats-card-label">Médecins</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-user-nurse"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">2</div>
+            <div class="stats-card-label">Personnel Soignant</div>
+        </div>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Membres du Personnel
+            </h6>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Membre</th>
+                        <th>Contact</th>
+                        <th>Spécialité</th>
+                        <th>Rôle</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in staff %}
+                    <tr>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ member.first_name|slice:":1" }}{{ member.last_name|slice:":1" }}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ member.first_name }} {{ member.last_name }}</div>
+                                    <div class="item-user-meta">ID: {{ member.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ member.email }}</td>
+                        <td>
+                            {% if member.specialty %}
+                                <span class="status-badge status-badge-info">{{ member.specialty }}</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if member.role == 'doctor' %}
+                                <span class="status-badge status-badge-primary">
+                                    <i class="fa-solid fa-user-doctor"></i>Médecin
+                                </span>
+                            {% elif member.role == 'admin' %}
+                                <span class="status-badge status-badge-warning">
+                                    <i class="fa-solid fa-user-gear"></i>Admin
+                                </span>
+                            {% else %}
+                                <span class="status-badge status-badge-secondary">
+                                    <i class="fa-solid fa-user"></i>Personnel
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'accounts:staff_detail' pk=member.id %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir profil">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{% url 'accounts:staff_edit' pk=member.id %}" 
+                                   class="action-btn" 
+                                   title="Modifier">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </div>
+                                <h6 class="empty-state-title">Aucun membre trouvé</h6>
+                                <p class="empty-state-description">Commencez par ajouter un membre du personnel</p>
+                                <a href="{% url 'accounts:staff_create' %}" class="btn-primary">
+                                    <i class="fa-solid fa-user-plus"></i>Ajouter un membre
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

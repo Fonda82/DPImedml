@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mon Profil | DPI MedML{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <h2 class="mb-4">Mon Profil</h2>
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="text-center mb-3">
+                                <img src="{% static 'img/avatar-default.jpg' %}" alt="Photo de profil" class="rounded-circle img-fluid" style="max-width: 150px;">
+                            </div>
+                            <div class="d-grid gap-2">
+                                <a href="#" class="btn btn-outline-primary btn-sm">Changer la photo</a>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h4 class="mb-3">{{ user.first_name }} {{ user.last_name }}</h4>
+                            <p class="text-muted">
+                                {% if user.profile.user_type == 'doctor' %}
+                                    <span class="badge bg-primary">Médecin</span>
+                                {% elif user.profile.user_type == 'facility_admin' %}
+                                    <span class="badge bg-info">Administrateur d'Établissement</span>
+                                {% elif user.profile.user_type == 'superadmin' %}
+                                    <span class="badge bg-danger">Super Administrateur</span>
+                                {% elif user.profile.user_type == 'patient' %}
+                                    <span class="badge bg-success">Patient</span>
+                                {% endif %}
+                            </p>
+                            <hr>
+                            <div class="row mb-2">
+                                <div class="col-md-4 fw-bold">Nom d'utilisateur:</div>
+                                <div class="col-md-8">{{ user.username }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-4 fw-bold">Email:</div>
+                                <div class="col-md-8">{{ user.email }}</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-md-4 fw-bold">Date d'inscription:</div>
+                                <div class="col-md-8">{{ user.date_joined|date:"d/m/Y" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <a href="{% url 'dashboard:index' %}" class="btn btn-secondary">Retour au tableau de bord</a>
+                            <a href="#" class="btn btn-primary float-end">Modifier le profil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

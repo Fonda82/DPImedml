@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Référence {{ referral.referral_id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Référence {{ referral.referral_id }}</h1>
+                    <p class="text-muted">{{ referral.patient.first_name }} {{ referral.patient.last_name }} - {{ referral.specialty_requested }}</p>
+                </div>
+                <div>
+                    <a href="{% url 'referrals:list' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Retour
+                    </a>
+                    {% if can_respond %}
+                    <a href="{% url 'referrals:respond' referral.pk %}" class="btn btn-success">
+                        <i class="fa-solid fa-reply me-2"></i>Répondre
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    {% if referral.status == 'pending' %}
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-clock me-2"></i>
+                        <strong>En attente de réponse</strong> - Cette référence attend une réponse de {{ referral.receiving_facility.name }}
+                    </div>
+                    {% elif referral.status == 'accepted' %}
+                    <div class="alert alert-success">
+                        <i class="fa-solid fa-check-circle me-2"></i>
+                        <strong>Acceptée</strong> - Référence acceptée
+                    </div>
+                    {% elif referral.status == 'rejected' %}
+                    <div class="alert alert-danger">
+                        <i class="fa-solid fa-times-circle me-2"></i>
+                        <strong>Refusée</strong> - Référence refusée
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-user me-2"></i>Informations Patient
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Nom complet:</strong><br>
+                                    <span class="text-primary">{{ referral.patient.first_name }} {{ referral.patient.last_name }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Âge:</strong><br>
+                                    {{ referral.patient.age }} ans
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>ID Patient:</strong><br>
+                                    {{ referral.patient.patient_id }}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Date de naissance:</strong><br>
+                                    {{ referral.patient.date_of_birth|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-clipboard-list me-2"></i>Détails Référence
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Type:</strong><br>
+                                    <span class="badge bg-primary">{{ referral.get_referral_type_display }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Priorité:</strong><br>
+                                    {% if referral.priority == 'urgent' %}
+                                    <span class="badge bg-danger">Urgente</span>
+                                    {% elif referral.priority == 'high' %}
+                                    <span class="badge bg-warning">Élevée</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ referral.get_priority_display }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Date créée:</strong><br>
+                                    {{ referral.created_date|date:"d/m/Y H:i" }}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Date préférée:</strong><br>
+                                    {% if referral.preferred_date %}
+                                    {{ referral.preferred_date|date:"d/m/Y" }}
+                                    {% else %}
+                                    <em class="text-muted">Non spécifiée</em>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-hospital me-2"></i>Établissement Référent
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="text-primary">{{ referral.referring_facility.name }}</h6>
+                            <p class="text-muted mb-2">{{ referral.referring_facility.get_facility_type_display }}</p>
+                            <div class="small">
+                                <strong>Médecin référent:</strong><br>
+                                Dr. {{ referral.referring_doctor.user.first_name }} {{ referral.referring_doctor.user.last_name }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-building-medical me-2"></i>Établissement Destinataire
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="text-success">{{ referral.receiving_facility.name }}</h6>
+                            <p class="text-muted mb-2">{{ referral.receiving_facility.get_facility_type_display }}</p>
+                            <div class="small">
+                                <strong>Spécialité demandée:</strong><br>
+                                <span class="badge bg-light text-dark">{{ referral.specialty_requested }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-stethoscope me-2"></i>Informations Médicales
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <strong>Motif de référence:</strong>
+                                        <p class="mt-2">{{ referral.reason_for_referral }}</p>
+                                    </div>
+                                    
+                                    {% if referral.current_diagnosis %}
+                                    <div class="mb-3">
+                                        <strong>Diagnostic actuel:</strong>
+                                        <p class="mt-2">{{ referral.current_diagnosis }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <strong>Résumé clinique:</strong>
+                                        <p class="mt-2">{{ referral.clinical_summary }}</p>
+                                    </div>
+                                    
+                                    {% if referral.current_medications %}
+                                    <div class="mb-3">
+                                        <strong>Médicaments actuels:</strong>
+                                        <p class="mt-2">{{ referral.current_medications }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if referral.specific_questions %}
+                            <hr>
+                            <div class="mb-0">
+                                <strong>Questions spécifiques:</strong>
+                                <p class="mt-2">{{ referral.specific_questions }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

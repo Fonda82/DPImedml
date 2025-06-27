@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter un Établissement | Système de Réhabilitation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-building-columns me-2"></i>Ajouter un Établissement
+                </h1>
+                <p class="create-subtitle">Créer un nouvel établissement dans le système</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'facilities:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <form method="post" action="{% url 'facilities:create' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-info-circle form-section-icon"></i>
+                        <h5 class="form-section-title">Informations de l'Établissement</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label required">Nom de l'établissement</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <div class="invalid-feedback">Veuillez saisir le nom de l'établissement</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="facility_type" class="form-label required">Type d'établissement</label>
+                                <select class="form-select" id="facility_type" name="facility_type" required>
+                                    <option value="">Sélectionner</option>
+                                    <option value="CSCom">Centre de Santé Communautaire</option>
+                                    <option value="CSRef">Centre de Santé de Référence</option>
+                                    <option value="CR">Centre de Réadaptation</option>
+                                    <option value="H">Hôpital</option>
+                                    <option value="P">Poste de Santé</option>
+                                    <option value="A">Autre</option>
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner le type d'établissement</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Location Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-map-marker-alt form-section-icon"></i>
+                        <h5 class="form-section-title">Localisation</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label required">Adresse</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                                <div class="invalid-feedback">Veuillez saisir l'adresse</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label for="city" class="form-label required">Ville</label>
+                                <input type="text" class="form-control" id="city" name="city" value="Bamako" required>
+                                <div class="invalid-feedback">Veuillez saisir la ville</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="region" class="form-label">Région</label>
+                                <input type="text" class="form-control" id="region" name="region">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="country" class="form-label">Pays</label>
+                                <input type="text" class="form-control" id="country" name="country" value="Mali">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-phone form-section-icon"></i>
+                        <h5 class="form-section-title">Informations de Contact</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-cog form-section-icon"></i>
+                        <h5 class="form-section-title">Informations Complémentaires</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="year_established" class="form-label">Année de création</label>
+                                <input type="number" class="form-control" id="year_established" name="year_established" min="1900" max="2025">
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                    <label class="form-check-label" for="is_active">
+                                        Établissement actif
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'facilities:list' %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn-primary-create">
+                            <i class="fa-solid fa-building-columns"></i>Enregistrer l'Établissement
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <!-- Guidelines Section -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-lightbulb form-section-icon"></i>
+                    <h5 class="form-section-title">Guide de Création</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-hospital"></i>
+                            Types d'établissements
+                        </div>
+                        <div class="form-info-content">
+                            <strong>CSCom:</strong> Centres de santé de première ligne<br>
+                            <strong>CSRef:</strong> Centres de référence de district<br>
+                            <strong>CR:</strong> Centres de réadaptation spécialisés<br>
+                            <strong>Hôpital:</strong> Établissements hospitaliers
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-map"></i>
+                            Localisation au Mali
+                        </div>
+                        <div class="form-info-content">
+                            Assurez-vous que l'adresse est complète et correcte pour faciliter la localisation dans le système de santé malien.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-network-wired"></i>
+                            Réseau de santé
+                        </div>
+                        <div class="form-info-content">
+                            L'établissement sera automatiquement intégré au réseau de réhabilitation pédiatrique une fois créé.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Statistics -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-chart-bar form-section-icon"></i>
+                    <h5 class="form-section-title">Statistiques Réseau</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-primary mb-1">15</div>
+                        <div class="text-muted">Établissements actifs</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-success mb-1">8</div>
+                        <div class="text-muted">Centres de réadaptation</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-info mb-1">247</div>
+                        <div class="text-muted">Patients en réseau</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        
+        console.log('Facilities create form initialized with unified design');
+    });
+</script>
+{% endblock %} 

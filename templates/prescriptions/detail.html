@@ -1,0 +1,477 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prescription {{ prescription.prescription_id }} - DPImedml{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="detail-title">
+                    <i class="fa-solid fa-prescription-bottle-alt me-2"></i>Prescription {{ prescription.prescription_id }}
+                </h1>
+                <p class="detail-subtitle">
+                    {{ prescription.patient.first_name }} {{ prescription.patient.last_name }} • {{ prescription.prescribed_date|date:"d/m/Y H:i" }}
+                </p>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'prescriptions:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour à la liste
+                </a>
+                {% if can_edit %}
+                <a href="{% url 'prescriptions:edit' prescription.pk %}" class="btn-primary-create">
+                    <i class="fa-solid fa-edit"></i>Modifier
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiry Warning -->
+    {% if prescription.is_expired %}
+    <div class="form-info form-info-warning mb-4">
+        <div class="form-info-content">
+            <i class="fa-solid fa-exclamation-triangle me-2"></i>
+            <strong>Attention:</strong> Cette prescription a expiré le {{ prescription.expiry_date|date:"d/m/Y" }}.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-md-8">
+            <!-- Prescription Header -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-prescription form-section-icon"></i>
+                    <h5 class="form-section-title">Informations de prescription</h5>
+                    <div class="form-section-actions">
+                        {% if prescription.status == 'DRAFT' %}
+                        <span class="status-badge status-badge-secondary">{{ prescription.get_status_display }}</span>
+                        {% elif prescription.status == 'PRESCRIBED' %}
+                        <span class="status-badge status-badge-info">{{ prescription.get_status_display }}</span>
+                        {% elif prescription.status == 'VALIDATED' %}
+                        <span class="status-badge status-badge-success">{{ prescription.get_status_display }}</span>
+                        {% elif prescription.status == 'DISPENSED' %}
+                        <span class="status-badge status-badge-primary">{{ prescription.get_status_display }}</span>
+                        {% elif prescription.status == 'COMPLETED' %}
+                        <span class="status-badge status-badge-success">{{ prescription.get_status_display }}</span>
+                        {% elif prescription.status == 'CANCELLED' %}
+                        <span class="status-badge status-badge-danger">{{ prescription.get_status_display }}</span>
+                        {% elif prescription.status == 'EXPIRED' %}
+                        <span class="status-badge status-badge-warning">{{ prescription.get_status_display }}</span>
+                        {% endif %}
+                        
+                        {% if prescription.priority == 'LOW' %}
+                        <span class="status-badge status-badge-secondary ms-2">{{ prescription.get_priority_display }}</span>
+                        {% elif prescription.priority == 'NORMAL' %}
+                        <span class="status-badge status-badge-info ms-2">{{ prescription.get_priority_display }}</span>
+                        {% elif prescription.priority == 'HIGH' %}
+                        <span class="status-badge status-badge-warning ms-2">{{ prescription.get_priority_display }}</span>
+                        {% elif prescription.priority == 'URGENT' %}
+                        <span class="status-badge status-badge-danger ms-2">{{ prescription.get_priority_display }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-section-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <!-- Patient Information -->
+                            <div class="entity-info-card mb-4">
+                                <div class="entity-details">
+                                    <h6 class="entity-section-title">
+                                        <i class="fa-solid fa-user me-2"></i>Patient
+                                    </h6>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Nom:</span>
+                                        <span class="entity-detail-value">{{ prescription.patient.first_name }} {{ prescription.patient.last_name }}</span>
+                                    </div>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">ID Patient:</span>
+                                        <span class="entity-detail-value">{{ prescription.patient.patient_id }}</span>
+                                    </div>
+                                    
+                                    {% if prescription.patient.date_of_birth %}
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Date de naissance:</span>
+                                        <span class="entity-detail-value">{{ prescription.patient.date_of_birth|date:"d/m/Y" }} ({{ prescription.patient.date_of_birth|timesince|truncatewords:1 }})</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Clinical Information -->
+                            <div class="entity-info-card">
+                                <div class="entity-details">
+                                    <h6 class="entity-section-title">
+                                        <i class="fa-solid fa-diagnoses me-2"></i>Informations cliniques
+                                    </h6>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Diagnostic:</span>
+                                        <span class="entity-detail-value">{{ prescription.diagnosis }}</span>
+                                    </div>
+                                    
+                                    {% if prescription.clinical_notes %}
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Notes cliniques:</span>
+                                        <span class="entity-detail-value">{{ prescription.clinical_notes }}</span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if prescription.instructions %}
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Instructions patient:</span>
+                                        <span class="entity-detail-value">{{ prescription.instructions }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6">
+                            <!-- Prescription Details -->
+                            <div class="entity-info-card">
+                                <div class="entity-details">
+                                    <h6 class="entity-section-title">
+                                        <i class="fa-solid fa-info-circle me-2"></i>Détails de prescription
+                                    </h6>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Médecin prescripteur:</span>
+                                        <span class="entity-detail-value">
+                                            {% if prescription.prescribing_doctor %}
+                                                Dr. {{ prescription.prescribing_doctor.user.first_name }} {{ prescription.prescribing_doctor.user.last_name }}
+                                            {% else %}
+                                                Non renseigné
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Établissement:</span>
+                                        <span class="entity-detail-value">
+                                            {% if prescription.prescribing_facility %}
+                                                {{ prescription.prescribing_facility.name }}
+                                            {% else %}
+                                                Non renseigné
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Date de prescription:</span>
+                                        <span class="entity-detail-value">{{ prescription.prescribed_date|date:"d/m/Y H:i" }}</span>
+                                    </div>
+                                    
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Date d'expiration:</span>
+                                        <span class="entity-detail-value">
+                                            {% if prescription.expiry_date %}
+                                                {{ prescription.expiry_date|date:"d/m/Y" }}
+                                                {% if prescription.is_expired %}
+                                                    <span class="text-danger">(Expiré)</span>
+                                                {% else %}
+                                                    <span class="text-success">({{ prescription.expiry_date|timeuntil }} restant)</span>
+                                                {% endif %}
+                                            {% else %}
+                                                Non renseignée
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    
+                                    {% if prescription.medical_record %}
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Dossier médical:</span>
+                                        <a href="{% url 'patients:medical_record' prescription.medical_record.pk %}" class="entity-detail-value">
+                                            {{ prescription.medical_record.date|date:"d/m/Y" }} - {{ prescription.medical_record.diagnosis|truncatechars:30 }}
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medications Section -->
+            <div class="form-section mt-4">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-pills form-section-icon"></i>
+                    <h5 class="form-section-title">Médicaments prescrits ({{ prescription_medications|length }})</h5>
+                </div>
+                <div class="form-section-body">
+                    {% for med in prescription_medications %}
+                    <div class="entity-info-card mb-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h6 class="mb-1">{{ med.medication.name }}</h6>
+                                <p class="text-muted mb-2">{{ med.medication.generic_name }} - {{ med.medication.get_form_display }}</p>
+                                <div class="mb-2">
+                                    {% if med.medication.category %}
+                                    <span class="status-badge status-badge-info">{{ med.medication.category.name }}</span>
+                                    {% endif %}
+                                    {% if med.medication.is_pediatric_approved %}
+                                    <span class="status-badge status-badge-success ms-1">Pédiatrique</span>
+                                    {% endif %}
+                                    {% if med.medication.available_in_mali %}
+                                    <span class="status-badge status-badge-primary ms-1">Mali</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="entity-details">
+                                    <h6 class="entity-section-title">
+                                        <i class="fa-solid fa-pills me-2"></i>Posologie
+                                    </h6>
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Dose:</span>
+                                        <span class="entity-detail-value">{{ med.dose }} {{ med.dose_unit }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Fréquence:</span>
+                                        <span class="entity-detail-value">{{ med.frequency }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Voie:</span>
+                                        <span class="entity-detail-value">{{ med.get_route_display }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Durée:</span>
+                                        <span class="entity-detail-value">{{ med.duration_days }} jours</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <span class="entity-detail-label">Quantité totale:</span>
+                                        <span class="entity-detail-value">{{ med.total_quantity }} {{ med.dose_unit }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2 text-center">
+                                {% if med.is_dispensed %}
+                                <span class="status-badge status-badge-success mb-2">
+                                    <i class="fa-solid fa-check-circle me-1"></i>Délivré
+                                </span>
+                                <small class="text-muted d-block">{{ med.dispensed_date|date:"d/m/Y" }}</small>
+                                {% else %}
+                                <span class="status-badge status-badge-warning mb-2">
+                                    <i class="fa-solid fa-clock me-1"></i>En attente
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if med.instructions %}
+                        <div class="border-top pt-3 mt-3">
+                            <h6 class="mb-2">
+                                <i class="fa-solid fa-info me-2 text-info"></i>Instructions spécifiques
+                            </h6>
+                            <p class="text-muted mb-0">{{ med.instructions }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if med.special_notes %}
+                        <div class="border-top pt-3 mt-3">
+                            <div class="form-info form-info-warning">
+                                <div class="form-info-content">
+                                    <i class="fa-solid fa-exclamation-circle me-2"></i>
+                                    <strong>Notes spéciales:</strong> {{ med.special_notes }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-pills"></i>
+                        </div>
+                        <h6 class="empty-state-title">Aucun médicament prescrit</h6>
+                        <p class="empty-state-description">Aucun médicament n'a été ajouté à cette prescription</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Workflow Timeline -->
+            <div class="form-section mb-4">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-route form-section-icon"></i>
+                    <h5 class="form-section-title">Workflow de prescription</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="timeline-item d-flex align-items-start mb-3">
+                        <div class="entity-avatar bg-success me-3" style="width: 40px; height: 40px;">
+                            <i class="fa-solid fa-edit"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Prescription créée</h6>
+                            <small class="text-muted">{{ prescription.prescribed_date|date:"d/m/Y H:i" }}</small>
+                            {% if prescription.prescribing_doctor %}
+                            <br><small class="text-info">Dr. {{ prescription.prescribing_doctor.user.last_name }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item d-flex align-items-start mb-3">
+                        <div class="entity-avatar {% if prescription.status == 'VALIDATED' or prescription.status == 'DISPENSED' %}bg-success{% elif prescription.status == 'PRESCRIBED' %}bg-info{% else %}bg-light text-muted{% endif %} me-3" style="width: 40px; height: 40px;">
+                            <i class="fa-solid fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Validation pharmacien</h6>
+                            {% if prescription.validated_date %}
+                            <small class="text-muted">{{ prescription.validated_date|date:"d/m/Y H:i" }}</small>
+                            {% if prescription.validating_pharmacist %}
+                            <br><small class="text-info">{{ prescription.validating_pharmacist.user.last_name }}</small>
+                            {% endif %}
+                            {% else %}
+                            <small class="text-muted">En attente</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item d-flex align-items-start">
+                        <div class="entity-avatar {% if prescription.status == 'DISPENSED' %}bg-success{% elif prescription.status == 'VALIDATED' %}bg-info{% else %}bg-light text-muted{% endif %} me-3" style="width: 40px; height: 40px;">
+                            <i class="fa-solid fa-hand-holding-medical"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">Dispensation</h6>
+                            {% if prescription.dispensed_date %}
+                            <small class="text-muted">{{ prescription.dispensed_date|date:"d/m/Y H:i" }}</small>
+                            {% if prescription.dispensing_pharmacist %}
+                            <br><small class="text-info">{{ prescription.dispensing_pharmacist.user.last_name }}</small>
+                            {% endif %}
+                            {% if prescription.dispensing_facility %}
+                            <br><small class="text-success">{{ prescription.dispensing_facility.name }}</small>
+                            {% endif %}
+                            {% else %}
+                            <small class="text-muted">En attente</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="form-section mb-4">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-cogs form-section-icon"></i>
+                    <h5 class="form-section-title">Actions</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="d-grid gap-2">
+                        {% if can_edit %}
+                        <a href="{% url 'prescriptions:edit' prescription.pk %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-edit"></i>Modifier la prescription
+                        </a>
+                        {% endif %}
+                        
+                        {% if can_validate %}
+                        <form method="post" action="{% url 'prescriptions:validate' prescription.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary-create w-100" onclick="return confirm('Valider cette prescription ?')">
+                                <i class="fa-solid fa-check"></i>Valider la prescription
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        {% if can_dispense %}
+                        <form method="post" action="{% url 'prescriptions:dispense' prescription.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-primary-create w-100" onclick="return confirm('Marquer comme délivrée ?')">
+                                <i class="fa-solid fa-hand-holding-medical"></i>Marquer comme délivrée
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        <a href="{% url 'prescriptions:print' prescription.pk %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-print"></i>Imprimer la prescription
+                        </a>
+                        
+                        {% if prescription.status not in 'DISPENSED,COMPLETED' %}
+                        <form method="post" action="{% url 'prescriptions:cancel' prescription.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-danger-create" onclick="return confirm('Annuler cette prescription ?')">
+                                <i class="fa-solid fa-times"></i>Annuler la prescription
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mali Healthcare Context -->
+            <div class="entity-info-card">
+                <div class="entity-details">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-flag me-2"></i>Contexte Mali
+                    </h6>
+                    
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Autorisation spéciale:</span>
+                        <span class="entity-detail-value">
+                            {% if prescription.requires_authorization %}
+                            <i class="fa-solid fa-check text-warning"></i> Requise
+                            {% else %}
+                            <i class="fa-solid fa-times text-muted"></i> Non requise
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Couverture assurance:</span>
+                        <span class="entity-detail-value">
+                            {% if prescription.covered_by_insurance %}
+                            <i class="fa-solid fa-check text-success"></i> Couverte
+                            {% else %}
+                            <i class="fa-solid fa-times text-muted"></i> Non couverte
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Bon de prise en charge:</span>
+                        <span class="entity-detail-value">
+                            {% if prescription.voucher_required %}
+                            <i class="fa-solid fa-check text-info"></i> Requis
+                            {% else %}
+                            <i class="fa-solid fa-times text-muted"></i> Non requis
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add confirmation for destructive actions
+    const forms = document.querySelectorAll('form[method="post"]');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const button = form.querySelector('button[type="submit"]');
+            if (button && button.classList.contains('btn-danger-create')) {
+                if (!confirm('Cette action est irréversible. Continuer ?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+    
+    console.log('Prescription detail page initialized with unified design');
+});
+</script>
+{% endblock %} 

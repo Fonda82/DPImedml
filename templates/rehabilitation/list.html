@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Plans de Réadaptation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-dumbbell me-2"></i>Plans de Réadaptation
+                </h1>
+                <p class="list-subtitle">Gestion des programmes de rééducation et d'exercices</p>
+            </div>
+            <div class="list-actions">
+                <span class="badge bg-light text-dark">{{ total_count }} plans</span>
+                <a href="{% url 'rehabilitation:create_select_patient' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Nouveau Plan
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.active_count|default:15 }}</div>
+            <div class="stats-card-label">Plans Actifs</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.completed_count|default:8 }}</div>
+            <div class="stats-card-label">Terminés</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-pause"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.suspended_count|default:3 }}</div>
+            <div class="stats-card-label">Suspendus</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-calendar-day"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.this_week_count|default:5 }}</div>
+            <div class="stats-card-label">Cette Semaine</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" id="plan-search" class="filter-input" 
+                       placeholder="Patient, diagnostic..." 
+                       value="{{ filters.search_query }}">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select id="status-filter" class="filter-select">
+                    <option value="">Tous statuts</option>
+                    <option value="active" {% if filters.status_filter == 'active' %}selected{% endif %}>Actif</option>
+                    <option value="completed" {% if filters.status_filter == 'completed' %}selected{% endif %}>Terminé</option>
+                    <option value="suspended" {% if filters.status_filter == 'suspended' %}selected{% endif %}>Suspendu</option>
+                    <option value="cancelled" {% if filters.status_filter == 'cancelled' %}selected{% endif %}>Annulé</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Thérapeute</label>
+                <select id="therapist-filter" class="filter-select">
+                    <option value="">Tous thérapeutes</option>
+                    {% for therapist in therapists %}
+                    <option value="{{ therapist.id }}" {% if filters.therapist_filter == therapist.id|stringformat:"s" %}selected{% endif %}>
+                        {{ therapist.user.get_full_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Période</label>
+                <select id="date-filter" class="filter-select">
+                    <option value="">Toutes dates</option>
+                    <option value="active" {% if filters.date_filter == 'active' %}selected{% endif %}>Plans actifs</option>
+                    <option value="today" {% if filters.date_filter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                    <option value="week" {% if filters.date_filter == 'week' %}selected{% endif %}>Cette semaine</option>
+                    <option value="month" {% if filters.date_filter == 'month' %}selected{% endif %}>Ce mois</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-calendar-alt"></i>Calendrier
+                </button>
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-file-excel"></i>Export
+                </button>
+            </div>
+        </div>
+        
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button type="button" class="quick-filter-btn" data-status="active">
+                <i class="fa-solid fa-play"></i>Actifs
+            </button>
+            <button type="button" class="quick-filter-btn" data-filter="week">
+                <i class="fa-solid fa-calendar-week"></i>Cette semaine
+            </button>
+            <button type="button" class="quick-filter-btn" data-status="completed">
+                <i class="fa-solid fa-check-circle"></i>Terminés
+            </button>
+            <button type="button" class="quick-filter-btn" id="clear-all-filters">
+                <i class="fa-solid fa-times"></i>Effacer
+            </button>
+        </div>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Plans de Réadaptation
+            </h6>
+        </div>
+        
+        {% if rehabilitation_plans %}
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Diagnostic</th>
+                        <th>Thérapeute</th>
+                        <th>Dates</th>
+                        <th>Progrès</th>
+                        <th>Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in rehabilitation_plans %}
+                    <tr data-plan-id="{{ plan.id }}">
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ plan.patient.first_name|slice:":1" }}{{ plan.patient.last_name|slice:":1" }}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ plan.patient.first_name }} {{ plan.patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ plan.patient.age }} ans • {{ plan.patient.patient_id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ plan.primary_diagnosis|default:"Diagnostic principal" }}</div>
+                                {% if plan.secondary_diagnosis %}
+                                <div class="item-user-meta">{{ plan.secondary_diagnosis|truncatechars:30 }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ plan.therapist.user.get_full_name }}</div>
+                                <div class="item-user-meta">{{ plan.therapist.specialization|default:"Physiothérapeute" }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ plan.start_date|date:"d/m/Y" }}</div>
+                                {% if plan.end_date %}
+                                <div class="item-user-meta">Fin: {{ plan.end_date|date:"d/m/Y" }}</div>
+                                {% else %}
+                                <div class="item-user-meta">En cours</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-info">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: {{ plan.progress_percentage|default:65 }}%"></div>
+                                </div>
+                                <span class="progress-text">{{ plan.progress_percentage|default:65 }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if plan.status == 'active' %}
+                            <span class="status-badge status-badge-primary">
+                                <i class="fa-solid fa-play"></i>Actif
+                            </span>
+                            {% elif plan.status == 'completed' %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check-circle"></i>Terminé
+                            </span>
+                            {% elif plan.status == 'suspended' %}
+                            <span class="status-badge status-badge-warning">
+                                <i class="fa-solid fa-pause"></i>Suspendu
+                            </span>
+                            {% elif plan.status == 'cancelled' %}
+                            <span class="status-badge status-badge-danger">
+                                <i class="fa-solid fa-times-circle"></i>Annulé
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'rehabilitation:detail' plan.id %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <button class="action-btn action-btn-success" 
+                                        title="Séances" 
+                                        onclick="showComingSoon('Gestion des séances')">
+                                    <i class="fa-solid fa-dumbbell"></i>
+                                </button>
+                                <button class="action-btn" 
+                                        title="Modifier" 
+                                        onclick="showComingSoon('Modification de plan')">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                {% if plan.status == 'active' %}
+                                <button class="action-btn action-btn-warning" 
+                                        title="Suspendre" 
+                                        onclick="showComingSoon('Suspension de plan')">
+                                    <i class="fa-solid fa-pause"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-dumbbell"></i>
+            </div>
+            <h6 class="empty-state-title">Aucun plan de réadaptation trouvé</h6>
+            <p class="empty-state-description">
+                {% if filters.search_query or filters.status_filter or filters.therapist_filter or filters.date_filter %}
+                    Aucun plan ne correspond aux critères de filtrage.
+                {% else %}
+                    Il n'y a pas de plans de réadaptation pour le moment.
+                {% endif %}
+            </p>
+            <a href="{% url 'rehabilitation:create_select_patient' %}" class="btn-primary">
+                <i class="fa-solid fa-plus"></i>Nouveau Plan
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Progress Bar Component */
+.progress-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-bar {
+    width: 80px;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0C7C59, #14A97C);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #495057;
+    min-width: 35px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    let filterTimeout;
+    
+    // DOM Elements
+    const $searchInput = $('#plan-search');
+    const $statusFilter = $('#status-filter');
+    const $therapistFilter = $('#therapist-filter');
+    const $dateFilter = $('#date-filter');
+    
+    // Search Input Handler
+    $searchInput.on('input', function() {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(function() {
+            applyFilters();
+        }, 300);
+    });
+    
+    // Quick Filter Buttons
+    $('.quick-filter-btn').on('click', function() {
+        const $this = $(this);
+        const status = $this.data('status');
+        const filter = $this.data('filter');
+        
+        $('.quick-filter-btn').removeClass('active');
+        
+        if (status) {
+            $statusFilter.val(status);
+            $this.addClass('active');
+        } else if (filter) {
+            $dateFilter.val(filter);
+            $this.addClass('active');
+        }
+        
+        applyFilters();
+    });
+    
+    // Clear All Filters
+    $('#clear-all-filters').on('click', function() {
+        $searchInput.val('');
+        $statusFilter.val('');
+        $therapistFilter.val('');
+        $dateFilter.val('');
+        $('.quick-filter-btn').removeClass('active');
+        
+        window.location.href = window.location.pathname;
+    });
+    
+    // Apply filters function (simplified for now)
+    function applyFilters() {
+        console.log('Applying filters...');
+        // Filter logic will be implemented when backend is updated
+    }
+    
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
+// Coming soon placeholder
+function showComingSoon(feature) {
+    alert(`${feature} - Fonctionnalité en développement`);
+}
+</script>
+{% endblock %} 

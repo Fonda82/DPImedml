@@ -1,0 +1,552 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter un Patient | Système de Réhabilitation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-user-plus me-2"></i>Ajouter un Patient
+                </h1>
+                <p class="create-subtitle">Créer un nouveau dossier patient dans le système</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'patients:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <form method="post" action="{% url 'patients:create' %}" class="needs-validation" novalidate 
+                  role="form" aria-labelledby="form-title" aria-describedby="form-description">
+                {% csrf_token %}
+                
+                <!-- Screen Reader Announcements -->
+                <div class="sr-only" id="form-title">Formulaire d'ajout d'un nouveau patient</div>
+                <div class="sr-only" id="form-description">Remplissez les informations requises pour créer un dossier patient. Les champs marqués d'un astérisque sont obligatoires.</div>
+                
+                <!-- Form Status Announcements -->
+                <div aria-live="polite" aria-atomic="true" class="sr-only" id="form-status-announcements"></div>
+                <div aria-live="assertive" aria-atomic="true" class="sr-only" id="form-error-announcements"></div>
+                
+                <!-- Patient ID Generation Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-fingerprint form-section-icon"></i>
+                        <h5 class="form-section-title">Identifiant Patient</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-id-card"></i>
+                                ID Généré Automatiquement
+                            </div>
+                            <div class="form-info-content">
+                                <div class="row g-3">
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control fw-bold" id="generated_id_preview" value="P-XX-X-0000" readonly>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="button" class="btn-primary-create w-100" id="generate_id_btn" data-bs-toggle="tooltip" title="Générer un identifiant basé sur les informations ci-dessous">
+                                            <i class="fa-solid fa-sync-alt me-1"></i>Générer
+                                        </button>
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-2">Format: P-[Nom][Prénom][Année]-[Unique]</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-user form-section-icon"></i>
+                        <h5 class="form-section-title">Informations Personnelles</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label required">Prénom</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       required aria-required="true" aria-describedby="first_name_help first_name_error"
+                                       aria-invalid="false" autocomplete="given-name">
+                                <div id="first_name_help" class="form-help">Saisissez le prénom complet du patient</div>
+                                <div id="first_name_error" class="invalid-feedback" role="alert" aria-live="polite">
+                                    Veuillez saisir le prénom
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label required">Nom</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       required aria-required="true" aria-describedby="last_name_help last_name_error"
+                                       aria-invalid="false" autocomplete="family-name">
+                                <div id="last_name_help" class="form-help">Saisissez le nom de famille du patient</div>
+                                <div id="last_name_error" class="invalid-feedback" role="alert" aria-live="polite">
+                                    Veuillez saisir le nom
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label for="date_of_birth" class="form-label required">Date de naissance</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                                       required aria-required="true" aria-describedby="date_of_birth_help date_of_birth_error"
+                                       aria-invalid="false" autocomplete="bday">
+                                <div id="date_of_birth_help" class="form-help">Format: JJ/MM/AAAA - Patients pédiatriques (0-14 ans)</div>
+                                <div id="date_of_birth_error" class="invalid-feedback" role="alert" aria-live="polite">
+                                    Veuillez saisir la date de naissance
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="gender" class="form-label required">Genre</label>
+                                <select class="form-select" id="gender" name="gender" 
+                                        required aria-required="true" aria-describedby="gender_help gender_error"
+                                        aria-invalid="false" autocomplete="sex">
+                                    <option value="">Sélectionner le genre</option>
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                    <option value="O">Autre</option>
+                                </select>
+                                <div id="gender_help" class="form-help">Sélectionnez le genre du patient</div>
+                                <div id="gender_error" class="invalid-feedback" role="alert" aria-live="polite">
+                                    Veuillez sélectionner le genre
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="phone_number" class="form-label">Numéro de téléphone</label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number"
+                                       aria-describedby="phone_number_help" autocomplete="tel">
+                                <div id="phone_number_help" class="form-help">Format: +223 XX XX XX XX (optionnel)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-address-card form-section-icon"></i>
+                        <h5 class="form-section-title">Informations de Contact</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                            </div>
+                            <div class="col-md-8">
+                                <label for="address" class="form-label">Adresse</label>
+                                <input type="text" class="form-control" id="address" name="address">
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">Ville</label>
+                                <input type="text" class="form-control" id="city" name="city" value="Bamako">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="region" class="form-label">Région</label>
+                                <input type="text" class="form-control" id="region" name="region">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Guardian Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-user-friends form-section-icon"></i>
+                        <h5 class="form-section-title">Informations du Représentant Légal</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="guardian_name" class="form-label">Nom du représentant</label>
+                                <input type="text" class="form-control" id="guardian_name" name="guardian_name">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="guardian_relationship" class="form-label">Relation avec le patient</label>
+                                <input type="text" class="form-control" id="guardian_relationship" name="guardian_relationship">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="guardian_phone" class="form-label">Téléphone du représentant</label>
+                                <input type="tel" class="form-control" id="guardian_phone" name="guardian_phone">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- User Account Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-key form-section-icon"></i>
+                        <h5 class="form-section-title">Compte Utilisateur (Optionnel)</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="create_user" name="create_user">
+                            <label class="form-check-label" for="create_user">
+                                Créer un compte utilisateur pour ce patient
+                            </label>
+                        </div>
+                        
+                        <div class="user-account-section d-none">
+                            <div class="form-info">
+                                <div class="form-info-header">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                    Informations de connexion
+                                </div>
+                                <div class="form-info-content">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="username" class="form-label required">Nom d'utilisateur</label>
+                                            <input type="text" class="form-control" id="username" name="username">
+                                            <div class="invalid-feedback">Veuillez saisir un nom d'utilisateur</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="password" class="form-label required">Mot de passe</label>
+                                            <input type="password" class="form-control" id="password" name="password">
+                                            <div class="invalid-feedback">Veuillez saisir un mot de passe</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'patients:list' %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn-primary-create">
+                            <i class="fa-solid fa-user-plus"></i>Enregistrer le Patient
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Information Sidebar -->
+        <aside class="col-lg-4" role="complementary" aria-labelledby="sidebar-title">
+            <div class="sr-only" id="sidebar-title">Informations d'aide et guides</div>
+            
+            <!-- Patient Creation Guide -->
+            <section class="form-section" aria-labelledby="guide-title">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-info-circle form-section-icon" aria-hidden="true"></i>
+                    <h5 class="form-section-title" id="guide-title">Guide d'Enregistrement</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info" role="article" aria-labelledby="pediatric-info">
+                        <div class="form-info-header" id="pediatric-info">
+                            <i class="fa-solid fa-child" aria-hidden="true"></i>
+                            Patients pédiatriques
+                        </div>
+                        <div class="form-info-content">
+                            Ce système est conçu pour les enfants de 0 à 14 ans nécessitant des services de réhabilitation au Mali.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info" role="article" aria-labelledby="unique-id-info">
+                        <div class="form-info-header" id="unique-id-info">
+                            <i class="fa-solid fa-id-badge" aria-hidden="true"></i>
+                            Identification unique
+                        </div>
+                        <div class="form-info-content">
+                            Chaque patient reçoit un identifiant unique basé sur ses informations personnelles pour éviter les doublons.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info" role="article" aria-labelledby="guardian-info">
+                        <div class="form-info-header" id="guardian-info">
+                            <i class="fa-solid fa-users" aria-hidden="true"></i>
+                            Représentant légal
+                        </div>
+                        <div class="form-info-content">
+                            Pour les mineurs, les informations du tuteur ou représentant légal sont essentielles pour les contacts.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-arrow-right form-section-icon"></i>
+                    <h5 class="form-section-title">Étapes Suivantes</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="d-grid gap-2">
+                        <div class="entity-info-card">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fa-solid fa-heartbeat text-primary fa-2x"></i>
+                                </div>
+                                <div>
+                                    <strong>Signes vitaux</strong><br>
+                                    <small class="text-muted">Enregistrer le poids, la taille, etc.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="entity-info-card">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fa-solid fa-file-medical text-success fa-2x"></i>
+                                </div>
+                                <div>
+                                    <strong>Dossier médical</strong><br>
+                                    <small class="text-muted">Créer le premier diagnostic</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="entity-info-card">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fa-solid fa-dumbbell text-warning fa-2x"></i>
+                                </div>
+                                <div>
+                                    <strong>Programme de réhabilitation</strong><br>
+                                    <small class="text-muted">Définir les exercices et objectifs</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Statistics -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-chart-pie form-section-icon"></i>
+                    <h5 class="form-section-title">Statistiques Système</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-primary mb-1">247</div>
+                        <div class="text-muted">Patients enregistrés</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-success mb-1">89%</div>
+                        <div class="text-muted">Dossiers complets</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-info mb-1">156</div>
+                        <div class="text-muted">En réhabilitation active</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Accessibility: Announce page loaded
+        announceToScreenReader('Formulaire d\'ajout de patient chargé. Remplissez les informations requises.');
+        
+        // Show/hide user account section based on checkbox
+        const createUserCheckbox = document.getElementById('create_user');
+        const userAccountSection = document.querySelector('.user-account-section');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        
+        // Accessibility helper functions
+        function announceToScreenReader(message) {
+            const announcer = document.getElementById('form-status-announcements');
+            if (announcer) {
+                announcer.textContent = message;
+                setTimeout(() => announcer.textContent = '', 1000);
+            }
+        }
+        
+        function announceError(message) {
+            const errorAnnouncer = document.getElementById('form-error-announcements');
+            if (errorAnnouncer) {
+                errorAnnouncer.textContent = message;
+                setTimeout(() => errorAnnouncer.textContent = '', 3000);
+            }
+        }
+        
+        function updateFieldAriaInvalid(fieldId, isInvalid) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.setAttribute('aria-invalid', isInvalid ? 'true' : 'false');
+            }
+        }
+
+        createUserCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                userAccountSection.classList.remove('d-none');
+                usernameInput.setAttribute('required', 'required');
+                usernameInput.setAttribute('aria-required', 'true');
+                passwordInput.setAttribute('required', 'required');
+                passwordInput.setAttribute('aria-required', 'true');
+                // Accessibility: Announce section expanded
+                announceToScreenReader('Section compte utilisateur étendue. Nom d\'utilisateur et mot de passe requis.');
+                // Focus on the first input in the expanded section
+                setTimeout(() => usernameInput.focus(), 100);
+            } else {
+                userAccountSection.classList.add('d-none');
+                usernameInput.removeAttribute('required');
+                usernameInput.setAttribute('aria-required', 'false');
+                passwordInput.removeAttribute('required');
+                passwordInput.setAttribute('aria-required', 'false');
+                // Accessibility: Announce section collapsed
+                announceToScreenReader('Section compte utilisateur masquée.');
+            }
+        });
+        
+        // Patient ID generation
+        let patientIdRandomPart = generateRandomDigits();
+        
+        function updatePatientIdPreview() {
+            // Get values from form
+            let lastName = document.getElementById('last_name').value.toUpperCase() || 'XX';
+            let firstName = document.getElementById('first_name').value.toUpperCase() || 'X';
+            let dateOfBirth = document.getElementById('date_of_birth').value;
+            
+            // Extract first 2 letters of last name
+            let lastNameInitial = lastName.substring(0, 2);
+            
+            // Extract first letter of first name
+            let firstNameInitial = firstName.substring(0, 1);
+            
+            // Extract year from birth date if available
+            let birthYear = '00';
+            if (dateOfBirth) {
+                birthYear = dateOfBirth.substring(2, 4);
+            }
+            
+            // Generate new random part
+            patientIdRandomPart = generateRandomDigits();
+            
+            // Combine all parts to create the preview ID
+            let patientIdPreview = `P-${lastNameInitial}${firstNameInitial}${birthYear}-${patientIdRandomPart}`;
+            
+            // Update the preview input with animation
+            const idField = document.getElementById('generated_id_preview');
+            idField.value = patientIdPreview;
+            
+            // Accessibility: Announce new ID generated
+            announceToScreenReader(`Nouvel identifiant patient généré: ${patientIdPreview}`);
+            
+            // Add animation effect
+            idField.style.backgroundColor = '#e8f4f8';
+            setTimeout(function() {
+                idField.style.transition = 'background-color 0.5s';
+                idField.style.backgroundColor = '#ffffff';
+            }, 100);
+            
+            // Add spin animation to button icon
+            const generateBtn = document.querySelector('#generate_id_btn i');
+            generateBtn.classList.add('fa-spin');
+            setTimeout(function() {
+                generateBtn.classList.remove('fa-spin');
+            }, 500);
+        }
+        
+        function generateRandomDigits() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+        
+        // Initialize with default values
+        function initializePatientId() {
+            const idField = document.getElementById('generated_id_preview');
+            idField.value = 'P-XX0-0000';
+        }
+        
+        // Attach click event to Generate ID button
+        document.getElementById('generate_id_btn').addEventListener('click', updatePatientIdPreview);
+        
+        // Initial setup
+        initializePatientId();
+        
+        // Enhanced Form validation with accessibility
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            
+                            // Accessibility: Find and announce first error
+                            const firstInvalidField = form.querySelector(':invalid');
+                            if (firstInvalidField) {
+                                const fieldLabel = form.querySelector(`label[for="${firstInvalidField.id}"]`);
+                                const labelText = fieldLabel ? fieldLabel.textContent : firstInvalidField.name;
+                                
+                                // Update aria-invalid for all invalid fields
+                                const invalidFields = form.querySelectorAll(':invalid');
+                                invalidFields.forEach(field => {
+                                    updateFieldAriaInvalid(field.id, true);
+                                });
+                                
+                                // Announce error and focus first invalid field
+                                announceError(`Erreur de validation: ${labelText} est requis.`);
+                                firstInvalidField.focus();
+                            }
+                        } else {
+                            // Accessibility: Announce successful submission
+                            announceToScreenReader('Formulaire validé. Enregistrement du patient en cours...');
+                            
+                            // Reset aria-invalid for all fields
+                            const allFields = form.querySelectorAll('input, select, textarea');
+                            allFields.forEach(field => {
+                                updateFieldAriaInvalid(field.id, false);
+                            });
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                    
+                    // Real-time validation feedback
+                    const inputs = form.querySelectorAll('input[required], select[required]');
+                    inputs.forEach(input => {
+                        input.addEventListener('blur', function() {
+                            if (this.checkValidity()) {
+                                updateFieldAriaInvalid(this.id, false);
+                            } else {
+                                updateFieldAriaInvalid(this.id, true);
+                            }
+                        });
+                        
+                        input.addEventListener('input', function() {
+                            if (this.checkValidity()) {
+                                updateFieldAriaInvalid(this.id, false);
+                            }
+                        });
+                    });
+                });
+            }, false);
+        })();
+        
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        console.log('Patient create form initialized with unified design');
+    });
+</script>
+{% endblock %} 

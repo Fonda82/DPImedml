@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mes Exercices | Système de Réhabilitation{% endblock %}
+
+{% block page_title %}Mes Exercices{% endblock %}
+{% block page_subtitle %}Programme d'exercices personnalisé{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="widget">
+            <div class="widget-header">
+                <h5>Programme d'exercices</h5>
+                <div class="widget-header-actions">
+                    <div class="widget-header-action">
+                        <i class="fa-solid fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
+                <p class="mb-4">
+                    Voici la liste des exercices que votre thérapeute vous a prescrits. Veuillez les pratiquer régulièrement selon la fréquence indiquée pour obtenir les meilleurs résultats pour votre réhabilitation.
+                </p>
+                
+                {% if exercises %}
+                <div class="row g-4">
+                    {% for exercise in exercises %}
+                    <div class="col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title mb-2">{{ exercise.name }}</h5>
+                                <p class="text-muted mb-3">{{ exercise.description }}</p>
+                                
+                                <div class="d-flex mb-3">
+                                    <div class="me-4">
+                                        <small class="text-muted d-block">Fréquence</small>
+                                        <strong>{{ exercise.frequency }}</strong>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Durée</small>
+                                        <strong>{{ exercise.duration }}</strong>
+                                    </div>
+                                </div>
+                                
+                                <div class="card bg-light mb-3">
+                                    <div class="card-body">
+                                        <h6 class="mb-2">Instructions:</h6>
+                                        <p class="mb-0">{{ exercise.instructions }}</p>
+                                    </div>
+                                </div>
+                                
+                                {% if exercise.video_url %}
+                                <div class="text-center mt-3">
+                                    <a href="{{ exercise.video_url }}" target="_blank" class="btn btn-outline-primary">
+                                        <i class="fa-solid fa-play-circle me-2"></i>Voir la vidéo de démonstration
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="text-muted">
+                        <i class="fa-solid fa-dumbbell fa-3x mb-3"></i>
+                        <h6>Aucun exercice prescrit</h6>
+                        <p>Votre thérapeute ne vous a pas encore attribué d'exercices.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="widget">
+            <div class="widget-header">
+                <h5>Suivi de progrès</h5>
+            </div>
+            <div class="widget-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="progress-container mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Progrès global</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="mb-3">Notes du thérapeute:</h6>
+                                <p>
+                                    Le patient montre une bonne progression dans ses exercices de mobilité. Continuez à pratiquer régulièrement les exercices d'étirement des jambes et d'équilibre. Augmentez progressivement la durée des exercices d'équilibre de 30 secondes à 45 secondes au cours des deux prochaines semaines.
+                                </p>
+                                <p class="mb-0">
+                                    Les exercices de renforcement des mains montrent des résultats encourageants. Continuez avec la même intensité.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="height: 220px;">
+                            <canvas id="exerciseComplianceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Exercise compliance chart
+    var ctx = document.getElementById('exerciseComplianceChart').getContext('2d');
+    var exerciseComplianceChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Complété', 'Manqué', 'Reporté'],
+            datasets: [{
+                data: [70, 15, 15],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.7)',
+                    'rgba(220, 53, 69, 0.7)',
+                    'rgba(255, 193, 7, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(220, 53, 69, 1)',
+                    'rgba(255, 193, 7, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        boxWidth: 12
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Suivi des exercices',
+                    font: {
+                        size: 14
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %} 

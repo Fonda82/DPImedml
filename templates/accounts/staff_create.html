@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter Personnel | DPI MedML{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-user-plus me-2"></i>Ajouter un Membre du Personnel
+                </h1>
+                <p class="create-subtitle">Créer un nouveau compte personnel dans le système</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'accounts:staff_list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-user form-section-icon"></i>
+                        <h5 class="form-section-title">Informations Personnelles</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label required">Prénom</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                <div class="invalid-feedback">Veuillez entrer le prénom.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label required">Nom</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                <div class="invalid-feedback">Veuillez entrer le nom.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-address-card form-section-icon"></i>
+                        <h5 class="form-section-title">Informations de Contact</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="email" class="form-label required">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">Veuillez entrer un email valide.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone">
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="address" class="form-label">Adresse</label>
+                                <input type="text" class="form-control" id="address" name="address">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Professional Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-briefcase form-section-icon"></i>
+                        <h5 class="form-section-title">Informations Professionnelles</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="specialty" class="form-label required">Spécialité</label>
+                                <input type="text" class="form-control" id="specialty" name="specialty" required>
+                                <div class="invalid-feedback">Veuillez entrer la spécialité.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="role" class="form-label required">Rôle</label>
+                                <select class="form-select" id="role" name="role" required>
+                                    <option value="" selected disabled>Sélectionner un rôle</option>
+                                    <option value="doctor">Médecin</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="staff">Personnel</option>
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un rôle.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Security Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-lock form-section-icon"></i>
+                        <h5 class="form-section-title">Sécurité du Compte</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-shield-alt"></i>
+                                Mot de passe sécurisé
+                            </div>
+                            <div class="form-info-content">
+                                Le mot de passe doit contenir au moins 8 caractères avec une combinaison de lettres, chiffres et symboles.
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label required">Mot de passe</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="invalid-feedback">Veuillez entrer un mot de passe.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="password_confirm" class="form-label required">Confirmer le mot de passe</label>
+                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
+                                <div class="invalid-feedback">Veuillez confirmer le mot de passe.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'accounts:staff_list' %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn-primary-create">
+                            <i class="fa-solid fa-user-plus"></i>Créer le compte
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <!-- Staff Roles Guide -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-users form-section-icon"></i>
+                    <h5 class="form-section-title">Rôles du Personnel</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-user-md"></i>
+                            Médecin
+                        </div>
+                        <div class="form-info-content">
+                            Accès complet aux dossiers patients, prescriptions, diagnostics et rapports médicaux.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-cog"></i>
+                            Admin
+                        </div>
+                        <div class="form-info-content">
+                            Gestion du système, paramètres, utilisateurs et supervision générale.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-hands-helping"></i>
+                            Personnel
+                        </div>
+                        <div class="form-info-content">
+                            Accès limité selon la spécialité: infirmiers, thérapeutes, secrétaires médicaux.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Guidelines -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-shield-check form-section-icon"></i>
+                    <h5 class="form-section-title">Sécurité des Données</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-key"></i>
+                            Politique des mots de passe
+                        </div>
+                        <div class="form-info-content">
+                            Changement obligatoire tous les 90 jours. Pas de réutilisation des 5 derniers mots de passe.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-clock"></i>
+                            Sessions sécurisées
+                        </div>
+                        <div class="form-info-content">
+                            Déconnexion automatique après 30 minutes d'inactivité pour protéger les données patients.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-history"></i>
+                            Traçabilité
+                        </div>
+                        <div class="form-info-content">
+                            Toutes les actions sont enregistrées pour audit et conformité GDPR.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Statistics -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-chart-pie form-section-icon"></i>
+                    <h5 class="form-section-title">Équipe Actuelle</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-primary mb-1">12</div>
+                        <div class="text-muted">Membres actifs</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-success mb-1">5</div>
+                        <div class="text-muted">Médecins</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-info mb-1">7</div>
+                        <div class="text-muted">Personnel soignant</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        (function() {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+
+                    // Check if passwords match
+                    var password = document.getElementById('password')
+                    var passwordConfirm = document.getElementById('password_confirm')
+                    
+                    if (password.value !== passwordConfirm.value) {
+                        passwordConfirm.setCustomValidity('Les mots de passe ne correspondent pas.')
+                        event.preventDefault()
+                        event.stopPropagation()
+                    } else {
+                        passwordConfirm.setCustomValidity('')
+                    }
+                }, false)
+            })
+        })()
+        
+        console.log('Staff create form initialized with unified design');
+    });
+</script>
+{% endblock %} 

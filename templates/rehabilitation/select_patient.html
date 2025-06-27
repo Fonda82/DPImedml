@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sélectionner un Patient | Système de Réhabilitation{% endblock %}
+
+{% block page_title %}Créer un Plan de Réadaptation{% endblock %}
+{% block page_subtitle %}Sélectionnez un patient pour créer un plan de réadaptation{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Sélectionner un Patient</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'rehabilitation:create_select_patient' %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="patient" class="form-label">Patient <span class="text-danger">*</span></label>
+                        <select class="form-select" id="patient" name="patient" required>
+                            <option value="">-- Sélectionner un patient --</option>
+                            {% for patient in patients %}
+                            <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }} ({{ patient.patient_id }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="invalid-feedback">Veuillez sélectionner un patient</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'rehabilitation:list' %}" class="btn btn-light">Annuler</a>
+                        <button type="submit" class="btn btn-primary">Continuer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    });
+</script>
+{% endblock %} 

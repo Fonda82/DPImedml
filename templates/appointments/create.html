@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer un rendez-vous{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-calendar-plus me-2"></i>Créer un rendez-vous
+                </h1>
+                <p class="create-subtitle">Planification d'un nouveau rendez-vous médical</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'appointments:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <!-- Appointment Details Section -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-calendar-check form-section-icon"></i>
+                    <h5 class="form-section-title">Détails du rendez-vous</h5>
+                </div>
+                <div class="form-section-body">
+                    <form method="post" action="{% url 'appointments:create' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="patient" class="form-label required">Patient</label>
+                                <select class="form-select" id="patient" name="patient" required>
+                                    <option value="">-- Sélectionner un patient --</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">{{ patient.first_name }} {{ patient.last_name }} ({{ patient.patient_id }})</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un patient</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="doctor" class="form-label required">Médecin</label>
+                                <select class="form-select" id="doctor" name="doctor" required>
+                                    <option value="">-- Sélectionner un médecin --</option>
+                                    {% for doctor in doctors %}
+                                    <option value="{{ doctor.id }}">Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un médecin</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="date" class="form-label required">Date</label>
+                                <input type="date" class="form-control" id="date" name="date" required>
+                                <div class="invalid-feedback">Veuillez sélectionner une date</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="time" class="form-label required">Heure</label>
+                                <input type="time" class="form-control" id="time" name="time" required>
+                                <div class="invalid-feedback">Veuillez sélectionner une heure</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="facility" class="form-label required">Établissement</label>
+                                <select class="form-select" id="facility" name="facility" required>
+                                    <option value="">-- Sélectionner un établissement --</option>
+                                    {% for facility in facilities %}
+                                    <option value="{{ facility.id }}">{{ facility.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un établissement</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="reason" class="form-label required">Motif de la consultation</label>
+                                <select class="form-select" id="reason" name="reason" required>
+                                    <option value="">-- Sélectionner un motif --</option>
+                                    <option value="Première consultation">Première consultation</option>
+                                    <option value="Consultation de suivi">Consultation de suivi</option>
+                                    <option value="Urgence">Urgence</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un motif</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                          placeholder="Notes additionnelles concernant ce rendez-vous..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <a href="{% url 'appointments:list' %}" class="btn-secondary-create">
+                        <i class="fa-solid fa-times"></i>Annuler
+                    </a>
+                    <button type="submit" class="btn-primary-create" form="appointment-form">
+                        <i class="fa-solid fa-calendar-plus"></i>Créer rendez-vous
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Availability Section -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-clock form-section-icon"></i>
+                    <h5 class="form-section-title">Disponibilité</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info" id="availability-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-info-circle"></i>
+                            Information
+                        </div>
+                        <div class="form-info-content">
+                            Sélectionnez d'abord un médecin et une date pour voir les disponibilités.
+                        </div>
+                    </div>
+                    
+                    <div class="d-none" id="availabilityCalendar">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-calendar"></i>
+                                Créneaux pour <span id="selectedDate">--/--/----</span>
+                            </div>
+                            <div class="form-info-content">
+                                <div class="calendar-slots">
+                                    <div class="slot available" data-time="09:00">09:00</div>
+                                    <div class="slot available" data-time="09:30">09:30</div>
+                                    <div class="slot unavailable" data-time="10:00">10:00</div>
+                                    <div class="slot unavailable" data-time="10:30">10:30</div>
+                                    <div class="slot available" data-time="11:00">11:00</div>
+                                    <div class="slot available" data-time="11:30">11:30</div>
+                                    <div class="slot available" data-time="14:00">14:00</div>
+                                    <div class="slot available" data-time="14:30">14:30</div>
+                                    <div class="slot unavailable" data-time="15:00">15:00</div>
+                                    <div class="slot unavailable" data-time="15:30">15:30</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-lightning form-section-icon"></i>
+                    <h5 class="form-section-title">Actions rapides</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn-outline-create" id="emergency-appointment">
+                            <i class="fa-solid fa-exclamation-triangle"></i>Rendez-vous d'urgence
+                        </button>
+                        <button type="button" class="btn-outline-create" id="follow-up-appointment">
+                            <i class="fa-solid fa-repeat"></i>Rendez-vous de suivi
+                        </button>
+                        <button type="button" class="btn-outline-create" id="bulk-appointments">
+                            <i class="fa-solid fa-calendar-days"></i>Planification en série
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-chart-line form-section-icon"></i>
+                    <h5 class="form-section-title">Statistiques du jour</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-primary mb-1">12</div>
+                        <div class="text-muted">RDV aujourd'hui</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-success mb-1">8</div>
+                        <div class="text-muted">Créneaux libres</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calendar-slots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 1rem;
+    }
+    
+    .slot {
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        flex: 1 1 calc(50% - 4px);
+        text-align: center;
+    }
+    
+    .slot.available {
+        background-color: #e8f4f8;
+        color: #0C7C59;
+        border-color: #0C7C59;
+    }
+    
+    .slot.available:hover {
+        background-color: #0C7C59;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    .slot.unavailable {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        cursor: not-allowed;
+        text-decoration: line-through;
+        border-color: #e9ecef;
+    }
+    
+    .slot.selected {
+        background-color: #0C7C59;
+        color: white;
+        border-color: #0a6b4d;
+        transform: scale(1.05);
+    }
+
+    .slot.available:active {
+        transform: scale(0.95);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get form elements
+        const doctorSelect = document.getElementById('doctor');
+        const dateInput = document.getElementById('date');
+        const availabilityCalendar = document.getElementById('availabilityCalendar');
+        const availabilityInfo = document.getElementById('availability-info');
+        const selectedDateSpan = document.getElementById('selectedDate');
+        const slots = document.querySelectorAll('.slot.available');
+        const timeInput = document.getElementById('time');
+        
+        // Form reference fix
+        const form = document.querySelector('form');
+        form.id = 'appointment-form';
+        
+        function checkAvailability() {
+            if (doctorSelect.value && dateInput.value) {
+                // Format date for display
+                const formattedDate = new Date(dateInput.value).toLocaleDateString('fr-FR');
+                selectedDateSpan.textContent = formattedDate;
+                
+                // Hide info and show calendar
+                availabilityInfo.classList.add('d-none');
+                availabilityCalendar.classList.remove('d-none');
+            } else {
+                // Show info and hide calendar
+                availabilityInfo.classList.remove('d-none');
+                availabilityCalendar.classList.add('d-none');
+            }
+        }
+        
+        // Event listeners for availability check
+        doctorSelect.addEventListener('change', checkAvailability);
+        dateInput.addEventListener('change', checkAvailability);
+        
+        // Handle slot selection
+        slots.forEach(slot => {
+            slot.addEventListener('click', function() {
+                // Remove selected class from all slots
+                slots.forEach(s => s.classList.remove('selected'));
+                
+                // Add selected class to clicked slot
+                this.classList.add('selected');
+                
+                // Update time input
+                timeInput.value = this.dataset.time;
+            });
+        });
+
+        // Quick action buttons
+        document.getElementById('emergency-appointment').addEventListener('click', function() {
+            // Set reason to emergency
+            document.getElementById('reason').value = 'Urgence';
+            alert('Mode urgence activé - Le formulaire a été pré-rempli pour un rendez-vous d\'urgence');
+        });
+
+        document.getElementById('follow-up-appointment').addEventListener('click', function() {
+            // Set reason to follow-up
+            document.getElementById('reason').value = 'Consultation de suivi';
+            alert('Mode suivi activé - Le formulaire a été pré-rempli pour un rendez-vous de suivi');
+        });
+
+        document.getElementById('bulk-appointments').addEventListener('click', function() {
+            alert('Fonctionnalité de planification en série en développement');
+        });
+
+        // Form validation
+        form.addEventListener('submit', function(e) {
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs obligatoires');
+            }
+        });
+
+        console.log('Appointment create form initialized');
+    });
+</script>
+{% endblock %} 

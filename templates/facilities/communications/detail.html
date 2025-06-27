@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Détail Communication{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="detail-title">
+                    <i class="fa-solid fa-envelope me-2"></i>{{ communication.subject }}
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'facilities:communications' %}">Communications</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ communication.communication_id|slice:":8" }}</li>
+                    </ol>
+                </nav>
+                <p class="detail-subtitle">Communication {{ communication.get_communication_type_display|lower }}</p>
+            </div>
+            <div class="detail-actions">
+                {% if can_respond %}
+                <button type="button" class="btn-primary-create" data-bs-toggle="modal" data-bs-target="#responseModal">
+                    <i class="fa-solid fa-reply"></i>Répondre
+                </button>
+                {% endif %}
+                <a href="{% url 'facilities:communications' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Communication Details -->
+        <div class="col-lg-8">
+            <div class="form-section mb-4">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-envelope form-section-icon"></i>
+                    <h5 class="form-section-title">Message Principal</h5>
+                    <div class="form-section-actions">
+                        {% if communication.is_urgent %}
+                        <span class="status-badge status-badge-danger">Urgent</span>
+                        {% endif %}
+                        {% if communication.requires_response %}
+                        <span class="status-badge status-badge-info">Réponse requise</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-section-body">
+                    <!-- Communication Timeline -->
+                    <div class="d-flex align-items-start mb-4">
+                        <div class="flex-shrink-0">
+                            <div class="entity-avatar" style="width: 48px; height: 48px;">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ communication.sent_by.user.get_full_name|default:communication.sent_by.user.username }}</h6>
+                                    <p class="text-muted small mb-2">
+                                        <i class="fa-solid fa-building me-1"></i>{{ communication.from_facility.name }}
+                                    </p>
+                                </div>
+                                <small class="text-muted">{{ communication.sent_date|date:"d/m/Y H:i" }}</small>
+                            </div>
+                            <div class="form-info">
+                                <div class="form-info-content">
+                                    {{ communication.message|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Status -->
+                    <div class="delivery-status border-top pt-3">
+                        <div class="row text-center">
+                            <div class="col">
+                                <div class="status-step {% if communication.sent_date %}completed{% endif %}">
+                                    <div class="entity-avatar mx-auto mb-2 {% if communication.sent_date %}bg-primary{% else %}bg-light{% endif %}" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-paper-plane fa-sm"></i>
+                                    </div>
+                                    <div class="small">
+                                        <div class="fw-bold">Envoyé</div>
+                                        {% if communication.sent_date %}
+                                        <div class="text-muted">{{ communication.sent_date|date:"d/m H:i" }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="status-step {% if communication.delivered_date %}completed{% endif %}">
+                                    <div class="entity-avatar mx-auto mb-2 {% if communication.delivered_date %}bg-success{% else %}bg-light{% endif %}" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-truck fa-sm"></i>
+                                    </div>
+                                    <div class="small">
+                                        <div class="fw-bold">Livré</div>
+                                        {% if communication.delivered_date %}
+                                        <div class="text-muted">{{ communication.delivered_date|date:"d/m H:i" }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="status-step {% if communication.read_date %}completed{% endif %}">
+                                    <div class="entity-avatar mx-auto mb-2 {% if communication.read_date %}bg-info{% else %}bg-light{% endif %}" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-eye fa-sm"></i>
+                                    </div>
+                                    <div class="small">
+                                        <div class="fw-bold">Lu</div>
+                                        {% if communication.read_date %}
+                                        <div class="text-muted">{{ communication.read_date|date:"d/m H:i" }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="status-step {% if communication.response_date %}completed{% endif %}">
+                                    <div class="entity-avatar mx-auto mb-2 {% if communication.response_date %}bg-warning{% else %}bg-light{% endif %}" style="width: 32px; height: 32px;">
+                                        <i class="fa-solid fa-reply fa-sm"></i>
+                                    </div>
+                                    <div class="small">
+                                        <div class="fw-bold">Répondu</div>
+                                        {% if communication.response_date %}
+                                        <div class="text-muted">{{ communication.response_date|date:"d/m H:i" }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Response Section -->
+                    {% if communication.response_message %}
+                    <div class="response-section border-top pt-4 mt-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <div class="entity-avatar bg-success" style="width: 48px; height: 48px;">
+                                    <i class="fa-solid fa-user-nurse"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">{{ communication.response_by.user.get_full_name|default:communication.response_by.user.username }}</h6>
+                                        <p class="text-muted small mb-2">
+                                            <i class="fa-solid fa-building me-1"></i>{{ communication.to_facility.name }}
+                                        </p>
+                                    </div>
+                                    <small class="text-muted">{{ communication.response_date|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <div class="form-info">
+                                    <div class="form-info-content">
+                                        {{ communication.response_message|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Communication Info -->
+        <div class="col-lg-4">
+            <div class="entity-info-card mb-4">
+                <div class="entity-details">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-info-circle me-2"></i>Informations
+                    </h6>
+                    
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">ID Communication:</span>
+                        <span class="entity-detail-value font-monospace">{{ communication.communication_id }}</span>
+                    </div>
+                    
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Type:</span>
+                        <div class="mt-1">
+                            {% if communication.communication_type == 'referral' %}
+                            <span class="status-badge status-badge-primary">Référence Patient</span>
+                            {% elif communication.communication_type == 'voucher_validation' %}
+                            <span class="status-badge status-badge-success">Validation Bon</span>
+                            {% elif communication.communication_type == 'information_request' %}
+                            <span class="status-badge status-badge-info">Demande Information</span>
+                            {% elif communication.communication_type == 'emergency_notification' %}
+                            <span class="status-badge status-badge-danger">Urgence</span>
+                            {% else %}
+                            <span class="status-badge status-badge-secondary">{{ communication.get_communication_type_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Statut:</span>
+                        <div class="mt-1">
+                            {% if communication.status == 'sent' %}
+                            <span class="status-badge status-badge-secondary">Envoyé</span>
+                            {% elif communication.status == 'delivered' %}
+                            <span class="status-badge status-badge-info">Livré</span>
+                            {% elif communication.status == 'read' %}
+                            <span class="status-badge status-badge-primary">Lu</span>
+                            {% elif communication.status == 'responded' %}
+                            <span class="status-badge status-badge-success">Répondu</span>
+                            {% elif communication.status == 'failed' %}
+                            <span class="status-badge status-badge-danger">Échec</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if communication.response_time_hours %}
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Temps de réponse:</span>
+                        <span class="entity-detail-value fw-bold">{{ communication.response_time_hours|floatformat:1 }} heures</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Related Information -->
+            {% if communication.related_patient or communication.related_referral or communication.related_voucher %}
+            <div class="entity-info-card">
+                <div class="entity-details">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-link me-2"></i>Éléments Liés
+                    </h6>
+                    
+                    {% if communication.related_patient %}
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Patient:</span>
+                        <a href="{% url 'patients:detail' communication.related_patient.pk %}" class="entity-detail-value">
+                            <i class="fa-solid fa-user me-2"></i>{{ communication.related_patient.first_name }} {{ communication.related_patient.last_name }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if communication.related_referral %}
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Référence:</span>
+                        <a href="{% url 'referrals:detail' communication.related_referral.pk %}" class="entity-detail-value">
+                            <i class="fa-solid fa-share-nodes me-2"></i>Référence #{{ communication.related_referral.pk }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if communication.related_voucher %}
+                    <div class="entity-detail-item">
+                        <span class="entity-detail-label">Bon:</span>
+                        <a href="{% url 'vouchers:detail' communication.related_voucher.pk %}" class="entity-detail-value">
+                            <i class="fa-solid fa-ticket me-2"></i>{{ communication.related_voucher.voucher_id }}
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Response Modal -->
+{% if can_respond %}
+<div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="responseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="responseModalLabel">
+                    <i class="fa-solid fa-reply me-2"></i>Répondre à la Communication
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'facilities:communication_respond' communication.pk %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label required">Réponse</label>
+                        <textarea class="form-control" name="response_message" rows="6" placeholder="Saisissez votre réponse..." required></textarea>
+                    </div>
+                    <div class="form-info">
+                        <div class="form-info-content">
+                            <i class="fa-solid fa-info-circle me-2"></i>
+                            Cette réponse sera envoyée à <strong>{{ communication.from_facility.name }}</strong>.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary-create" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn-primary-create">
+                        <i class="fa-solid fa-paper-plane"></i>Envoyer la Réponse
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

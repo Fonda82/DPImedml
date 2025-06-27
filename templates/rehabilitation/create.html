@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Créer un Plan de Réadaptation | Système de Réhabilitation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-dumbbell me-2"></i>Créer un Plan de Réadaptation
+                </h1>
+                <p class="create-subtitle">Définir un plan de réadaptation pour {{ patient.first_name }} {{ patient.last_name }}</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'rehabilitation:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <form method="post" action="{% url 'rehabilitation:create' patient_id=patient.id %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Patient Information Card -->
+                <div class="entity-info-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="entity-avatar">
+                                {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                            </div>
+                            <div class="entity-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                            <div class="entity-id">
+                                <span class="badge bg-primary">{{ patient.patient_id }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-9">
+                            <div class="entity-details">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-birthday-cake entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Date de naissance:</span>
+                                    <span class="entity-detail-value">{{ patient.date_of_birth|date:"d/m/Y" }}</span>
+                                </div>
+                                
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-venus-mars entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Genre:</span>
+                                    <span class="entity-detail-value">{{ patient.get_gender_display }}</span>
+                                </div>
+                                
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-phone entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Contact:</span>
+                                    <span class="entity-detail-value">{{ patient.phone_number|default:"Non renseigné" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Plan Details Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-clipboard-list form-section-icon"></i>
+                        <h5 class="form-section-title">Détails du Plan de Réadaptation</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="diagnosis" class="form-label required">Diagnostic</label>
+                                <input type="text" class="form-control" id="diagnosis" name="diagnosis" required>
+                                <div class="invalid-feedback">Veuillez saisir un diagnostic</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="goals" class="form-label required">Objectifs</label>
+                                <textarea class="form-control" id="goals" name="goals" rows="4" required placeholder="Décrivez les objectifs spécifiques du plan de réadaptation..."></textarea>
+                                <div class="invalid-feedback">Veuillez définir les objectifs du plan</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-calendar-alt form-section-icon"></i>
+                        <h5 class="form-section-title">Calendrier</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="start_date" class="form-label">Date de début</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ today|date:'Y-m-d' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="end_date" class="form-label">Date de fin estimée</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'rehabilitation:list' %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn-primary-create">
+                            <i class="fa-solid fa-dumbbell"></i>Créer le Plan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-tasks form-section-icon"></i>
+                    <h5 class="form-section-title">Actions Rapides</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'patients:detail' patient.id %}" class="btn-outline-create">
+                            <i class="fa-solid fa-user-md"></i>Voir le Dossier Médical
+                        </a>
+                        <button type="button" class="btn-outline-create" onclick="alert('Fonctionnalité en développement')">
+                            <i class="fa-solid fa-history"></i>Historique des Plans
+                        </button>
+                        <button type="button" class="btn-outline-create" onclick="alert('Fonctionnalité en développement')">
+                            <i class="fa-solid fa-chart-line"></i>Évaluation Fonctionnelle
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rehabilitation Guidelines -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-book-medical form-section-icon"></i>
+                    <h5 class="form-section-title">Guide de Réadaptation</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-target"></i>
+                            Objectifs SMART
+                        </div>
+                        <div class="form-info-content">
+                            Définissez des objectifs <strong>Spécifiques, Mesurables, Atteignables, Réalistes et Temporels</strong> pour maximiser l'efficacité du plan.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-child"></i>
+                            Réadaptation pédiatrique
+                        </div>
+                        <div class="form-info-content">
+                            Adaptez les exercices et objectifs à l'âge de l'enfant. Incluez les parents dans le processus.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-clock"></i>
+                            Durée recommandée
+                        </div>
+                        <div class="form-info-content">
+                            Plans typiques: 3-6 mois selon la pathologie. Réévaluation mensuelle recommandée.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Statistics -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-chart-bar form-section-icon"></i>
+                    <h5 class="form-section-title">Statistiques</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-success mb-1">89%</div>
+                        <div class="text-muted">Taux de réussite</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-primary mb-1">156</div>
+                        <div class="text-muted">Plans actifs</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h4 text-info mb-1">4.2</div>
+                        <div class="text-muted">Durée moyenne (mois)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        
+        console.log('Rehabilitation create form initialized with unified design');
+    });
+</script>
+{% endblock %} 

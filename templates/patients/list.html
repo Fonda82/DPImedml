@@ -1,0 +1,437 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liste des Patients | DPImedml{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-users me-2"></i>Liste des Patients
+                </h1>
+                <p class="list-subtitle">Gestion des patients pédiatriques (0-14 ans)</p>
+            </div>
+            <div class="list-actions">
+                <span class="badge bg-light text-dark">{{ total_count }} patients</span>
+                <a href="{% url 'patients:create' %}" class="btn-primary">
+                    <i class="fa-solid fa-user-plus"></i>Nouveau Patient
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_count }}</div>
+            <div class="stats-card-label">Total Patients</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-child"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_count }}</div>
+            <div class="stats-card-label">Pédiatrie 0-14 ans</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-calendar"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_count|add:"-5" }}</div>
+            <div class="stats-card-label">Actifs ce mois</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_count|add:"-2" }}</div>
+            <div class="stats-card-label">En réhabilitation</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" id="patient-search" class="filter-input" 
+                       placeholder="Nom, ID, téléphone, ville..." 
+                       value="{{ search_query }}">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Âge</label>
+                <select class="filter-select" id="age-filter">
+                    <option value="">Tous âges</option>
+                    <option value="0-2">0-2 ans</option>
+                    <option value="3-6">3-6 ans</option>
+                    <option value="7-10">7-10 ans</option>
+                    <option value="11-14">11-14 ans</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Ville</label>
+                <select class="filter-select" id="city-filter">
+                    <option value="">Toutes villes</option>
+                    <option value="Bamako">Bamako</option>
+                    <option value="Sikasso">Sikasso</option>
+                    <option value="Koutiala">Koutiala</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="button" class="btn-secondary" onclick="clearSearch()">
+                    <i class="fa-solid fa-times"></i>Effacer
+                </button>
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-download"></i>Export
+                </button>
+            </div>
+        </div>
+        
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button type="button" class="quick-filter-btn active" data-filter="all">Tous</button>
+            <button type="button" class="quick-filter-btn" data-filter="new">Nouveaux</button>
+            <button type="button" class="quick-filter-btn" data-filter="active">Actifs</button>
+            <button type="button" class="quick-filter-btn" data-filter="treatment">En traitement</button>
+        </div>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Patients ({{ total_count }})
+            </h6>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Âge</th>
+                        <th>Contact</th>
+                        <th>Ville</th>
+                        <th>Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patients-table-body">
+                    {% for patient in patients %}
+                    <tr>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ patient.patient_id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if patient.date_of_birth %}
+                                {{ patient.date_of_birth|timesince|slice:":2" }} ans
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if patient.phone_number %}
+                                {{ patient.phone_number }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if patient.city %}
+                                {{ patient.city }}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check"></i>Actif
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'patients:detail' patient.id %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir dossier">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                </a>
+                                <a href="{% url 'patients:edit' patient.id %}" 
+                                   class="action-btn" 
+                                   title="Modifier">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
+                                <a href="{% url 'appointments:create' %}?patient_id={{ patient.id }}" 
+                                   class="action-btn action-btn-success" 
+                                   title="RDV">
+                                    <i class="fa-solid fa-calendar-plus"></i>
+                                </a>
+                                <a href="{% url 'vouchers:create' %}?patient_id={{ patient.id }}" 
+                                   class="action-btn action-btn-warning" 
+                                   title="Bon">
+                                    <i class="fa-solid fa-ticket"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fa-solid fa-users"></i>
+                                </div>
+                                <h6 class="empty-state-title">Aucun patient trouvé</h6>
+                                <p class="empty-state-description">
+                                    {% if search_query %}
+                                        Aucun résultat pour "{{ search_query }}"
+                                    {% else %}
+                                        Commencez par ajouter votre premier patient
+                                    {% endif %}
+                                </p>
+                                <a href="{% url 'patients:create' %}" class="btn-primary">
+                                    <i class="fa-solid fa-user-plus"></i>Ajouter un patient
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Real-time search functionality with AJAX
+    let searchTimeout;
+    $('#patient-search').on('input', function() {
+        const query = $(this).val().trim();
+        
+        // Clear previous timeout
+        clearTimeout(searchTimeout);
+        
+        // Add loading state
+        $(this).addClass('searching');
+        
+        // Debounce search (wait 300ms after user stops typing)
+        searchTimeout = setTimeout(function() {
+            performSearch(query);
+        }, 300);
+    });
+    
+    // Filter functionality
+    $('#age-filter, #city-filter').on('change', function() {
+        performSearch($('#patient-search').val().trim());
+    });
+    
+    // Quick filter functionality
+    $('.quick-filter-btn').on('click', function() {
+        $('.quick-filter-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        const filterType = $(this).data('filter');
+        performSearch($('#patient-search').val().trim());
+    });
+    
+    // Perform AJAX search
+    function performSearch(query) {
+        const ageFilter = $('#age-filter').val();
+        const cityFilter = $('#city-filter').val();
+        
+        $.ajax({
+            url: '{% url "patients:list" %}',
+            method: 'GET',
+            data: {
+                'search': query,
+                'age_filter': ageFilter,
+                'city_filter': cityFilter
+            },
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                updatePatientTable(response);
+                $('#patient-search').removeClass('searching');
+            },
+            error: function(xhr, status, error) {
+                console.error('Search error:', error);
+                $('#patient-search').removeClass('searching');
+                showNotification('Erreur de recherche', 'error');
+            }
+        });
+    }
+    
+    // Update the patient table with search results
+    function updatePatientTable(response) {
+        const tbody = $('#patients-table-body');
+        tbody.empty();
+        
+        // Update total count
+        $('.list-table-title').html('<i class="fa-solid fa-list me-2"></i>Patients (' + response.total_count + ')');
+        $('.stats-card-number').first().text(response.total_count);
+        
+        if (response.patients.length === 0) {
+            // Show empty state
+            tbody.append(`
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fa-solid fa-search"></i>
+                            </div>
+                            <h6 class="empty-state-title">Aucun résultat trouvé</h6>
+                            <p class="empty-state-description">
+                                ${response.search_query ? 'Aucun résultat pour "' + response.search_query + '"' : 'Aucun patient ne correspond aux critères'}
+                            </p>
+                            <button type="button" class="btn-secondary" onclick="clearSearch()">
+                                <i class="fa-solid fa-times"></i>Effacer la recherche
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        } else {
+            // Populate table with results
+            response.patients.forEach(function(patient) {
+                const ageDisplay = patient.age ? patient.age + ' ans' : '<span class="text-muted">—</span>';
+                const phoneDisplay = patient.phone_number || '<span class="text-muted">—</span>';
+                const cityDisplay = patient.city || '<span class="text-muted">—</span>';
+                
+                tbody.append(`
+                    <tr>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    ${patient.first_name.charAt(0)}${patient.last_name.charAt(0)}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">${patient.first_name} ${patient.last_name}</div>
+                                    <div class="item-user-meta">${patient.patient_id}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${ageDisplay}</td>
+                        <td>${phoneDisplay}</td>
+                        <td>${cityDisplay}</td>
+                        <td>
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check"></i>Actif
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="${patient.detail_url}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir dossier">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                </a>
+                                <a href="${patient.edit_url}" 
+                                   class="action-btn" 
+                                   title="Modifier">
+                                    <i class="fa-solid fa-edit"></i>
+                                </a>
+                                <a href="{% url 'appointments:create' %}?patient_id=${patient.id}" 
+                                   class="action-btn action-btn-success" 
+                                   title="RDV">
+                                    <i class="fa-solid fa-calendar-plus"></i>
+                                </a>
+                                <a href="{% url 'vouchers:create' %}?patient_id=${patient.id}" 
+                                   class="action-btn action-btn-warning" 
+                                   title="Bon">
+                                    <i class="fa-solid fa-ticket"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        // Add animation to new results
+        tbody.find('tr').hide().fadeIn(300);
+    }
+    
+    // Clear search function
+    window.clearSearch = function() {
+        $('#patient-search').val('');
+        $('#age-filter').val('');
+        $('#city-filter').val('');
+        $('.quick-filter-btn').removeClass('active');
+        $('.quick-filter-btn').first().addClass('active');
+        performSearch('');
+    };
+    
+    // Show notification function
+    function showNotification(message, type) {
+        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        const notification = $(`
+            <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 9999;">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+        $('body').append(notification);
+        setTimeout(() => notification.remove(), 5000);
+    }
+});
+</script>
+
+<style>
+/* Add loading state for search */
+.searching {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%230C7C59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Active quick filter */
+.quick-filter-btn.active {
+    background: linear-gradient(135deg, #0C7C59, #14A085);
+    color: white;
+    border-color: #0C7C59;
+}
+</style>
+{% endblock %} 

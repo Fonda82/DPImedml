@@ -1,0 +1,651 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mon Tableau de Bord | Système de Réhabilitation{% endblock %}
+
+{% block page_title %}Mon Tableau de Bord{% endblock %}
+{% block page_subtitle %}Bienvenue {{ patient.first_name|default:"Ibrahim" }}, suivez votre parcours de réhabilitation{% endblock %}
+
+{% block content %}
+<!-- Quick Actions Bar -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="quick-actions-container">
+            <div class="quick-actions-wrapper">
+                <div class="quick-actions-grid">
+                    <a href="{% url 'appointments:create' %}" class="btn btn-success">
+                        <i class="fa-solid fa-calendar-plus me-1"></i> RDV
+                    </a>
+                    <a href="{% url 'rehabilitation:patient_exercises' %}" class="btn btn-primary">
+                        <i class="fa-solid fa-dumbbell me-1"></i> Mes exercices
+                    </a>
+                    <a href="{% url 'patients:documents' patient.id|default:1 %}" class="btn btn-info">
+                        <i class="fa-solid fa-file-medical me-1"></i> Documents
+                    </a>
+                    <a href="{% url 'patients:edit' patient.id|default:1 %}" class="btn btn-warning">
+                        <i class="fa-solid fa-user-edit me-1"></i> Mon profil
+                    </a>
+                    <a href="{% url 'vouchers:list' %}" class="btn btn-secondary">
+                        <i class="fa-solid fa-ticket me-1"></i> Mes bons
+                    </a>
+                </div>
+            </div>
+        </div>
+            </div>
+            </div>
+            
+<!-- Patient Overview KPIs -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-green">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h6 class="kpi-title">Mes rendez-vous</h6>
+                </div>
+            <div class="kpi-value">{{ upcoming_appointments_count|default:3 }}</div>
+            <div class="kpi-context">{{ next_appointment_date|default:"Prochain: Vendredi 14h30" }}</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ appointments_completion|default:75 }}%"></div>
+                </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+1 cette semaine</span>
+                <small>Dr. {{ primary_doctor|default:"Traoré" }}</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-primary">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-heartbeat"></i>
+                </div>
+                <h6 class="kpi-title">Ma progression</h6>
+            </div>
+            <div class="kpi-value">{{ overall_progress|default:78 }}<small>%</small></div>
+            <div class="kpi-context">{{ progress_context|default:"Mobilité en amélioration" }}</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ overall_progress|default:78 }}%"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+12% ce mois</span>
+                <small>Objectif: 85%</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-yellow">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <h6 class="kpi-title">Mes bons</h6>
+            </div>
+            <div class="kpi-value">{{ active_vouchers|default:5 }}</div>
+            <div class="kpi-context">{{ voucher_context|default:"4 actifs, 1 en attente" }}</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ voucher_usage|default:80 }}%"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend stable">Utilisation normale</span>
+                <small>Expiration: 15 jours</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-red">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <h6 class="kpi-title">Exercices</h6>
+            </div>
+            <div class="kpi-value">{{ exercises_completed|default:18 }}<small>/{{ total_exercises|default:25 }}</small></div>
+            <div class="kpi-context">{{ exercise_context|default:"Programme kinésithérapie" }}</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ exercise_completion|default:72 }}%"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">Régulier</span>
+                <small>Séance: Mardi</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Profile & Progress Row -->
+<div class="row mb-4">
+    <!-- Patient Profile Overview -->
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-user-circle me-2"></i>Mon profil</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'patients:edit' patient.id|default:1 %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="patient-profile-card">
+                    <div class="profile-avatar">
+                        {% if patient.photo %}
+                        <img src="{{ patient.photo.url }}" alt="{{ patient.first_name }}" class="rounded-circle">
+                        {% else %}
+                        <div class="avatar-placeholder bg-primary text-white">
+                            {{ patient.first_name|default:"Ibrahim"|slice:":1" }}{{ patient.last_name|default:"Koné"|slice:":1" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-info">
+                        <h6 class="profile-name">{{ patient.first_name|default:"Ibrahim" }} {{ patient.last_name|default:"Koné" }}</h6>
+                        <div class="profile-details">
+                            <div class="detail-item">
+                                <i class="fa-solid fa-birthday-cake"></i>
+                                <span>{{ patient.age|default:7 }} ans</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-map-marker-alt"></i>
+                                <span>{{ patient.city|default:"Commune I, Bamako" }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-user-friends"></i>
+                                <span>{{ patient.guardian_name|default:"Mme Koné" }}</span>
+                                </div>
+                            <div class="detail-item">
+                                <i class="fa-solid fa-stethoscope"></i>
+                                <span>{{ patient.main_diagnosis|default:"Paralysie cérébrale G80" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Rehabilitation Progress Chart -->
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-chart-line me-2"></i>Progrès réhabilitation</h5>
+                <div class="widget-actions">
+                    <select class="form-select form-select-sm">
+                        <option>6 derniers mois</option>
+                        <option>3 derniers mois</option>
+                        <option>Cette année</option>
+                    </select>
+                </div>
+            </div>
+            <div class="widget-body">
+                <canvas id="progressChart" height="200"></canvas>
+                <div class="progress-summary mt-3">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="progress-item">
+                                <div class="progress-label">Mobilité</div>
+                                <div class="progress-value text-success">{{ mobility_progress|default:85 }}%</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="progress-item">
+                                <div class="progress-label">Communication</div>
+                                <div class="progress-value text-warning">{{ communication_progress|default:65 }}%</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="progress-item">
+                                <div class="progress-label">Autonomie</div>
+                                <div class="progress-value text-info">{{ autonomy_progress|default:72 }}%</div>
+                                </div>
+                                </div>
+                        <div class="col-6">
+                            <div class="progress-item">
+                                <div class="progress-label">Social</div>
+                                <div class="progress-value text-primary">{{ social_progress|default:78 }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Exercise Program -->
+    <div class="col-xl-4 col-lg-12 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-dumbbell me-2"></i>Mon programme</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'rehabilitation:patient_exercises' %}" class="btn btn-sm btn-primary">
+                        Voir tout
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="exercise-program">
+                    <div class="exercise-item">
+                        <div class="exercise-icon bg-success">
+                            <i class="fa-solid fa-walking"></i>
+                        </div>
+                        <div class="exercise-details">
+                            <div class="exercise-name">Marche thérapeutique</div>
+                            <div class="exercise-schedule">3x/semaine • 20 min</div>
+                        </div>
+                        <div class="exercise-progress">
+                            <div class="progress-circle" data-progress="90">90%</div>
+                        </div>
+                    </div>
+                    <div class="exercise-item">
+                        <div class="exercise-icon bg-primary">
+                            <i class="fa-solid fa-hand-paper"></i>
+                        </div>
+                        <div class="exercise-details">
+                            <div class="exercise-name">Motricité fine</div>
+                            <div class="exercise-schedule">2x/semaine • 15 min</div>
+                        </div>
+                        <div class="exercise-progress">
+                            <div class="progress-circle" data-progress="75">75%</div>
+                        </div>
+                    </div>
+                    <div class="exercise-item">
+                        <div class="exercise-icon bg-warning">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div class="exercise-details">
+                            <div class="exercise-name">Orthophonie</div>
+                            <div class="exercise-schedule">2x/semaine • 30 min</div>
+                        </div>
+                        <div class="exercise-progress">
+                            <div class="progress-circle" data-progress="60">60%</div>
+                        </div>
+                    </div>
+                    <div class="exercise-item">
+                        <div class="exercise-icon bg-info">
+                            <i class="fa-solid fa-puzzle-piece"></i>
+                        </div>
+                        <div class="exercise-details">
+                            <div class="exercise-name">Activités cognitives</div>
+                            <div class="exercise-schedule">1x/semaine • 45 min</div>
+                        </div>
+                        <div class="exercise-progress">
+                            <div class="progress-circle" data-progress="80">80%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointments & Medical History Row -->
+<div class="row mb-4">
+    <!-- Upcoming Appointments -->
+    <div class="col-xl-8 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-calendar-day me-2"></i>Mes prochains rendez-vous</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-plus me-1"></i> Demander RDV
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date & Heure</th>
+                                <th>Médecin</th>
+                                <th>Type</th>
+                                <th>Lieu</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="appointment-time">
+                                        <div class="appointment-date">Vendredi 28 Juin</div>
+                                        <div class="appointment-hour">14:30</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            AT
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Dr. Aminata Traoré</div>
+                                            <small class="text-muted">Pédiatre</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-light text-dark">Consultation</span></td>
+                                <td>Centre de Santé Commune I</td>
+                                <td><span class="badge bg-success">Confirmé</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="appointment-time">
+                                        <div class="appointment-date">Mardi 2 Juillet</div>
+                                        <div class="appointment-hour">10:00</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            IK
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Dr. Ibrahim Keita</div>
+                                            <small class="text-muted">Kinésithérapeute</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-light text-dark">Kinésithérapie</span></td>
+                                <td>Centre de Réhabilitation</td>
+                                <td><span class="badge bg-warning">En attente</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="appointment-time">
+                                        <div class="appointment-date">Jeudi 4 Juillet</div>
+                                        <div class="appointment-hour">15:30</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-info text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            FD
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Dr. Fatoumata Diallo</div>
+                                            <small class="text-muted">Orthophoniste</small>
+                                        </div>
+                    </div>
+                                </td>
+                                <td><span class="badge bg-light text-dark">Orthophonie</span></td>
+                                <td>Clinique Spécialisée</td>
+                                <td><span class="badge bg-primary">Programmé</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Appointments -->
+    <div class="col-xl-4 mb-4">
+        <div class="widget h-100">
+            <div class="widget-header">
+                <h5>Rendez-vous à venir</h5>
+                <div class="widget-header-actions">
+                    <div class="widget-header-action" data-bs-toggle="tooltip" title="Demander un rendez-vous">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for appointment in upcoming_appointments %}
+                    <div class="list-group-item d-flex align-items-center p-3">
+                        <div class="me-3">
+                            <div class="d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; background-color: {% cycle '#e3f2fd' '#fff3e0' '#f3e5f5' '#e8f5e9' %}; border-radius: 50%;">
+                                <i class="fa-solid {% cycle 'fa-stethoscope' 'fa-notes-medical' 'fa-wheelchair' 'fa-heartbeat' %}" style="color: {% cycle '#1976d2' '#ff8f00' '#8e24aa' '#2e7d32' %}; font-size: 1.2rem;"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Dr. {{ appointment.doctor.last_name }}</h6>
+                                <span class="badge bg-primary">{{ appointment.date|date:"d M" }}</span>
+                            </div>
+                            <small class="text-muted">{{ appointment.reason }} - {{ appointment.date|date:"H:i" }}</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center py-5">
+                        <div class="text-muted">
+                            <i class="fa-solid fa-calendar-xmark fa-2x mb-3"></i>
+                            <p>Aucun rendez-vous prévu</p>
+                            <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-outline-primary mt-2">Demander un rendez-vous</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Vouchers Section -->
+    <div class="col-xl-6 mb-4">
+        <div class="widget">
+            <div class="widget-header">
+                <h5>Mes bons de service</h5>
+            </div>
+            <div class="widget-body">
+                {% if vouchers %}
+                <div class="row g-3">
+                    {% for voucher in vouchers %}
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h6 class="mb-1">{{ voucher.service_type }}</h6>
+                                        <span class="badge bg-{{ voucher.status_color }}">{{ voucher.status }}</span>
+                                    </div>
+                                    <img src="{% static 'img/logo-small.png' %}" alt="Logo" width="30">
+                                </div>
+                                
+                                <div class="text-center mb-3">
+                                    <img src="{{ voucher.qr_code_url }}" alt="QR Code" class="img-fluid" style="max-width: 100px;">
+                                    <small class="d-block text-muted mt-1">{{ voucher.code }}</small>
+                                </div>
+                                
+                                <div class="voucher-info">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Émis le:</span>
+                                        <span>{{ voucher.issue_date|date:"d/m/Y" }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted">Valide jusqu'au:</span>
+                                        <span>{{ voucher.expiry_date|date:"d/m/Y" }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted">Structure:</span>
+                                        <span>{{ voucher.facility.name }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid mt-3">
+                                    <a href="{% url 'vouchers:detail' voucher.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-eye me-1"></i>Détails
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="text-muted">
+                        <i class="fa-solid fa-ticket fa-3x mb-3"></i>
+                        <h6>Aucun bon disponible</h6>
+                        <p>Vous n'avez pas de bons de service actifs actuellement.</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="widget-footer">
+                <a href="{% url 'vouchers:list' %}" class="btn btn-sm btn-outline-primary">Voir tous mes bons</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Medical History -->
+    <div class="col-xl-6 mb-4">
+        <div class="widget">
+            <div class="widget-header">
+                <h5>Historique médical</h5>
+            </div>
+            <div class="widget-body p-0">
+                <div class="medical-timeline">
+                    {% for record in medical_history %}
+                    <div class="medical-timeline-item">
+                        <div class="medical-timeline-date">
+                            <span class="date">{{ record.date|date:"d" }}</span>
+                            <span class="month">{{ record.date|date:"M" }}</span>
+                        </div>
+                        <div class="medical-timeline-content">
+                            <h6 class="mb-1">{{ record.diagnosis }}</h6>
+                            <p class="text-muted mb-1">
+                                <i class="fa-solid fa-user-doctor me-1"></i> Dr. {{ record.doctor.last_name }}
+                                <span class="ms-2">
+                                    <i class="fa-solid fa-hospital me-1"></i> {{ record.facility.name }}
+                                </span>
+                            </p>
+                            <p class="mb-2">{{ record.description|truncatechars:100 }}</p>
+                            <a href="{% url 'patients:medical_record' record.id %}" class="btn btn-sm btn-light">
+                                <i class="fa-solid fa-file-medical me-1"></i>Détails
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="fa-solid fa-notes-medical fa-3x mb-3"></i>
+                            <h6>Aucun enregistrement</h6>
+                            <p>Votre historique médical est vide.</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="widget-footer">
+                <a href="{% url 'patients:medical_history' patient.id %}" class="btn btn-sm btn-outline-primary">Voir tout l'historique</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Row -->
+<div class="row">
+    <div class="col-12">
+        <div class="widget">
+            <div class="widget-header">
+                <h5>Actions rapides</h5>
+            </div>
+            <div class="widget-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{% url 'appointments:create' %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center py-4">
+                                <div class="icon-circle bg-primary text-white mb-3">
+                                    <i class="fa-solid fa-calendar-plus"></i>
+                                </div>
+                                <h6 class="card-title">Demander un rendez-vous</h6>
+                                <p class="card-text small text-muted">Planifier une nouvelle consultation</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{% url 'rehabilitation:patient_exercises' %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center py-4">
+                                <div class="icon-circle bg-success text-white mb-3">
+                                    <i class="fa-solid fa-dumbbell"></i>
+                                </div>
+                                <h6 class="card-title">Mes exercices</h6>
+                                <p class="card-text small text-muted">Accéder à mon programme d'exercices</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{% url 'patients:documents' patient.id %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center py-4">
+                                <div class="icon-circle bg-info text-white mb-3">
+                                    <i class="fa-solid fa-file-medical"></i>
+                                </div>
+                                <h6 class="card-title">Mes documents</h6>
+                                <p class="card-text small text-muted">Consulter mes documents médicaux</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <a href="{% url 'patients:edit' patient.id %}" class="card h-100 text-decoration-none">
+                            <div class="card-body text-center py-4">
+                                <div class="icon-circle bg-warning text-white mb-3">
+                                    <i class="fa-solid fa-user-edit"></i>
+                                </div>
+                                <h6 class="card-title">Modifier mon profil</h6>
+                                <p class="card-text small text-muted">Mettre à jour mes informations personnelles</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Progress Chart for Patient Dashboard
+    const progressCtx = document.getElementById('progressChart');
+    if (progressCtx) {
+        new Chart(progressCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Mobilité', 'Communication', 'Autonomie', 'Social', 'Cognitif'],
+                datasets: [{
+                    label: 'Mon progrès',
+                    data: [85, 65, 72, 78, 70],
+                    borderColor: '#0C7C59',
+                    backgroundColor: 'rgba(12, 124, 89, 0.2)',
+                    pointBackgroundColor: '#0C7C59',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#0C7C59'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                        pointLabels: { font: { size: 11 } },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    // Set progress circle data attributes
+    const progressCircles = document.querySelectorAll('[data-progress]');
+    progressCircles.forEach(circle => {
+        const progress = circle.getAttribute('data-progress');
+        circle.style.setProperty('--progress', progress);
+    });
+});
+</script>
+{% endblock %} 

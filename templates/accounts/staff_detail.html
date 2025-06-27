@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Détails du Personnel | DPI MedML{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <div class="detail-header-content">
+            <div class="detail-title-section">
+                <div class="detail-breadcrumb">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    <a href="{% url 'accounts:staff_list' %}" class="text-decoration-none">Personnel</a>
+                    <i class="fas fa-chevron-right mx-2 text-muted"></i>
+                    <span class="text-muted">{{ staff.first_name }} {{ staff.last_name }}</span>
+                </div>
+                <h1 class="detail-title">
+                    <i class="fas fa-user-md me-3"></i>
+                    {{ staff.first_name }} {{ staff.last_name }}
+                </h1>
+                <div class="detail-subtitle">
+                    <span class="badge status-active me-2">
+                        <i class="fas fa-circle me-1"></i>Actif
+                    </span>
+                    <span class="text-muted">{{ staff.specialty }}</span>
+                </div>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'accounts:staff_edit' pk=staff.id %}" class="btn btn-primary-detail">
+                    <i class="fas fa-edit me-2"></i>Modifier
+                </a>
+                <a href="{% url 'accounts:staff_list' %}" class="btn btn-secondary-detail">
+                    <i class="fas fa-arrow-left me-2"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Staff Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-id-card me-2"></i>
+                        Informations du Personnel
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-envelope text-primary me-2"></i>Email
+                                </label>
+                                <div class="form-value">{{ staff.email }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-phone text-primary me-2"></i>Téléphone
+                                </label>
+                                <div class="form-value">{{ staff.phone|default:"Non renseigné" }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-stethoscope text-primary me-2"></i>Spécialité
+                                </label>
+                                <div class="form-value">{{ staff.specialty }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>Adresse
+                                </label>
+                                <div class="form-value">{{ staff.address|default:"Non renseignée" }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-user-tag text-primary me-2"></i>Rôle
+                                </label>
+                                <div class="form-value">
+                                    {% if staff.role == 'doctor' %}
+                                    <span class="badge status-active">Médecin</span>
+                                    {% elif staff.role == 'admin' %}
+                                    <span class="badge status-pending">Admin</span>
+                                    {% else %}
+                                    <span class="badge status-inactive">Personnel</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-calendar-plus text-primary me-2"></i>Date d'entrée
+                                </label>
+                                <div class="form-value">{{ staff.joined_date|default:"Non renseignée" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Statistiques
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="info-card text-center">
+                                <div class="info-card-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="info-card-value">--</div>
+                                <div class="info-card-label">Rendez-vous</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card text-center">
+                                <div class="info-card-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="info-card-value">--</div>
+                                <div class="info-card-label">Patients</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-card text-center">
+                                <div class="info-card-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="info-card-value">--</div>
+                                <div class="info-card-label">Heures</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Staff Avatar -->
+            <div class="entity-info-card text-center">
+                <div class="entity-avatar-large">
+                    {{ staff.first_name|slice:":1" }}{{ staff.last_name|slice:":1" }}
+                </div>
+                <h5 class="mt-3 mb-1">{{ staff.first_name }} {{ staff.last_name }}</h5>
+                <p class="text-muted mb-3">{{ staff.specialty }}</p>
+                <div class="entity-info-item">
+                    <small class="text-muted">Email:</small>
+                    <div>{{ staff.email }}</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-bolt me-2"></i>
+                        Actions Rapides
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'accounts:staff_edit' pk=staff.id %}" class="btn btn-primary-detail">
+                            <i class="fas fa-edit me-2"></i>Modifier les informations
+                        </a>
+                        <button class="btn btn-secondary-detail" onclick="showComingSoon('Planifier rendez-vous')">
+                            <i class="fas fa-calendar-plus me-2"></i>Planifier rendez-vous
+                        </button>
+                        <button class="btn btn-secondary-detail" onclick="showComingSoon('Voir planning')">
+                            <i class="fas fa-calendar-alt me-2"></i>Voir planning
+                        </button>
+                        <button class="btn btn-secondary-detail" onclick="showComingSoon('Statistiques détaillées')">
+                            <i class="fas fa-chart-bar me-2"></i>Statistiques détaillées
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information -->
+            <div class="form-info">
+                <div class="form-info-content">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-info-circle me-2 mt-1"></i>
+                        <div>
+                            <strong>Information</strong><br>
+                            <small>Ce personnel fait partie de l'équipe médicale. Les modifications des informations importantes nécessitent une validation administrative.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showComingSoon(feature) {
+    alert('Fonctionnalité "' + feature + '" en cours de développement.\n\nCette fonctionnalité sera disponible dans une prochaine version du système.');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Nouveau Dossier Médical - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-file-medical me-2"></i>Nouveau Dossier Médical
+                </h1>
+                <p class="create-subtitle">Création d'un dossier médical pour {{ patient.first_name }} {{ patient.last_name }}</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'patients:detail' patient.id %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour au patient
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'patients:medical_record_create' patient.id %}" id="medical-record-form">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Main Form Column -->
+            <div class="col-lg-8">
+                <!-- Patient Information Card -->
+                <div class="entity-info-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="entity-avatar">
+                                {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                            </div>
+                            <div class="entity-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                            <div class="entity-id">
+                                <span class="badge bg-primary">{{ patient.patient_id }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-9">
+                            <div class="entity-details">
+                                {% if patient.date_of_birth %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-birthday-cake entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Âge:</span>
+                                    <span class="entity-detail-value">{{ patient.date_of_birth|timesince|truncatewords:2 }}</span>
+                                </div>
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-calendar entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Né le:</span>
+                                    <span class="entity-detail-value">{{ patient.date_of_birth|date:"d/m/Y" }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.get_gender_display %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-venus-mars entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Sexe:</span>
+                                    <span class="entity-detail-value">{{ patient.get_gender_display }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.guardian_name %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-user-friends entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Tuteur:</span>
+                                    <span class="entity-detail-value">{{ patient.guardian_name }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.phone_number %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-phone entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Téléphone:</span>
+                                    <span class="entity-detail-value">{{ patient.phone_number }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.city %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-map-marker-alt entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Ville:</span>
+                                    <span class="entity-detail-value">{{ patient.city }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-stethoscope form-section-icon"></i>
+                        <h5 class="form-section-title">Informations de Base</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="chief_complaint" class="form-label required">
+                                    Motif de consultation
+                                </label>
+                                <textarea class="form-control" id="chief_complaint" name="chief_complaint" rows="2" required 
+                                          placeholder="Pourquoi le patient consulte-t-il aujourd'hui?"></textarea>
+                                <div class="invalid-feedback">Le motif de consultation est requis</div>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="present_illness" class="form-label">Histoire de la maladie actuelle</label>
+                                <textarea class="form-control" id="present_illness" name="present_illness" rows="3" 
+                                          placeholder="Développement chronologique des symptômes..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diagnostic Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-code form-section-icon"></i>
+                        <h5 class="form-section-title">Diagnostic Professionnel (ICD-10)</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-info-circle"></i>
+                                Diagnostic optimisé pour la pédiatrie Mali
+                            </div>
+                            <div class="form-info-content">
+                                Recherchez parmi les diagnostics ICD-10 fréquents au Mali et approuvés pour la pédiatrie (0-14 ans).
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="primary_diagnosis" class="form-label required">
+                                    Diagnostic Principal (ICD-10)
+                                </label>
+                                <input type="text" class="form-control" id="primary_diagnosis" 
+                                       placeholder="Rechercher un code ICD-10... (ex: F84.0, Paralysie cérébrale, etc.)" required>
+                                <input type="hidden" id="primary_diagnosis_icd10" name="primary_diagnosis_icd10">
+                                <div class="invalid-feedback">Le diagnostic principal est requis</div>
+                            </div>
+                            
+                            <div class="col-md-12">
+                                <label for="secondary_diagnosis" class="form-label">
+                                    Diagnostics Secondaires (ICD-10)
+                                </label>
+                                <input type="text" class="form-control" id="secondary_diagnosis" 
+                                       placeholder="Ajouter un diagnostic secondaire...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vital Signs Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-heartbeat form-section-icon"></i>
+                        <h5 class="form-section-title">Signes Vitaux & Mesures Pédiatriques</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="temperature" class="form-label">Température</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" 
+                                           placeholder="37.5">
+                                    <span class="input-group-text">°C</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label for="heart_rate" class="form-label">Fréquence cardiaque</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="heart_rate" name="heart_rate" 
+                                           placeholder="80">
+                                    <span class="input-group-text">bpm</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label for="height" class="form-label">Taille</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" class="form-control" id="height" name="height" 
+                                           placeholder="120">
+                                    <span class="input-group-text">cm</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <label for="weight" class="form-label">Poids</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" class="form-control" id="weight" name="weight" 
+                                           placeholder="25">
+                                    <span class="input-group-text">kg</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BMI Display -->
+                        <div class="form-info mt-3">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-calculator"></i>
+                                IMC (calculé automatiquement)
+                            </div>
+                            <div class="form-info-content">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="bmi_display" readonly placeholder="Calculé automatiquement">
+                                            <span class="input-group-text">kg/m²</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted" id="bmi_status">Entrez la taille et le poids pour calculer l'IMC</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinical Examination Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-search form-section-icon"></i>
+                        <h5 class="form-section-title">Examen Clinique</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="physical_examination" class="form-label">Examen physique</label>
+                                <textarea class="form-control" id="physical_examination" name="physical_examination" rows="4" 
+                                          placeholder="Résultats de l'examen physique détaillé..."></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="clinical_notes" class="form-label">Notes cliniques</label>
+                                <textarea class="form-control" id="clinical_notes" name="clinical_notes" rows="3" 
+                                          placeholder="Observations cliniques additionnelles..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treatment Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-prescription-bottle-medical form-section-icon"></i>
+                        <h5 class="form-section-title">Traitement & Suivi</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="treatment_plan" class="form-label">Plan de traitement</label>
+                                <textarea class="form-control" id="treatment_plan" name="treatment_plan" rows="3" 
+                                          placeholder="Plan thérapeutique détaillé..."></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="recommendations" class="form-label">Recommandations</label>
+                                <textarea class="form-control" id="recommendations" name="recommendations" rows="3" 
+                                          placeholder="Recommandations pour le patient et la famille..."></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="follow_up_instructions" class="form-label">Instructions de suivi</label>
+                                <textarea class="form-control" id="follow_up_instructions" name="follow_up_instructions" rows="2" 
+                                          placeholder="Prochains rendez-vous, surveillance requise..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'patients:detail' patient.id %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </a>
+                        <div>
+                            <button type="submit" name="status" value="DRAFT" class="btn-outline-create me-2">
+                                <i class="fa-solid fa-save"></i>Sauvegarder comme brouillon
+                            </button>
+                            <button type="submit" class="btn-primary-create">
+                                <i class="fa-solid fa-file-medical"></i>Enregistrer le Dossier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar with Tools -->
+            <div class="col-lg-4">
+                <!-- Quick Tools -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-tools form-section-icon"></i>
+                        <h5 class="form-section-title">Outils d'aide</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn-outline-create" id="vital-signs-guide">
+                                <i class="fa-solid fa-chart-line"></i>Guide signes vitaux pédiatriques
+                            </button>
+                            <button type="button" class="btn-outline-create" id="growth-chart">
+                                <i class="fa-solid fa-ruler"></i>Courbe de croissance Mali
+                            </button>
+                            <button type="button" class="btn-outline-create" id="malnutrition-screening">
+                                <i class="fa-solid fa-utensils"></i>Dépistage malnutrition
+                            </button>
+                            <button type="button" class="btn-outline-create" id="emergency-protocols">
+                                <i class="fa-solid fa-exclamation-triangle"></i>Protocoles d'urgence
+                            </button>
+                        </div>
+                        
+                        <!-- Patient Age/Weight Calculator -->
+                        {% if patient.date_of_birth %}
+                        <div class="form-info mt-3">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-child"></i>
+                                Calculs pédiatriques
+                            </div>
+                            <div class="form-info-content">
+                                <p class="mb-1">
+                                    <strong>Âge exact:</strong> 
+                                    <span id="patient-age-months" data-birthdate="{{ patient.date_of_birth|date:'Y-m-d' }}">
+                                        {{ patient.date_of_birth|timesince|truncatewords:2 }}
+                                    </span>
+                                </p>
+                                <small class="text-muted">
+                                    Les valeurs de référence seront ajustées automatiquement.
+                                </small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Mali Protocols -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-flag form-section-icon"></i>
+                        <h5 class="form-section-title">Protocoles Mali</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info mb-3">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-heartbeat"></i>
+                                Malnutrition aiguë sévère
+                            </div>
+                            <div class="form-info-content">
+                                Protocole OMS/UNICEF Mali
+                                <span class="badge bg-success ms-2">Mali Standard</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-info mb-3">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-virus"></i>
+                                Paludisme grave
+                            </div>
+                            <div class="form-info-content">
+                                Guide national 2024
+                                <span class="badge bg-success ms-2">Mali Standard</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-wheelchair"></i>
+                                Paralysie cérébrale
+                            </div>
+                            <div class="form-info-content">
+                                Réhabilitation pédiatrique
+                                <span class="badge bg-primary ms-2">Pédiatrique</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// BMI Calculation
+function calculateBMI() {
+    const height = parseFloat(document.getElementById('height').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    
+    if (height && weight) {
+        const heightInMeters = height / 100;
+        const bmi = weight / (heightInMeters * heightInMeters);
+        
+        document.getElementById('bmi_display').value = bmi.toFixed(1);
+        
+        // BMI status for pediatric patients
+        let status = '';
+        if (bmi < 18.5) {
+            status = 'Insuffisance pondérale';
+        } else if (bmi < 25) {
+            status = 'Poids normal';
+        } else if (bmi < 30) {
+            status = 'Surpoids';
+        } else {
+            status = 'Obésité';
+        }
+        
+        document.getElementById('bmi_status').textContent = status;
+    }
+}
+
+// BMI calculation on input
+document.getElementById('height')?.addEventListener('input', calculateBMI);
+document.getElementById('weight')?.addEventListener('input', calculateBMI);
+
+// Form validation
+document.getElementById('medical-record-form').addEventListener('submit', function(e) {
+    const chiefComplaint = document.getElementById('chief_complaint').value.trim();
+    
+    if (!chiefComplaint) {
+        e.preventDefault();
+        document.getElementById('chief_complaint').classList.add('is-invalid');
+        document.getElementById('chief_complaint').focus();
+        return false;
+    }
+});
+
+// Tool buttons
+document.querySelectorAll('[id*="-guide"], [id*="-chart"], [id*="-screening"], [id*="-protocols"]').forEach(btn => {
+    btn.addEventListener('click', function() {
+        alert('Fonctionnalité en développement - ' + this.textContent.trim());
+    });
+});
+
+console.log('Medical record create form initialized');
+</script>
+{% endblock %} 

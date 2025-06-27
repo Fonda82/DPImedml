@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ facility.name }} | DPI MedML{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="detail-title">
+                    <i class="fa-solid fa-building-columns me-2"></i>{{ facility.name }}
+                </h1>
+                <p class="detail-subtitle">Informations de l'établissement de santé</p>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'facilities:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour à la liste
+                </a>
+                {% if user.profile.user_type == 'superadmin' or user.profile.facility == facility and user.profile.user_type == 'facility_admin' %}
+                <a href="{% url 'facilities:edit' pk=facility.pk %}" class="btn-primary-create">
+                    <i class="fa-solid fa-pencil"></i>Modifier
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Facility Information -->
+        <div class="col-lg-8">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-info-circle form-section-icon"></i>
+                    <h5 class="form-section-title">Informations de l'établissement</h5>
+                    <div class="form-section-actions">
+                        {% if facility.is_active %}
+                        <span class="status-badge status-badge-success">Actif</span>
+                        {% else %}
+                        <span class="status-badge status-badge-danger">Inactif</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-building entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Type d'établissement:</span>
+                                    <span class="entity-detail-value">{{ facility.get_facility_type_display|default:"Non spécifié" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-globe entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Pays:</span>
+                                    <span class="entity-detail-value">{{ facility.country }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-map-marker-alt entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Adresse:</span>
+                                    <span class="entity-detail-value">{{ facility.address }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-phone entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Téléphone:</span>
+                                    <span class="entity-detail-value">{{ facility.phone|default:"Non spécifié" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-city entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Ville:</span>
+                                    <span class="entity-detail-value">{{ facility.city }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-envelope entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Email:</span>
+                                    <span class="entity-detail-value">{{ facility.email|default:"Non spécifié" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-map entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Région:</span>
+                                    <span class="entity-detail-value">{{ facility.region|default:"Non spécifiée" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="entity-info-card">
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-calendar entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Année de création:</span>
+                                    <span class="entity-detail-value">{{ facility.year_established|default:"Non spécifiée" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="col-lg-4">
+            <div class="entity-info-card">
+                <div class="entity-details">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-chart-bar me-2"></i>Statistiques
+                    </h6>
+                    
+                    <div class="entity-stats mb-3">
+                        <div class="text-center">
+                            <div class="h4 text-primary mb-1">{{ staff.count }}</div>
+                            <div class="text-muted">Membres du personnel</div>
+                        </div>
+                    </div>
+                    
+                    {% if facility.is_active %}
+                    <div class="form-info">
+                        <div class="form-info-content">
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid fa-check-circle text-success me-2"></i>
+                                <span>Établissement actif et opérationnel</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="form-info form-info-warning">
+                        <div class="form-info-content">
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid fa-exclamation-triangle text-warning me-2"></i>
+                                <span>Établissement inactif</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-users form-section-icon"></i>
+                    <h5 class="form-section-title">Personnel</h5>
+                    {% if user.profile.user_type == 'superadmin' or user.profile.facility == facility and user.profile.user_type == 'facility_admin' %}
+                    <div class="form-section-actions">
+                        <a href="#" class="btn-primary-create">
+                            <i class="fa-solid fa-plus"></i>Ajouter un membre
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="form-section-body">
+                    {% if staff %}
+                    <div class="table-responsive">
+                        <table class="list-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Rôle</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in staff %}
+                                <tr>
+                                    <td>
+                                        <div class="item-user-info">
+                                            <div class="item-user-name">{{ member.user.get_full_name }}</div>
+                                            <div class="item-user-meta">{{ member.user.username }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-badge-info">{{ member.get_user_type_display }}</span>
+                                    </td>
+                                    <td>{{ member.user.email|default:"Non spécifié" }}</td>
+                                    <td>{{ member.phone_number|default:"Non spécifié" }}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="#" class="action-btn action-btn-primary" title="Voir détails">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <h6 class="empty-state-title">Aucun membre du personnel</h6>
+                        <p class="empty-state-description">Aucun membre du personnel n'est associé à cet établissement.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

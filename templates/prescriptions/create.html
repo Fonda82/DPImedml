@@ -1,0 +1,486 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nouvelle Prescription - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-prescription-bottle-alt me-2"></i>Nouvelle Prescription
+                </h1>
+                <p class="create-subtitle">Prescription médicale pour {{ patient.first_name }} {{ patient.last_name }}</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'prescriptions:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour aux prescriptions
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="prescription-form">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Main Form Column -->
+            <div class="col-lg-8">
+                <!-- Patient Information Card -->
+                <div class="entity-info-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="entity-avatar">
+                                {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                            </div>
+                            <div class="entity-name">{{ patient.first_name }} {{ patient.last_name }}</div>
+                            <div class="entity-id">
+                                <span class="badge bg-primary">{{ patient.patient_id }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-9">
+                            <div class="entity-details">
+                                {% if patient.date_of_birth %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-birthday-cake entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Âge:</span>
+                                    <span class="entity-detail-value">{{ patient.date_of_birth|timesince|truncatewords:1 }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.guardian_name %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-user-friends entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Tuteur:</span>
+                                    <span class="entity-detail-value">{{ patient.guardian_name }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.phone_number %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-phone entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Téléphone:</span>
+                                    <span class="entity-detail-value">{{ patient.phone_number }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if patient.city %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-map-marker-alt entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Ville:</span>
+                                    <span class="entity-detail-value">{{ patient.city }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if latest_vitals %}
+                                {% if latest_vitals.weight %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-weight entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Poids:</span>
+                                    <span class="entity-detail-value">{{ latest_vitals.weight }} kg</span>
+                                </div>
+                                {% endif %}
+                                {% if latest_vitals.height %}
+                                <div class="entity-detail-item">
+                                    <i class="fa-solid fa-ruler-vertical entity-detail-icon"></i>
+                                    <span class="entity-detail-label">Taille:</span>
+                                    <span class="entity-detail-value">{{ latest_vitals.height }} cm</span>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Prescription Info -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-edit form-section-icon"></i>
+                        <h5 class="form-section-title">Informations de prescription</h5>
+                    </div>
+                    <div class="form-section-body">
+                        {% if not latest_vitals %}
+                        <div class="form-warning">
+                            <div class="form-warning-header">
+                                <i class="fa-solid fa-exclamation-triangle"></i>
+                                Attention: Signes vitaux manquants
+                            </div>
+                            <div class="form-info-content">
+                                Aucun signe vital récent disponible. Le calcul de dosage automatique sera limité.
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Diagnostic</label>
+                                <input type="text" 
+                                       name="diagnosis" 
+                                       class="form-control" 
+                                       placeholder="Diagnostic principal..." 
+                                       required>
+                                <div class="invalid-feedback">Le diagnostic est requis</div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Priorité</label>
+                                <select name="priority" class="form-select">
+                                    {% for value, label in priority_choices %}
+                                        <option value="{{ value }}" {% if value == 'NORMAL' %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Dossier médical</label>
+                                <select name="medical_record" class="form-select">
+                                    <option value="">Sélectionner...</option>
+                                    {% for record in medical_records %}
+                                        <option value="{{ record.id }}">
+                                            {{ record.date|date:"d/m/Y" }} - {{ record.diagnosis|truncatechars:30 }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label class="form-label">Notes cliniques</label>
+                                <textarea name="clinical_notes" 
+                                          class="form-control" 
+                                          rows="3" 
+                                          placeholder="Notes cliniques détaillées..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label class="form-label">Instructions pour le patient</label>
+                                <textarea name="instructions" 
+                                          class="form-control" 
+                                          rows="2" 
+                                          placeholder="Instructions spéciales pour le patient..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medications Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-pills form-section-icon"></i>
+                        <h5 class="form-section-title">Médicaments prescrits</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-plus"></i>
+                                Ajouter des médicaments
+                            </div>
+                            <div class="form-info-content">
+                                <button type="button" id="add-medication" class="btn-primary-create">
+                                    <i class="fa-solid fa-plus"></i>Ajouter un médicament
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="medications-container">
+                            <!-- Medications will be added here dynamically -->
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary-create" onclick="history.back()">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </button>
+                        <div>
+                            <button type="submit" name="status" value="DRAFT" class="btn-outline-create me-2">
+                                <i class="fa-solid fa-save"></i>Sauvegarder comme brouillon
+                            </button>
+                            <button type="submit" name="status" value="PRESCRIBED" class="btn-primary-create">
+                                <i class="fa-solid fa-prescription"></i>Prescrire maintenant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar with Templates and Tools -->
+            <div class="col-lg-4">
+                <!-- Prescription Templates -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-clipboard-list form-section-icon"></i>
+                        <h5 class="form-section-title">Protocoles Mali</h5>
+                    </div>
+                    <div class="form-section-body">
+                        {% if templates %}
+                            {% for template in templates %}
+                                <div class="form-info mb-3 template-card" data-template-id="{{ template.id }}">
+                                    <div class="form-info-header">
+                                        <i class="fa-solid fa-file-medical"></i>
+                                        {{ template.name }}
+                                    </div>
+                                    <div class="form-info-content">
+                                        {{ template.description|truncatechars:80 }}
+                                        <div class="mt-2">
+                                            {% if template.is_who_approved %}
+                                                <span class="badge bg-success">OMS</span>
+                                            {% endif %}
+                                            {% if template.is_mali_standard %}
+                                                <span class="badge bg-primary">Mali Standard</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="form-info">
+                                <div class="form-info-content text-center py-3">
+                                    <i class="fa-solid fa-info-circle me-2"></i>
+                                    Aucun protocole disponible
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Quick Tools -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-tools form-section-icon"></i>
+                        <h5 class="form-section-title">Outils d'aide</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn-outline-create" id="dose-calculator">
+                                <i class="fa-solid fa-calculator"></i>Calculateur de dose
+                            </button>
+                            <button type="button" class="btn-outline-create" id="interaction-checker">
+                                <i class="fa-solid fa-exclamation-triangle"></i>Vérifier les interactions
+                            </button>
+                            <button type="button" class="btn-outline-create" id="dosage-guidelines">
+                                <i class="fa-solid fa-book-medical"></i>Guide posologique pédiatrique
+                            </button>
+                        </div>
+                        
+                        <!-- Patient Age/Weight Calculator -->
+                        {% if patient.date_of_birth and latest_vitals.weight %}
+                        <div class="form-info mt-3">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-child"></i>
+                                Calculs pédiatriques
+                            </div>
+                            <div class="form-info-content">
+                                <p class="mb-1">
+                                    <strong>Poids:</strong> {{ latest_vitals.weight }} kg
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Âge:</strong> 
+                                    <span id="patient-age-months" data-birthdate="{{ patient.date_of_birth|date:'Y-m-d' }}">
+                                        {{ patient.date_of_birth|timesince|truncatewords:2 }}
+                                    </span>
+                                </p>
+                                <small class="text-muted">
+                                    Les doses seront calculées automatiquement selon le poids et l'âge.
+                                </small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Medication Row Template (Hidden) -->
+<div id="medication-template" style="display: none;">
+    <div class="form-info medication-row mb-3">
+        <div class="form-info-header">
+            <i class="fa-solid fa-pill"></i>
+            Médicament
+            <button type="button" class="btn btn-sm btn-outline-danger remove-medication ms-auto">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="form-info-content">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label required">Médicament</label>
+                    <input type="text" 
+                           class="form-control medication-search" 
+                           placeholder="Rechercher un médicament..."
+                           autocomplete="off">
+                    <input type="hidden" name="medication_id" class="medication-id">
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label required">Dose</label>
+                    <div class="input-group">
+                        <input type="number" 
+                               name="dose" 
+                               class="form-control dose-input" 
+                               step="0.001" 
+                               placeholder="0">
+                        <input type="text" 
+                               name="dose_unit" 
+                               class="form-control dose-unit" 
+                               placeholder="mg" 
+                               style="max-width: 60px;">
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">Fréquence</label>
+                    <select name="frequency" class="form-select frequency-select">
+                        <option value="1 fois par jour">1 fois par jour</option>
+                        <option value="2 fois par jour">2 fois par jour</option>
+                        <option value="3 fois par jour" selected>3 fois par jour</option>
+                        <option value="4 fois par jour">4 fois par jour</option>
+                        <option value="Toutes les 4 heures">Toutes les 4 heures</option>
+                        <option value="Toutes les 6 heures">Toutes les 6 heures</option>
+                        <option value="Toutes les 8 heures">Toutes les 8 heures</option>
+                        <option value="Au besoin">Au besoin</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Voie d'administration</label>
+                    <select name="route" class="form-select">
+                        {% for value, label in route_choices %}
+                            <option value="{{ value }}" {% if value == 'ORAL' %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Durée (jours)</label>
+                    <input type="number" 
+                           name="duration" 
+                           class="form-control" 
+                           value="7" 
+                           min="1" 
+                           max="365">
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">Instructions spécifiques</label>
+                    <input type="text" 
+                           name="medication_instructions" 
+                           class="form-control" 
+                           placeholder="Ex: Avant les repas...">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let medicationCount = 0;
+const patientWeight = {{ latest_vitals.weight|default:0 }};
+const patientId = {{ patient.id }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add first medication row
+    addMedicationRow();
+    
+    // Add medication button handler
+    document.getElementById('add-medication').addEventListener('click', addMedicationRow);
+    
+    // Form submission validation
+    document.getElementById('prescription-form').addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+        }
+    });
+    
+    // Template selection
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', function() {
+            selectTemplate(this.dataset.templateId);
+        });
+    });
+    
+    // Tool buttons
+    document.querySelectorAll('[id*="calculator"], [id*="checker"], [id*="guidelines"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            alert('Fonctionnalité en développement - ' + this.textContent.trim());
+        });
+    });
+});
+
+function addMedicationRow() {
+    medicationCount++;
+    const template = document.getElementById('medication-template');
+    const clone = template.cloneNode(true);
+    
+    clone.id = 'medication-' + medicationCount;
+    clone.style.display = 'block';
+    
+    // Setup event handlers for the new row
+    setupMedicationRow(clone);
+    
+    document.getElementById('medications-container').appendChild(clone);
+}
+
+function setupMedicationRow(row) {
+    const removeBtn = row.querySelector('.remove-medication');
+    
+    // Remove button handler
+    removeBtn.addEventListener('click', function() {
+        if (document.querySelectorAll('.medication-row').length > 1) {
+            row.remove();
+        } else {
+            alert('Au moins un médicament est requis.');
+        }
+    });
+    
+    // Medication search functionality would be implemented here
+    const searchInput = row.querySelector('.medication-search');
+    searchInput.addEventListener('input', function() {
+        // Simulate medication search
+        console.log('Searching for:', this.value);
+    });
+}
+
+function validateForm() {
+    const diagnosis = document.querySelector('input[name="diagnosis"]').value.trim();
+    const medications = document.querySelectorAll('.medication-id');
+    
+    if (!diagnosis) {
+        alert('Le diagnostic est requis.');
+        return false;
+    }
+    
+    let hasValidMedication = false;
+    medications.forEach(med => {
+        if (med.value) hasValidMedication = true;
+    });
+    
+    if (!hasValidMedication) {
+        alert('Au moins un médicament est requis.');
+        return false;
+    }
+    
+    return true;
+}
+
+function selectTemplate(templateId) {
+    console.log('Template selected:', templateId);
+    alert('Fonctionnalité des protocoles en développement');
+}
+
+console.log('Prescription form initialized');
+</script>
+{% endblock %} 

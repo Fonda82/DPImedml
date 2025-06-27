@@ -1,0 +1,542 @@
+/* Unified List Templates - DPImedml Mali Healthcare */
+/* Clean, Minimalist Design System */
+
+/* ========================================
+   UNIFIED LIST LAYOUT
+======================================== */
+
+.list-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem 0;
+  margin-bottom: 1.5rem;
+}
+
+.list-title {
+  color: #111827;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.list-subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0.25rem 0 0 0;
+}
+
+.list-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ========================================
+   CLEAN STATS CARDS
+======================================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stats-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  transition: all 0.15s ease;
+}
+
+.stats-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.stats-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+/* Mali accent colors - used sparingly */
+.stats-card-primary .stats-card-icon {
+  background: #f0fdf4;
+  color: #0C7C59;
+}
+
+.stats-card-warning .stats-card-icon {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.stats-card-info .stats-card-icon {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.stats-card-number {
+  color: #111827;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.stats-card-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* ========================================
+   CLEAN FILTER SECTION
+======================================== */
+
+.filter-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-title {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 1rem 0;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-label {
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+}
+
+.filter-input,
+.filter-select {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #0C7C59;
+  box-shadow: 0 0 0 3px rgba(12, 124, 89, 0.1);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Quick filter buttons */
+.quick-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.quick-filter-btn {
+  background: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-filter-btn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.quick-filter-btn.active {
+  background: #0C7C59;
+  border-color: #0C7C59;
+  color: #ffffff;
+}
+
+/* ========================================
+   CLEAN TABLE DESIGN
+======================================== */
+
+.list-table-container {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.list-table-header {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 1.25rem;
+}
+
+.list-table-title {
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.list-table th {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.list-table td {
+  border-bottom: 1px solid #f3f4f6;
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.list-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.list-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.list-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ========================================
+   ITEM COMPONENTS
+======================================== */
+
+/* User/Patient display */
+.item-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.item-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.item-avatar-mali {
+  background: #f0fdf4;
+  color: #0C7C59;
+}
+
+.item-user-info {
+  min-width: 0;
+}
+
+.item-user-name {
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.item-user-meta {
+  color: #6b7280;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  margin-top: 0.125rem;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.status-badge-primary {
+  background: #f0fdf4;
+  color: #0C7C59;
+}
+
+.status-badge-success {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.status-badge-warning {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.status-badge-danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.status-badge-info {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.status-badge-secondary {
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+/* Priority badges */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.priority-urgent {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.priority-high {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.priority-normal {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.priority-low {
+  background: #f9fafb;
+  color: #6b7280;
+}
+
+/* ========================================
+   ACTION BUTTONS
+======================================== */
+
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background: #ffffff;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.action-btn:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.action-btn-primary:hover {
+  border-color: #0C7C59;
+  background: #f0fdf4;
+  color: #0C7C59;
+}
+
+.action-btn-success:hover {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.action-btn-warning:hover {
+  border-color: #d97706;
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.action-btn-danger:hover {
+  border-color: #dc2626;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ========================================
+   EMPTY STATE
+======================================== */
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.empty-state-icon {
+  color: #d1d5db;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state-title {
+  color: #374151;
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0 0 1.5rem 0;
+}
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.btn-primary {
+  background: #0C7C59;
+  border: 1px solid #0C7C59;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-primary:hover {
+  background: #065f46;
+  border-color: #065f46;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+@media (max-width: 768px) {
+  .list-header {
+    padding: 1rem 0;
+  }
+  
+  .list-title {
+    font-size: 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .filter-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .filter-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .quick-filters {
+    justify-content: center;
+  }
+  
+  .action-buttons {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,875 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Signes Vitaux - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js" rel="stylesheet">
+<style>
+    /* Mali Flag Colors Theme */
+    :root {
+        --mali-green: #0C7C59;
+        --mali-yellow: #FCD116;
+        --mali-red: #CE1126;
+        --mali-green-light: rgba(12, 124, 89, 0.1);
+        --mali-yellow-light: rgba(252, 209, 22, 0.1);
+        --mali-red-light: rgba(206, 17, 38, 0.1);
+    }
+
+    .vital-signs-header {
+        background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(12, 124, 89, 0.3);
+    }
+
+    .vital-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .vital-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(12, 124, 89, 0.2);
+    }
+
+    .vital-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .vital-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .vital-unit {
+        font-size: 1.2rem;
+        color: var(--mali-green);
+        font-weight: 600;
+    }
+
+    .alert-card {
+        border-left: 4px solid;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 0 8px 8px 0;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-danger {
+        border-left-color: var(--mali-red);
+        background: var(--mali-red-light);
+    }
+
+    .alert-warning {
+        border-left-color: var(--mali-yellow);
+        background: var(--mali-yellow-light);
+    }
+
+    .alert-success {
+        border-left-color: var(--mali-green);
+        background: var(--mali-green-light);
+    }
+
+    .alert-icon {
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
+    }
+
+    .growth-chart-container {
+        position: relative;
+        height: 400px;
+        margin: 1rem 0;
+    }
+
+    .trend-indicator {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .trend-up {
+        background: var(--mali-green-light);
+        color: var(--mali-green);
+    }
+
+    .trend-down {
+        background: var(--mali-red-light);
+        color: var(--mali-red);
+    }
+
+    .trend-stable {
+        background: var(--mali-yellow-light);
+        color: #f57c00;
+    }
+
+    .chart-tabs {
+        border-bottom: 2px solid #e9ecef;
+        margin-bottom: 1.5rem;
+    }
+
+    .chart-tab {
+        background: none;
+        border: none;
+        padding: 1rem 1.5rem;
+        color: #6c757d;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .chart-tab.active {
+        color: var(--mali-green);
+        border-bottom-color: var(--mali-green);
+        background: var(--mali-green-light);
+    }
+
+    .chart-tab:hover {
+        color: var(--mali-green);
+        background: var(--mali-green-light);
+    }
+
+    .time-filter {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .time-filter.active {
+        background: var(--mali-green);
+        color: white;
+        border-color: var(--mali-green);
+    }
+
+    .time-filter:hover {
+        border-color: var(--mali-green);
+        color: var(--mali-green);
+    }
+
+    .nutritional-status {
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-align: center;
+        margin: 1rem 0;
+    }
+
+    .status-normal {
+        background: var(--mali-green-light);
+        color: var(--mali-green);
+        border: 2px solid var(--mali-green);
+    }
+
+    .status-warning {
+        background: var(--mali-yellow-light);
+        color: #f57c00;
+        border: 2px solid var(--mali-yellow);
+    }
+
+    .status-danger {
+        background: var(--mali-red-light);
+        color: var(--mali-red);
+        border: 2px solid var(--mali-red);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .btn-mali {
+        background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-mali:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(12, 124, 89, 0.3);
+        color: white;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(12, 124, 89, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--mali-green);
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .patient-info-card {
+        background: linear-gradient(135deg, rgba(12, 124, 89, 0.05), rgba(252, 209, 22, 0.05));
+        border: 1px solid rgba(12, 124, 89, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .vital-value {
+            font-size: 2rem;
+        }
+
+        .time-filter {
+            margin: 0.25rem 0;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fa-solid fa-heartbeat me-2"></i>Tableau de Bord - Signes Vitaux</h1>
+            <p class="text-muted mb-0">{{ patient.first_name }} {{ patient.last_name }} • {% if patient_age %}{{ patient_age }} ans{% else %}Âge non spécifié{% endif %}</p>
+        </div>
+        <div>
+            <a href="{% url 'patients:detail' patient.id %}" class="btn btn-outline-secondary me-2">
+                <i class="fa-solid fa-arrow-left me-1"></i>Retour
+            </a>
+            <a href="{% url 'patients:medical_record_create' patient.id %}" class="btn btn-mali">
+                <i class="fa-solid fa-plus me-1"></i>Nouvelle Consultation
+            </a>
+        </div>
+    </div>
+
+    <!-- Patient Info Card -->
+    <div class="vital-card patient-info-card mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <div class="d-flex align-items-center justify-content-center" 
+                             style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow)); border-radius: 50%; color: white; font-size: 1.5rem; font-weight: 700;">
+                            {{ patient.first_name.0 }}{{ patient.last_name.0 }}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">{{ patient.first_name }} {{ patient.last_name }}</h4>
+                        <p class="mb-0 text-muted">
+                            <i class="fa-solid fa-id-card me-1"></i>{{ patient.patient_id }}
+                            {% if patient.date_of_birth %}
+                                • <i class="fa-solid fa-calendar me-1"></i>{{ patient.date_of_birth|date:"d/m/Y" }}
+                            {% endif %}
+                            {% if patient.gender %}
+                                • <i class="fa-solid fa-user me-1"></i>{{ patient.get_gender_display }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="text-muted">
+                    <strong>{{ total_records }}</strong> mesures enregistrées
+                    {% if latest_vitals %}
+                        <br><small>Dernière mise à jour: {{ latest_vitals.medical_record.date|date:"d/m/Y H:i" }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts Section -->
+    {% if alerts %}
+    <div class="mb-4">
+        <h5><i class="fa-solid fa-triangle-exclamation me-2"></i>Alertes Cliniques</h5>
+        {% for alert in alerts %}
+        <div class="alert-card alert-{{ alert.type }}">
+            <div class="d-flex align-items-center">
+                {% if alert.type == 'danger' %}
+                    <i class="fa-solid fa-exclamation-circle alert-icon" style="color: var(--mali-red);"></i>
+                {% elif alert.type == 'warning' %}
+                    <i class="fa-solid fa-exclamation-triangle alert-icon" style="color: #f57c00;"></i>
+                {% else %}
+                    <i class="fa-solid fa-info-circle alert-icon" style="color: var(--mali-green);"></i>
+                {% endif %}
+                <div>
+                    <strong>{{ alert.category|title }}</strong>
+                    <p class="mb-0">{{ alert.message }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Latest Vital Signs Dashboard -->
+    {% if latest_vitals %}
+    <div class="mb-4">
+        <h5><i class="fa-solid fa-chart-line me-2"></i>Signes Vitaux Actuels</h5>
+        <div class="dashboard-grid">
+            {% if latest_vitals.temperature %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.temperature }}<span class="vital-unit">°C</span></p>
+                <p class="vital-label">Température</p>
+                {% if latest_vitals.temperature > 37.5 %}
+                    <span class="trend-indicator trend-up"><i class="fa-solid fa-arrow-up"></i> Fièvre</span>
+                {% elif latest_vitals.temperature < 36 %}
+                    <span class="trend-indicator trend-down"><i class="fa-solid fa-arrow-down"></i> Hypothermie</span>
+                {% else %}
+                    <span class="trend-indicator trend-stable"><i class="fa-solid fa-check"></i> Normal</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if latest_vitals.heart_rate %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.heart_rate }}<span class="vital-unit">bpm</span></p>
+                <p class="vital-label">Fréquence Cardiaque</p>
+                <span class="trend-indicator trend-stable"><i class="fa-solid fa-heart"></i> Régulier</span>
+            </div>
+            {% endif %}
+
+            {% if latest_vitals.get_blood_pressure_display %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.get_blood_pressure_display }}<span class="vital-unit">mmHg</span></p>
+                <p class="vital-label">Tension Artérielle</p>
+                <span class="trend-indicator trend-stable"><i class="fa-solid fa-activity"></i> Normal</span>
+            </div>
+            {% endif %}
+
+            {% if latest_vitals.oxygen_saturation %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.oxygen_saturation }}<span class="vital-unit">%</span></p>
+                <p class="vital-label">SpO2</p>
+                {% if latest_vitals.oxygen_saturation >= 95 %}
+                    <span class="trend-indicator trend-up"><i class="fa-solid fa-lungs"></i> Bon</span>
+                {% else %}
+                    <span class="trend-indicator trend-down"><i class="fa-solid fa-exclamation-triangle"></i> Bas</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if latest_vitals.weight %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.weight }}<span class="vital-unit">kg</span></p>
+                <p class="vital-label">Poids</p>
+                {% if growth_data.weight_trend == 'increasing' %}
+                    <span class="trend-indicator trend-up"><i class="fa-solid fa-arrow-up"></i> En hausse</span>
+                {% elif growth_data.weight_trend == 'decreasing' %}
+                    <span class="trend-indicator trend-down"><i class="fa-solid fa-arrow-down"></i> En baisse</span>
+                {% else %}
+                    <span class="trend-indicator trend-stable"><i class="fa-solid fa-minus"></i> Stable</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if latest_vitals.height %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.height }}<span class="vital-unit">cm</span></p>
+                <p class="vital-label">Taille</p>
+                {% if growth_data.height_trend == 'increasing' %}
+                    <span class="trend-indicator trend-up"><i class="fa-solid fa-arrow-up"></i> Croissance</span>
+                {% else %}
+                    <span class="trend-indicator trend-stable"><i class="fa-solid fa-ruler-vertical"></i> Stable</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if latest_vitals.bmi %}
+            <div class="vital-card text-center">
+                <p class="vital-value">{{ latest_vitals.bmi }}<span class="vital-unit">kg/m²</span></p>
+                <p class="vital-label">IMC</p>
+                {% if latest_vitals.nutritional_status %}
+                    {% if latest_vitals.nutritional_status == 'NORMAL' %}
+                        <span class="trend-indicator trend-up"><i class="fa-solid fa-check"></i> Normal</span>
+                    {% elif latest_vitals.nutritional_status == 'UNDERWEIGHT' %}
+                        <span class="trend-indicator trend-down"><i class="fa-solid fa-exclamation-triangle"></i> Sous-poids</span>
+                    {% elif latest_vitals.nutritional_status == 'OVERWEIGHT' %}
+                        <span class="trend-indicator trend-warning"><i class="fa-solid fa-exclamation-triangle"></i> Surpoids</span>
+                    {% else %}
+                        <span class="trend-indicator trend-down"><i class="fa-solid fa-exclamation-circle"></i> Attention</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Nutritional Status -->
+        {% if latest_vitals.nutritional_status %}
+        <div class="text-center">
+            <div class="nutritional-status {% if latest_vitals.nutritional_status == 'NORMAL' %}status-normal{% elif latest_vitals.nutritional_status in 'UNDERWEIGHT,SEVERE_MALNUTRITION,MODERATE_MALNUTRITION' %}status-danger{% else %}status-warning{% endif %}">
+                <i class="fa-solid fa-utensils me-2"></i>
+                État nutritionnel: {{ latest_vitals.get_nutritional_status_display }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Charts Section -->
+    <div class="chart-container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5><i class="fa-solid fa-chart-area me-2"></i>Tendances & Évolution</h5>
+            <div class="time-filters">
+                <button class="time-filter active" data-range="6months">6 Mois</button>
+                <button class="time-filter" data-range="1year">1 An</button>
+                <button class="time-filter" data-range="2years">2 Ans</button>
+                <button class="time-filter" data-range="all">Tout</button>
+            </div>
+        </div>
+
+        <div class="chart-tabs">
+            <button class="chart-tab active" data-chart="growth">Croissance</button>
+            <button class="chart-tab" data-chart="vitals">Signes Vitaux</button>
+            <button class="chart-tab" data-chart="bmi">IMC & Nutrition</button>
+            <button class="chart-tab" data-chart="who">Courbes OMS</button>
+        </div>
+
+        <div class="chart-content">
+            <div class="chart-loading text-center py-4">
+                <div class="loading-spinner"></div>
+                <p class="mt-2 text-muted">Chargement des données...</p>
+            </div>
+            <div class="growth-chart-container">
+                <canvas id="vitalSignsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Records -->
+    {% if vital_signs_records %}
+    <div class="vital-card mt-4">
+        <h5><i class="fa-solid fa-history me-2"></i>Historique Récent</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Température</th>
+                        <th>Pouls</th>
+                        <th>TA</th>
+                        <th>Poids</th>
+                        <th>Taille</th>
+                        <th>IMC</th>
+                        <th>État</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vs in vital_signs_records %}
+                    <tr>
+                        <td>{{ vs.medical_record.date|date:"d/m/Y" }}</td>
+                        <td>{% if vs.temperature %}{{ vs.temperature }}°C{% else %}-{% endif %}</td>
+                        <td>{% if vs.heart_rate %}{{ vs.heart_rate }} bpm{% else %}-{% endif %}</td>
+                        <td>{% if vs.get_blood_pressure_display %}{{ vs.get_blood_pressure_display }}{% else %}-{% endif %}</td>
+                        <td>{% if vs.weight %}{{ vs.weight }} kg{% else %}-{% endif %}</td>
+                        <td>{% if vs.height %}{{ vs.height }} cm{% else %}-{% endif %}</td>
+                        <td>{% if vs.bmi %}{{ vs.bmi }}{% else %}-{% endif %}</td>
+                        <td>
+                            {% if vs.nutritional_status %}
+                                {% if vs.nutritional_status == 'NORMAL' %}
+                                    <span class="badge bg-success">{{ vs.get_nutritional_status_display }}</span>
+                                {% elif vs.nutritional_status in 'UNDERWEIGHT,SEVERE_MALNUTRITION,MODERATE_MALNUTRITION' %}
+                                    <span class="badge bg-danger">{{ vs.get_nutritional_status_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning">{{ vs.get_nutritional_status_display }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">Non évalué</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="vital-card text-center py-5">
+        <i class="fa-solid fa-chart-line fa-3x text-muted mb-3"></i>
+        <h5>Aucune donnée de signes vitaux</h5>
+        <p class="text-muted">Les signes vitaux seront affichés après la première consultation.</p>
+        <a href="{% url 'patients:medical_record_create' patient.id %}" class="btn btn-mali">
+            <i class="fa-solid fa-plus me-1"></i>Créer une consultation
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<script>
+$(document).ready(function() {
+    let currentChart = null;
+    let currentRange = '6months';
+    let currentType = 'growth';
+    
+    // Chart configuration with Mali theme
+    const chartConfig = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20
+                }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(12, 124, 89, 0.9)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: '#0C7C59',
+                borderWidth: 1
+            }
+        },
+        scales: {
+            x: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'Date'
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                }
+            },
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: 'Valeur'
+                },
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)'
+                }
+            }
+        },
+        interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+        }
+    };
+    
+    // Initialize first chart
+    loadChart();
+    
+    // Time filter handlers
+    $('.time-filter').on('click', function(e) {
+        e.preventDefault();
+        $('.time-filter').removeClass('active');
+        $(this).addClass('active');
+        currentRange = $(this).data('range');
+        loadChart();
+    });
+    
+    // Chart tab handlers
+    $('.chart-tab').on('click', function(e) {
+        e.preventDefault();
+        $('.chart-tab').removeClass('active');
+        $(this).addClass('active');
+        currentType = $(this).data('chart');
+        loadChart();
+    });
+    
+    function loadChart() {
+        $('.chart-loading').show();
+        
+        if (currentType === 'who') {
+            loadGrowthChart();
+        } else {
+            loadTrendsChart();
+        }
+    }
+    
+    function loadTrendsChart() {
+        $.ajax({
+            url: '{% url "patients:vital_signs_trends" patient.id %}',
+            data: { range: currentRange },
+            success: function(data) {
+                $('.chart-loading').hide();
+                
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+                
+                const ctx = document.getElementById('vitalSignsChart').getContext('2d');
+                
+                let datasets = [];
+                let yAxisTitle = '';
+                
+                if (currentType === 'growth') {
+                    yAxisTitle = 'Mesures';
+                    if (data.growth.length > 0) {
+                        const dates = data.growth.map(item => item.date);
+                        
+                        datasets.push({
+                            label: 'Poids (kg)',
+                            data: data.growth.map(item => item.weight),
+                            borderColor: '#0C7C59',
+                            backgroundColor: 'rgba(12, 124, 89, 0.1)',
+                            tension: 0.4
+                        });
+                        
+                        datasets.push({
+                            label: 'Taille (cm)',
+                            data: data.growth.map(item => item.height),
+                            borderColor: '#FCD116',
+                            backgroundColor: 'rgba(252, 209, 22, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        });
+                        
+                        chartConfig.data = {
+                            labels: dates,
+                            datasets: datasets
+                        };
+                        
+                        chartConfig.scales.y1 = {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Taille (cm)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        };
+                    }
+                } else if (currentType === 'vitals') {
+                    yAxisTitle = 'Valeurs';
+                    if (data.vitals.length > 0) {
+                        const dates = data.vitals.map(item => item.date);
+                        
+                        datasets.push({
+                            label: 'Température (°C)',
+                            data: data.vitals.map(item => item.temperature),
+                            borderColor: '#CE1126',
+                            backgroundColor: 'rgba(206, 17, 38, 0.1)',
+                            tension: 0.4
+                        });
+                        
+                        datasets.push({
+                            label: 'Fréquence cardiaque (bpm)',
+                            data: data.vitals.map(item => item.heart_rate),
+                            borderColor: '#0C7C59',
+                            backgroundColor: 'rgba(12, 124, 89, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        });
+                        
+                        chartConfig.data = {
+                            labels: dates,
+                            datasets: datasets
+                        };
+                        
+                        chartConfig.scales.y1 = {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Fréquence (bpm)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        };
+                    }
+                } else if (currentType === 'bmi') {
+                    yAxisTitle = 'IMC (kg/m²)';
+                    if (data.bmi.length > 0) {
+                        const dates = data.bmi.map(item => item.date);
+                        
+                        datasets.push({
+                            label: 'IMC',
+                            data: data.bmi.map(item => item.bmi),
+                            borderColor: '#FCD116',
+                            backgroundColor: 'rgba(252, 209, 22, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        });
+                        
+                        chartConfig.data = {
+                            labels: dates,
+                            datasets: datasets
+                        };
+                    }
+                }
+                
+                chartConfig.scales.y.title.text = yAxisTitle;
+                
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartConfig.data,
+                    options: chartConfig
+                });
+            },
+            error: function() {
+                $('.chart-loading').hide();
+                $('.growth-chart-container').html('<div class="text-center py-4"><i class="fa-solid fa-exclamation-triangle fa-2x text-muted"></i><p class="mt-2">Erreur lors du chargement des données</p></div>');
+            }
+        });
+    }
+    
+    function loadGrowthChart() {
+        $.ajax({
+            url: '{% url "patients:growth_chart" patient.id %}',
+            success: function(data) {
+                $('.chart-loading').hide();
+                
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+                
+                const ctx = document.getElementById('vitalSignsChart').getContext('2d');
+                
+                let datasets = [];
+                
+                // Add WHO percentile lines
+                datasets.push({
+                    label: 'P97 (OMS)',
+                    data: data.who_percentiles.height.p97,
+                    borderColor: 'rgba(206, 17, 38, 0.3)',
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    tension: 0.4
+                });
+                
+                datasets.push({
+                    label: 'P50 (OMS)',
+                    data: data.who_percentiles.height.p50,
+                    borderColor: 'rgba(12, 124, 89, 0.5)',
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    tension: 0.4
+                });
+                
+                datasets.push({
+                    label: 'P3 (OMS)',
+                    data: data.who_percentiles.height.p3,
+                    borderColor: 'rgba(206, 17, 38, 0.3)',
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    tension: 0.4
+                });
+                
+                // Add patient data
+                datasets.push({
+                    label: 'Patient',
+                    data: data.patient_data.map(item => ({
+                        x: item.age_months,
+                        y: item.height
+                    })),
+                    borderColor: '#FCD116',
+                    backgroundColor: '#FCD116',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    showLine: true,
+                    tension: 0.4
+                });
+                
+                currentChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(12, 124, 89, 0.9)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: 'Âge (mois)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Taille (cm)'
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            error: function() {
+                $('.chart-loading').hide();
+                $('.growth-chart-container').html('<div class="text-center py-4"><i class="fa-solid fa-exclamation-triangle fa-2x text-muted"></i><p class="mt-2">Impossible de charger les courbes de croissance</p></div>');
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

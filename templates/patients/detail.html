@@ -1,0 +1,542 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Fiche Patient | {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="detail-title">
+                    <i class="fa-solid fa-user-circle me-2"></i>Fiche Patient
+                </h1>
+                <p class="detail-subtitle">{{ patient.first_name }} {{ patient.last_name }} • {{ patient.patient_id }}</p>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'patients:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Liste des patients
+                </a>
+                <a href="{% url 'patients:edit' patient.id %}" class="btn-primary-create">
+                    <i class="fa-solid fa-edit"></i>Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Patient Profile Section -->
+        <div class="col-lg-4">
+            <!-- Patient Information Card -->
+            <div class="entity-info-card">
+                <div class="text-center mb-4">
+                    <div class="entity-avatar entity-avatar-large">
+                        {% if patient.photo %}
+                            <img src="{{ patient.photo.url }}" alt="{{ patient.first_name }}" class="rounded-circle w-100 h-100" style="object-fit: cover;">
+                        {% else %}
+                            {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                        {% endif %}
+                    </div>
+                    <h4 class="entity-name mb-1">{{ patient.first_name }} {{ patient.last_name }}</h4>
+                    <div class="entity-id">
+                        <span class="badge bg-primary">{{ patient.patient_id }}</span>
+                    </div>
+                </div>
+                
+                <!-- Personal Information -->
+                <div class="entity-details">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-info-circle me-2"></i>Informations personnelles
+                    </h6>
+                    
+                    {% if patient.date_of_birth %}
+                    <div class="entity-detail-item">
+                        <i class="fa-solid fa-birthday-cake entity-detail-icon"></i>
+                        <span class="entity-detail-label">Âge:</span>
+                        <span class="entity-detail-value">{{ patient.date_of_birth|timesince|truncatewords:2 }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="entity-detail-item">
+                        <i class="fa-solid fa-venus-mars entity-detail-icon"></i>
+                        <span class="entity-detail-label">Genre:</span>
+                        <span class="entity-detail-value">{{ patient.get_gender_display|default:"Non renseigné" }}</span>
+                    </div>
+                    
+                    {% if patient.phone_number %}
+                    <div class="entity-detail-item">
+                        <i class="fa-solid fa-phone entity-detail-icon"></i>
+                        <span class="entity-detail-label">Téléphone:</span>
+                        <span class="entity-detail-value">{{ patient.phone_number }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if patient.city %}
+                    <div class="entity-detail-item">
+                        <i class="fa-solid fa-map-marker-alt entity-detail-icon"></i>
+                        <span class="entity-detail-label">Ville:</span>
+                        <span class="entity-detail-value">{{ patient.city }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Guardian Information -->
+                {% if patient.guardian_name or patient.guardian_phone %}
+                <div class="entity-details mt-4">
+                    <h6 class="entity-section-title">
+                        <i class="fa-solid fa-user-friends me-2"></i>Tuteur/Responsable
+                    </h6>
+                    
+                    {% if patient.guardian_name %}
+                    <div class="entity-detail-item">
+                        <i class="fa-solid fa-user entity-detail-icon"></i>
+                        <span class="entity-detail-label">Nom:</span>
+                        <span class="entity-detail-value">{{ patient.guardian_name }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if patient.guardian_phone %}
+                    <div class="entity-detail-item">
+                        <i class="fa-solid fa-phone entity-detail-icon"></i>
+                        <span class="entity-detail-label">Téléphone:</span>
+                        <span class="entity-detail-value">{{ patient.guardian_phone }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Statistics -->
+                <div class="entity-stats mt-4">
+                    <div class="text-center">
+                        <div class="h4 text-primary mb-1">{{ patient.medicalrecord_set.count }}</div>
+                        <div class="text-muted">Consultations</div>
+                        <small class="text-muted d-block mt-1">
+                            Enregistré le {{ patient.created_at|date:"d/m/Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Medical Information Section -->
+        <div class="col-lg-8">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-file-medical form-section-icon"></i>
+                    <h5 class="form-section-title">Informations Médicales</h5>
+                </div>
+                <div class="form-section-body">
+                    <!-- Medical Tabs -->
+                    <ul class="nav nav-tabs mb-3" id="patientTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="true">
+                                <i class="fa-solid fa-file-medical me-2"></i>Résumé médical
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab" aria-controls="appointments" aria-selected="false">
+                                <i class="fa-solid fa-calendar me-2"></i>Rendez-vous
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="rehab-tab" data-bs-toggle="tab" data-bs-target="#rehab" type="button" role="tab" aria-controls="rehab" aria-selected="false">
+                                <i class="fa-solid fa-dumbbell me-2"></i>Réadaptation
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="vouchers-tab" data-bs-toggle="tab" data-bs-target="#vouchers" type="button" role="tab" aria-controls="vouchers" aria-selected="false">
+                                <i class="fa-solid fa-ticket me-2"></i>Bons
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="patientTabsContent">
+                        <!-- Summary Tab -->
+                        <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="text-primary mb-0">
+                                    <i class="fa-solid fa-stethoscope me-2"></i>Dernières consultations
+                                </h6>
+                                <div>
+                                    <a href="{% url 'patients:medical_record_create' patient.id %}" class="btn-primary-create me-2">
+                                        <i class="fa-solid fa-plus"></i>Nouvelle Consultation
+                                    </a>
+                                    <a href="{% url 'patients:medical_history' patient.id %}" class="btn-secondary-create">
+                                        <i class="fa-solid fa-history"></i>Voir tout
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="list-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Médecin</th>
+                                            <th>Diagnostic</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for record in patient.medicalrecord_set.all|slice:":5" %}
+                                        <tr>
+                                            <td>
+                                                <div class="item-user-info">
+                                                    <div class="item-user-name">{{ record.date|date:"d/m/Y" }}</div>
+                                                    <div class="item-user-meta">{{ record.date|date:"H:i" }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="item-user-info">
+                                                    <div class="item-user-name">Dr. {{ record.doctor.user.last_name }}</div>
+                                                    <div class="item-user-meta">{{ record.doctor.user.first_name }}</div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if record.primary_diagnosis_icd10 %}
+                                                    <div class="item-user-info">
+                                                        <div class="item-user-name">{{ record.primary_diagnosis_icd10.title }}</div>
+                                                        <div class="item-user-meta">{{ record.primary_diagnosis_icd10.code }}</div>
+                                                    </div>
+                                                {% else %}
+                                                    {{ record.diagnosis|default:"Consultation générale" }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a href="{% url 'patients:medical_record' record.id %}" class="action-btn action-btn-primary" title="Voir détails">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class="fa-solid fa-file-medical"></i>
+                                                    </div>
+                                                    <h6 class="empty-state-title">Aucun dossier médical</h6>
+                                                    <p class="empty-state-description">Aucune consultation n'a été enregistrée pour ce patient.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            {% if patient.notes %}
+                            <div class="mt-4">
+                                <h6 class="text-primary mb-3">
+                                    <i class="fa-solid fa-sticky-note me-2"></i>Notes importantes
+                                </h6>
+                                <div class="form-info">
+                                    <div class="form-info-content">{{ patient.notes }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Appointments Tab -->
+                        <div class="tab-pane fade" id="appointments" role="tabpanel" aria-labelledby="appointments-tab">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="text-primary">Rendez-vous à venir</h6>
+                                <a href="{% url 'appointments:create' %}" class="btn-primary-create">
+                                    <i class="fa-solid fa-plus"></i>Nouveau RDV
+                                </a>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="list-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date & Heure</th>
+                                            <th>Médecin</th>
+                                            <th>Motif</th>
+                                            <th>Statut</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for appointment in patient.appointments.all|slice:":5" %}
+                                        <tr>
+                                            <td>
+                                                <div class="item-user-info">
+                                                    <div class="item-user-name">{{ appointment.appointment_date|date:"d/m/Y" }}</div>
+                                                    <div class="item-user-meta">{{ appointment.appointment_date|date:"H:i" }}</div>
+                                                </div>
+                                            </td>
+                                            <td>Dr. {{ appointment.doctor.user.last_name }}</td>
+                                            <td>{{ appointment.reason|default:"Consultation" }}</td>
+                                            <td>
+                                                {% if appointment.status == 'scheduled' %}
+                                                <span class="status-badge status-badge-info">Programmé</span>
+                                                {% elif appointment.status == 'completed' %}
+                                                <span class="status-badge status-badge-success">Terminé</span>
+                                                {% elif appointment.status == 'cancelled' %}
+                                                <span class="status-badge status-badge-danger">Annulé</span>
+                                                {% else %}
+                                                <span class="status-badge status-badge-secondary">{{ appointment.get_status_display }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class="fa-solid fa-calendar"></i>
+                                                    </div>
+                                                    <h6 class="empty-state-title">Aucun rendez-vous trouvé</h6>
+                                                    <p class="empty-state-description">Aucun rendez-vous programmé pour ce patient</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Rehabilitation Tab -->
+                        <div class="tab-pane fade" id="rehab" role="tabpanel" aria-labelledby="rehab-tab">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="text-primary">Plans de réadaptation</h6>
+                                <a href="{% url 'rehabilitation:create' patient_id=patient.id %}" class="btn-primary-create">
+                                    <i class="fa-solid fa-plus"></i>Nouveau Plan
+                                </a>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="list-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date de début</th>
+                                            <th>Diagnostic</th>
+                                            <th>Médecin</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for plan in patient.rehabilitation_plans.all %}
+                                        <tr>
+                                            <td>{{ plan.start_date|date:"d/m/Y" }}</td>
+                                            <td>{{ plan.diagnosis }}</td>
+                                            <td>Dr. {{ plan.prescribing_doctor.user.last_name }}</td>
+                                            <td>
+                                                {% if plan.status == 'active' %}
+                                                <span class="status-badge status-badge-success">Actif</span>
+                                                {% elif plan.status == 'completed' %}
+                                                <span class="status-badge status-badge-secondary">Terminé</span>
+                                                {% elif plan.status == 'suspended' %}
+                                                <span class="status-badge status-badge-warning">Suspendu</span>
+                                                {% else %}
+                                                <span class="status-badge status-badge-danger">{{ plan.get_status_display }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a href="{% url 'rehabilitation:detail' plan.id %}" class="action-btn action-btn-primary" title="Voir détails">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class="fa-solid fa-dumbbell"></i>
+                                                    </div>
+                                                    <h6 class="empty-state-title">Aucun plan de réadaptation trouvé</h6>
+                                                    <p class="empty-state-description">Aucun programme de réhabilitation pour ce patient</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Vouchers Tab -->
+                        <div class="tab-pane fade" id="vouchers" role="tabpanel" aria-labelledby="vouchers-tab">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="text-primary">Bons de prise en charge</h6>
+                                <a href="{% url 'vouchers:create' %}" class="btn-primary-create">
+                                    <i class="fa-solid fa-plus"></i>Nouveau Bon
+                                </a>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="list-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Service</th>
+                                            <th>Date d'émission</th>
+                                            <th>Expiration</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for voucher in patient.vouchers.all %}
+                                        <tr>
+                                            <td>{{ voucher.voucher_id }}</td>
+                                            <td>{{ voucher.service_type }}</td>
+                                            <td>{{ voucher.issue_date|date:"d/m/Y" }}</td>
+                                            <td>{{ voucher.expiry_date|date:"d/m/Y" }}</td>
+                                            <td>
+                                                {% if voucher.status == 'issued' %}
+                                                <span class="status-badge status-badge-warning">Émis</span>
+                                                {% elif voucher.status == 'validated' %}
+                                                <span class="status-badge status-badge-info">Validé</span>
+                                                {% elif voucher.status == 'used' %}
+                                                <span class="status-badge status-badge-success">Utilisé</span>
+                                                {% elif voucher.status == 'expired' %}
+                                                <span class="status-badge status-badge-danger">Expiré</span>
+                                                {% else %}
+                                                <span class="status-badge status-badge-secondary">{{ voucher.get_status_display }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <a href="{% url 'vouchers:detail' voucher.id %}" class="action-btn action-btn-primary" title="Voir détails">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6">
+                                                <div class="empty-state">
+                                                    <div class="empty-state-icon">
+                                                        <i class="fa-solid fa-ticket"></i>
+                                                    </div>
+                                                    <h6 class="empty-state-title">Aucun bon de prise en charge trouvé</h6>
+                                                    <p class="empty-state-description">Aucun bon émis pour ce patient</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-bolt form-section-icon"></i>
+                    <h5 class="form-section-title">Actions Rapides</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'patients:medical_profile' patient.id %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-file-medical"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Dossier médical</div>
+                                    <div class="quick-action-subtitle">Profil médical complet</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'patients:vital_signs_dashboard' patient.id %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-heartbeat"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Signes Vitaux</div>
+                                    <div class="quick-action-subtitle">Courbes & Tendances</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'appointments:create' %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-calendar-plus"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Nouveau RDV</div>
+                                    <div class="quick-action-subtitle">Planifier consultation</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'rehabilitation:create' patient_id=patient.id %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-dumbbell"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Plan réadaptation</div>
+                                    <div class="quick-action-subtitle">Nouveau programme</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'patients:documents' patient.id %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Documents</div>
+                                    <div class="quick-action-subtitle">Fichiers patient</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'vouchers:create' %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-ticket-alt"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Nouveau Bon</div>
+                                    <div class="quick-action-subtitle">Bon de service</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'patients:medical_record_create' patient.id %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-notes-medical"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Consultation</div>
+                                    <div class="quick-action-subtitle">Nouveau dossier</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="{% url 'patients:edit' patient.id %}" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="fa-solid fa-user-edit"></i>
+                                </div>
+                                <div class="quick-action-content">
+                                    <div class="quick-action-title">Modifier Patient</div>
+                                    <div class="quick-action-subtitle">Informations personnelles</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

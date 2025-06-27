@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}Communications Inter-Établissements{% endblock %}
+{% block page_subtitle %}Gestion des échanges réseau Mali{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-comments-medical me-2"></i>Communications Réseau
+                </h1>
+                <p class="list-subtitle">Échanges entre établissements du réseau Mali</p>
+            </div>
+            <div class="list-actions">
+                <a href="{% url 'facilities:communication_create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Nouvelle Communication
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_count }}</div>
+            <div class="stats-card-label">Total Messages</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ communications|length }}</div>
+            <div class="stats-card-label">En Attente</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">3</div>
+            <div class="stats-card-label">Urgentes</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">12</div>
+            <div class="stats-card-label">Centres Mali</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <form method="get" class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" class="filter-input" name="search" 
+                       value="{{ filters.search_query }}" 
+                       placeholder="Rechercher...">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Type</label>
+                <select class="filter-select" name="type">
+                    <option value="">Tous</option>
+                    {% for type_code, type_name in type_choices %}
+                    <option value="{{ type_code }}" {% if filters.type_filter == type_code %}selected{% endif %}>
+                        {{ type_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select class="filter-select" name="status">
+                    <option value="">Tous</option>
+                    {% for status_code, status_name in status_choices %}
+                    <option value="{{ status_code }}" {% if filters.status_filter == status_code %}selected{% endif %}>
+                        {{ status_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Établissement</label>
+                <select class="filter-select" name="facility">
+                    <option value="">Tous</option>
+                    {% for facility in facilities %}
+                    <option value="{{ facility.id }}" {% if filters.facility_filter == facility.id|stringformat:"s" %}selected{% endif %}>
+                        {{ facility.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Date</label>
+                <select class="filter-select" name="date_filter">
+                    <option value="">Toutes</option>
+                    <option value="today" {% if filters.date_filter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                    <option value="week" {% if filters.date_filter == 'week' %}selected{% endif %}>Cette semaine</option>
+                    <option value="month" {% if filters.date_filter == 'month' %}selected{% endif %}>Ce mois</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-filter"></i>Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-comments-medical me-2"></i>
+                Communications ({{ total_count }} messages)
+            </h6>
+        </div>
+        
+        {% if communications %}
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>De</th>
+                        <th>Vers</th>
+                        <th>Sujet</th>
+                        <th>Statut</th>
+                        <th>Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for communication in communications %}
+                    <tr {% if communication.is_urgent %}style="background-color: #fffbeb;"{% endif %}>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ communication.communication_id|slice:":8" }}</div>
+                                {% if communication.is_urgent %}
+                                <div class="item-user-meta">
+                                    <span class="priority-badge priority-urgent">
+                                        <i class="fa-solid fa-exclamation"></i>Urgent
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if communication.communication_type == 'referral' %}
+                            <span class="status-badge status-badge-primary">Référence</span>
+                            {% elif communication.communication_type == 'voucher_validation' %}
+                            <span class="status-badge status-badge-success">Validation</span>
+                            {% elif communication.communication_type == 'information_request' %}
+                            <span class="status-badge status-badge-info">Information</span>
+                            {% elif communication.communication_type == 'emergency_notification' %}
+                            <span class="status-badge status-badge-danger">Urgence</span>
+                            {% else %}
+                            <span class="status-badge status-badge-secondary">{{ communication.get_communication_type_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ communication.from_facility.name }}</div>
+                                <div class="item-user-meta">{{ communication.sent_by.user.get_full_name|default:communication.sent_by.user.username }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ communication.to_facility.name }}</div>
+                                {% if communication.received_by %}
+                                <div class="item-user-meta">Reçu par {{ communication.received_by.user.get_full_name|default:communication.received_by.user.username }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ communication.subject }}</div>
+                                <div class="item-user-meta">{{ communication.message|truncatechars:50 }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if communication.status == 'sent' %}
+                            <span class="status-badge status-badge-secondary">Envoyé</span>
+                            {% elif communication.status == 'delivered' %}
+                            <span class="status-badge status-badge-info">Livré</span>
+                            {% elif communication.status == 'read' %}
+                            <span class="status-badge status-badge-primary">Lu</span>
+                            {% elif communication.status == 'responded' %}
+                            <span class="status-badge status-badge-success">Répondu</span>
+                            {% elif communication.status == 'failed' %}
+                            <span class="status-badge status-badge-danger">Échec</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ communication.sent_date|date:"d/m/Y" }}</div>
+                                <div class="item-user-meta">{{ communication.sent_date|time:"H:i" }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'facilities:communication_detail' communication.pk %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                {% if communication.requires_response and not communication.response_date and communication.to_facility == user.profile.facility %}
+                                <a href="{% url 'facilities:communication_respond' communication.pk %}" 
+                                   class="action-btn action-btn-success" 
+                                   title="Répondre">
+                                    <i class="fa-solid fa-reply"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+            <h6 class="empty-state-title">Aucune communication trouvée</h6>
+            <p class="empty-state-description">Aucun échange inter-établissements ne correspond à vos critères.</p>
+            <a href="{% url 'facilities:communication_create' %}" class="btn-primary">
+                <i class="fa-solid fa-plus"></i>Envoyer un message
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

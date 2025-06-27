@@ -1,0 +1,646 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Système de Réhabilitation - Mali{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Modern Layout CSS -->
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <!-- Enhanced Responsive CSS -->
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    <!-- Modern Sidebar CSS -->
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <!-- Modern Header CSS -->
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <!-- Modern Components CSS -->
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <!-- Welcome Tour CSS -->
+    <link rel="stylesheet" href="{% static 'css/tour.css' %}">
+    <!-- Data Storytelling CSS -->
+    <link rel="stylesheet" href="{% static 'css/data-storytelling.css' %}">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/list-templates.css' %}">
+    <link rel="stylesheet" href="{% static 'css/create-forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/detail-templates.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accessibility.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Custom CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Skip Links for Accessibility -->
+    <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+    <a href="#sidebar-navigation" class="skip-link">Aller à la navigation</a>
+    
+    <!-- Mobile Sidebar Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    
+    <!-- Modern Flexbox Layout -->
+    <div class="app-container" id="appContainer">
+        <!-- Sidebar (Always Visible on Desktop) -->
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <h3><i class="fa-solid fa-heart-pulse sidebar-brand-icon"></i> DPIMedML</h3>
+            </div>
+            
+            <nav class="sidebar-menu" id="sidebar-navigation">
+                <div class="sidebar-menu-header">NAVIGATION</div>
+                <ul class="sidebar-menu-items">
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'dashboard:index' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-gauge-high sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Tableau de bord</span>
+                        </a>
+                    </li>
+                    
+                    {% if user.profile.user_type == 'superadmin' %}
+                    <!-- Super Admin Navigation -->
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'facilities:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-building-columns sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Gestion Multi-Établissements</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'accounts:staff_list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-gear sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Administration du Personnel</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'patients:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-users-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Base de Données Patients</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'vouchers:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-ticket-simple sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Administration des Bons</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'appointments:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-calendar-days sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Coordination des Rendez-vous</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'reports:system' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-chart-pie sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Rapports Exécutifs</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Réseau Inter-Établissements')">
+                            <i class="fa-solid fa-network-wired sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Réseau Inter-Établissements</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Références Système')">
+                            <i class="fa-solid fa-share-nodes sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Références Système</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Configuration Système')">
+                            <i class="fa-solid fa-gear sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Configuration Système</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'dashboard:security' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-shield-halved sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Sécurité & Audit</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'dashboard:gdpr' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-shield sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Conformité RGPD</span>
+                        </a>
+                    </li>
+                    
+                    {% elif user.profile.user_type == 'facility_admin' %}
+                    <!-- Facility Admin Navigation -->
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'accounts:staff_list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-tie sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Gestion du Personnel</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'patients:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-group sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Patients de l'Établissement</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'appointments:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-calendar-days sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Planning des Rendez-vous</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'vouchers:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-clipboard-check sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Supervision des Bons</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'reports:system' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-chart-line sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Statistiques de l'Établissement</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'patients:hospitalizations' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-bed-pulse sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Hospitalisations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'referrals:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-share-nodes sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Références Patients</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'facilities:communications' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-comments-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Communication Réseau</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Gestion des Ressources')">
+                            <i class="fa-solid fa-boxes-stacked sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Gestion des Ressources</span>
+                        </a>
+                    </li>
+                    
+                    {% elif user.profile.user_type == 'doctor' %}
+                    <!-- Doctor Navigation -->
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'patients:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-doctor sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Mes Patients</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'appointments:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-calendar-check sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Mes Consultations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'rehabilitation:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-file-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Plans de Réhabilitation</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'vouchers:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-hand-holding-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Émission de Bons</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'prescriptions:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-prescription-bottle-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Prescriptions Électroniques</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'patients:hospitalizations' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-bed-pulse sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Hospitalisations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'referrals:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-share-nodes sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Références Patients</span>
+                        </a>
+                    </li>
+
+                    {% elif user.profile.user_type == 'patient' %}
+                    <!-- Patient Navigation -->
+                    <li class="sidebar-menu-item">
+                        {% if current_patient %}
+                        <a href="{% url 'patients:medical_profile' current_patient.id %}" class="sidebar-menu-link">
+                        {% else %}
+                        <a href="{% url 'patients:medical_profile' 1 %}" class="sidebar-menu-link">
+                        {% endif %}
+                            <i class="fa-solid fa-file-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Mon Dossier Médical</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'appointments:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-calendar-heart sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Mes Rendez-vous</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'rehabilitation:patient_exercises' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-heart-pulse sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Mon Plan de Récupération</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'vouchers:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-hand-holding-heart sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Mes Bons de Santé</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Messagerie Médicale')">
+                            <i class="fa-solid fa-comments-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Messages</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <div class="sidebar-menu-header">COMPTE</div>
+                <ul class="sidebar-menu-items">
+                    {% if user.is_authenticated %}
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'accounts:profile' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-circle sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Profil</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'accounts:logout' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-sign-out-alt sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Déconnexion</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'accounts:login' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-sign-in-alt sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Connexion</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content Wrapper (Scrollable Area) -->
+        <div class="app-main-wrapper">
+            <!-- Header -->
+            <header class="app-header" id="appHeader">
+                <!-- Header Title Section -->
+                <div class="header-title-section">
+                    <h4>{% block page_title %}Tableau de bord{% endblock %}</h4>
+                    <small>{% block page_subtitle %}Bienvenue sur le système de réhabilitation{% endblock %}</small>
+                </div>
+                
+                <!-- Enhanced Search Section -->
+                <div class="header-search-section d-none d-md-block">
+                    <div class="header-search-container">
+                        <input type="text" class="header-search-input" placeholder="Rechercher patients, rendez-vous..." id="headerSearchInput">
+                        <i class="fa-solid fa-search header-search-icon"></i>
+                    </div>
+                    <div class="header-search-suggestions" id="headerSearchSuggestions">
+                        <!-- Search suggestions will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Enhanced Notifications Section -->
+                <div class="header-notifications-section">
+                    {% if user.is_authenticated %}
+                    <div class="header-notification-item" data-bs-toggle="tooltip" title="Notifications">
+                        <i class="fa-solid fa-bell header-notification-icon"></i>
+                        <span class="header-notification-badge">3</span>
+                    </div>
+                    
+                    <div class="header-notification-item" data-bs-toggle="tooltip" title="Messages">
+                        <i class="fa-solid fa-envelope header-notification-icon"></i>
+                        <span class="header-notification-badge">5</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Enhanced User Profile Section -->
+                <div class="header-user-section">
+                    <div class="header-user-profile" id="headerUserProfile">
+                        <div style="position: relative;">
+                            <img src="{% static 'img/avatar-default.jpg' %}" alt="User Avatar" class="header-user-avatar">
+                            <div class="header-user-role-badge {{ user.profile.user_type }}">
+                                {% if user.profile.user_type == 'superadmin' %}SA{% elif user.profile.user_type == 'facility_admin' %}FA{% elif user.profile.user_type == 'doctor' %}DR{% elif user.profile.user_type == 'patient' %}PT{% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="header-user-info d-none d-sm-flex">
+                            <div class="header-user-name">
+                                {% if user.is_authenticated %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                {% else %}
+                                    Invité
+                                {% endif %}
+                            </div>
+                            <div class="header-user-role">
+                                {% if user.profile.user_type == 'superadmin' %}
+                                    Super Administrateur
+                                {% elif user.profile.user_type == 'facility_admin' %}
+                                    Administrateur de Structure
+                                {% elif user.profile.user_type == 'doctor' %}
+                                    Médecin
+                                {% elif user.profile.user_type == 'patient' %}
+                                    Patient
+                                {% else %}
+                                    Utilisateur
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <i class="fa-solid fa-chevron-down header-dropdown-arrow d-none d-sm-inline"></i>
+                    </div>
+                    
+                    <!-- Enhanced User Dropdown -->
+                    <div class="header-user-dropdown" id="headerUserDropdown">
+                        <div class="header-dropdown-header">
+                            <div class="header-dropdown-user-info">
+                                <img src="{% static 'img/avatar-default.jpg' %}" alt="User Avatar" class="header-dropdown-avatar">
+                                <div class="header-dropdown-details">
+                                    <h6>
+                                    {% if user.is_authenticated %}
+                                        {{ user.first_name }} {{ user.last_name }}
+                                    {% else %}
+                                        Invité
+                                    {% endif %}
+                                    </h6>
+                                    <p>
+                                    {% if user.profile.user_type == 'superadmin' %}
+                                        Super Administrateur
+                                    {% elif user.profile.user_type == 'facility_admin' %}
+                                        Administrateur de Structure
+                                    {% elif user.profile.user_type == 'doctor' %}
+                                        Médecin
+                                    {% elif user.profile.user_type == 'patient' %}
+                                        Patient
+                                    {% else %}
+                                        Utilisateur
+                                    {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'accounts:profile' %}" class="header-dropdown-item">
+                            <i class="fa-solid fa-user-circle header-dropdown-icon"></i>
+                            Mon Profil
+                        </a>
+                        
+                        <a href="#" class="header-dropdown-item">
+                            <i class="fa-solid fa-cog header-dropdown-icon"></i>
+                            Paramètres
+                        </a>
+                        
+                        {% if user.profile.user_type == 'doctor' %}
+                        <a href="{% url 'patients:list' %}" class="header-dropdown-item">
+                            <i class="fa-solid fa-users-medical header-dropdown-icon"></i>
+                            Mes Patients
+                        </a>
+                        {% elif user.profile.user_type == 'facility_admin' %}
+                        <a href="{% url 'accounts:staff_list' %}" class="header-dropdown-item">
+                            <i class="fa-solid fa-user-tie header-dropdown-icon"></i>
+                            Gestion du Personnel
+                        </a>
+                        {% endif %}
+                        
+                        <div class="header-dropdown-divider"></div>
+                        
+                            {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:logout' %}" class="header-dropdown-item">
+                            <i class="fa-solid fa-sign-out-alt header-dropdown-icon"></i>
+                            Déconnexion
+                            </a>
+                            {% else %}
+                        <a href="{% url 'accounts:login' %}" class="header-dropdown-item">
+                            <i class="fa-solid fa-sign-in-alt header-dropdown-icon"></i>
+                            Connexion
+                        </a>
+                        {% endif %}
+                        
+                        <div class="header-dropdown-quick-actions">
+                            {% if user.profile.user_type == 'doctor' %}
+                            <button class="header-quick-action-btn">
+                                <i class="fa-solid fa-user-plus"></i>
+                                Nouveau Patient
+                            </button>
+                            {% elif user.profile.user_type == 'facility_admin' %}
+                            <button class="header-quick-action-btn">
+                                <i class="fa-solid fa-chart-line"></i>
+                                Voir Rapports
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Sidebar Toggle -->
+                    <div class="d-lg-none">
+                        <button class="header-notification-item mobile-toggle" id="mobileToggle">
+                            <i class="fa-solid fa-bars header-notification-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content -->
+            <main class="app-main" id="appMain">
+            <div class="content-wrapper" id="main-content">
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% block content %}
+                <!-- Content goes here -->
+                {% endblock %}
+            </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="app-footer" id="appFooter">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; DPIMedML {{ current_year }}</div>
+                        <div>
+                            <a href="#" class="text-decoration-none">Politique de confidentialité</a>
+                            &middot;
+                            <a href="#" class="text-decoration-none">Termes &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        
+            <!-- Mobile Bottom Navigation (shows only on mobile) -->
+            <nav class="mobile-bottom-nav d-md-none" id="mobileBottomNav">
+                {% if user.profile.user_type == 'patient' %}
+                <a href="{% url 'dashboard:index' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-gauge-high mobile-bottom-nav-icon"></i>
+                    <span>Accueil</span>
+                </a>
+                <a href="{% url 'appointments:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-calendar-heart mobile-bottom-nav-icon"></i>
+                    <span>RDV</span>
+                </a>
+                {% if current_patient %}
+                <a href="{% url 'patients:medical_profile' current_patient.id %}" class="mobile-bottom-nav-item">
+                {% else %}
+                <a href="{% url 'patients:medical_profile' 1 %}" class="mobile-bottom-nav-item">
+                {% endif %}
+                    <i class="fa-solid fa-file-medical mobile-bottom-nav-icon"></i>
+                    <span>Dossier</span>
+                </a>
+                <a href="{% url 'vouchers:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-hand-holding-heart mobile-bottom-nav-icon"></i>
+                    <span>Bons</span>
+                </a>
+                
+                {% elif user.profile.user_type == 'doctor' %}
+                <a href="{% url 'dashboard:index' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-gauge-high mobile-bottom-nav-icon"></i>
+                    <span>Tableau</span>
+                </a>
+                <a href="{% url 'patients:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-user-doctor mobile-bottom-nav-icon"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="{% url 'appointments:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-calendar-check mobile-bottom-nav-icon"></i>
+                    <span>RDV</span>
+                </a>
+                <a href="#" class="mobile-bottom-nav-item" onclick="showComingSoon('Références')">
+                    <i class="fa-solid fa-share-nodes mobile-bottom-nav-icon"></i>
+                    <span>Référ.</span>
+                </a>
+                
+                {% elif user.profile.user_type == 'facility_admin' %}
+                <a href="{% url 'dashboard:index' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-gauge-high mobile-bottom-nav-icon"></i>
+                    <span>Tableau</span>
+                </a>
+                <a href="{% url 'patients:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-user-group mobile-bottom-nav-icon"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="{% url 'accounts:staff_list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-user-tie mobile-bottom-nav-icon"></i>
+                    <span>Staff</span>
+                </a>
+                <a href="{% url 'vouchers:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-clipboard-check mobile-bottom-nav-icon"></i>
+                    <span>Bons</span>
+                </a>
+                
+                {% elif user.profile.user_type == 'superadmin' %}
+                <a href="{% url 'dashboard:index' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-gauge-high mobile-bottom-nav-icon"></i>
+                    <span>Tableau</span>
+                </a>
+                <a href="{% url 'facilities:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-building-columns mobile-bottom-nav-icon"></i>
+                    <span>Centres</span>
+                </a>
+                <a href="{% url 'patients:list' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-users-medical mobile-bottom-nav-icon"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="{% url 'reports:system' %}" class="mobile-bottom-nav-item">
+                    <i class="fa-solid fa-chart-pie mobile-bottom-nav-icon"></i>
+                    <span>Rapports</span>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+    </div>
+
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap Bundle JS (includes Popper.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <!-- Main JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    <!-- Custom JavaScript for dashboard -->
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- Welcome Tour JavaScript -->
+    <script src="{% static 'js/welcome-tour.js' %}"></script>
+    <!-- Data Storytelling JavaScript -->
+    <script src="{% static 'js/data-storytelling.js' %}"></script>
+    <!-- Extra JS for specific pages -->
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Demo Enhancement Script -->
+    <script>
+        function showComingSoon(featureName) {
+            // Show a professional "coming soon" notification
+            if (window.bootstrap && bootstrap.Toast) {
+                const toastHtml = `
+                    <div class="toast align-items-center text-white bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fa-solid fa-rocket me-2"></i>
+                                <strong>${featureName}</strong> sera disponible dans la prochaine version du système.
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                // Create toast container if it doesn't exist
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                    toastContainer.style.zIndex = '9999';
+                    document.body.appendChild(toastContainer);
+                }
+                
+                // Add toast to container
+                toastContainer.innerHTML = toastHtml;
+                const toastElement = toastContainer.querySelector('.toast');
+                const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+                toast.show();
+                
+                // Remove toast after it's hidden
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.remove();
+                });
+            } else {
+                // Fallback alert if Bootstrap Toast is not available
+                alert(`${featureName} sera disponible dans la prochaine version du système.`);
+            }
+        }
+    </script>
+</body>
+</html> 

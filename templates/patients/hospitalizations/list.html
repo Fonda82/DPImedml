@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+
+{% block title %}Hospitalisations{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-bed-pulse me-2"></i>Gestion des Hospitalisations
+                </h1>
+                <p class="list-subtitle">Suivi des patients hospitalisés dans l'établissement</p>
+            </div>
+            <div class="list-actions">
+                <a href="{% url 'patients:hospitalization_create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Nouvelle Hospitalisation
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-bed-pulse"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_count }}</div>
+            <div class="stats-card-label">Total</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ current_admissions }}</div>
+            <div class="stats-card-label">Actuellement Admis</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ planned_discharges }}</div>
+            <div class="stats-card-label">Sorties Prévues</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ bed_occupancy }}</div>
+            <div class="stats-card-label">Capacité</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" class="filter-input" name="search" 
+                       value="{{ filters.search_query }}" 
+                       placeholder="Patient, diagnostic, motif...">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select class="filter-select" name="status">
+                    <option value="">Tous</option>
+                    <option value="admitted">Admis</option>
+                    <option value="discharged">Sortis</option>
+                    <option value="transferred">Transférés</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Service</label>
+                <select class="filter-select" name="room">
+                    <option value="">Tous</option>
+                    <option value="pediatrics">Pédiatrie</option>
+                    <option value="rehabilitation">Rééducation</option>
+                    <option value="orthopedics">Orthopédie</option>
+                    <option value="neurology">Neurologie</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Médecin</label>
+                <select class="filter-select" name="doctor">
+                    <option value="">Tous</option>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.id }}">
+                        Dr. {{ doctor.user.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-search"></i>Filtrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Hospitalisations
+            </h6>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Service</th>
+                        <th>Lit</th>
+                        <th>Médecin</th>
+                        <th>Admission</th>
+                        <th>Diagnostic</th>
+                        <th>Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hosp in hospitalizations %}
+                    <tr>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ hosp.patient.first_name|first }}{{ hosp.patient.last_name|first }}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ hosp.patient.first_name }} {{ hosp.patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ hosp.patient.age }} ans</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge status-badge-info">{{ hosp.get_room_number_display }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ hosp.bed_number }}</strong>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">Dr. {{ hosp.attending_doctor.user.last_name }}</div>
+                                <div class="item-user-meta">{{ hosp.attending_doctor.user.first_name }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ hosp.admission_date|date:"d/m/Y" }}</div>
+                                <div class="item-user-meta">{{ hosp.admission_date|time:"H:i" }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ hosp.admission_diagnosis|truncatechars:40 }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if hosp.status == 'admitted' %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-bed"></i>Admis
+                            </span>
+                            {% elif hosp.status == 'discharged' %}
+                            <span class="status-badge status-badge-info">
+                                <i class="fa-solid fa-door-open"></i>Sorti
+                            </span>
+                            {% elif hosp.status == 'transferred' %}
+                            <span class="status-badge status-badge-warning">
+                                <i class="fa-solid fa-exchange-alt"></i>Transféré
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-badge-secondary">{{ hosp.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'patients:hospitalization_detail' hosp.pk %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                {% if hosp.status == 'admitted' %}
+                                <a href="{% url 'patients:add_progress_note' hosp.pk %}" 
+                                   class="action-btn action-btn-success" 
+                                   title="Ajouter note">
+                                    <i class="fa-solid fa-notes-medical"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fa-solid fa-bed"></i>
+                                </div>
+                                <h6 class="empty-state-title">Aucune hospitalisation trouvée</h6>
+                                <p class="empty-state-description">Commencez par créer une nouvelle hospitalisation</p>
+                                <a href="{% url 'patients:hospitalization_create' %}" class="btn-primary">
+                                    <i class="fa-solid fa-plus"></i>Nouvelle Hospitalisation
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

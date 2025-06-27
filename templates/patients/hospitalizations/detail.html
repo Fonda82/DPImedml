@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+
+{% block title %}Hospitalisation - {{ hospitalization.patient.first_name }} {{ hospitalization.patient.last_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Hospitalisation</h1>
+                    <p class="text-muted">{{ hospitalization.patient.first_name }} {{ hospitalization.patient.last_name }} - {{ hospitalization.get_room_number_display }}</p>
+                </div>
+                <div>
+                    <a href="{% url 'patients:hospitalizations' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Retour
+                    </a>
+                    {% if can_add_note %}
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                        <i class="fa-solid fa-notes-medical me-2"></i>Ajouter Note
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Status Banner -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    {% if hospitalization.status == 'admitted' %}
+                    <div class="alert alert-success">
+                        <i class="fa-solid fa-user-check me-2"></i>
+                        <strong>Patient admis</strong> - Hospitalisation en cours depuis le {{ hospitalization.admission_date|date:"d/m/Y" }}
+                    </div>
+                    {% elif hospitalization.status == 'discharged' %}
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-sign-out-alt me-2"></i>
+                        <strong>Patient sorti</strong> - Sortie le {{ hospitalization.discharge_date|date:"d/m/Y à H:i" }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Patient Information -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-user me-2"></i>Informations Patient
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Nom complet:</strong><br>
+                                    <span class="text-primary">{{ hospitalization.patient.first_name }} {{ hospitalization.patient.last_name }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Âge:</strong><br>
+                                    {{ hospitalization.patient.age }} ans
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Service:</strong><br>
+                                    {{ hospitalization.get_room_number_display }}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Lit:</strong><br>
+                                    {{ hospitalization.bed_number }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admission Details -->
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-clipboard-list me-2"></i>Détails Admission
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Date d'admission:</strong><br>
+                                    {{ hospitalization.admission_date|date:"d/m/Y à H:i" }}
+                                </div>
+                                <div class="col-6">
+                                    <strong>Médecin responsable:</strong><br>
+                                    Dr. {{ hospitalization.attending_doctor.user.last_name }}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <strong>Diagnostic d'admission:</strong>
+                                <p class="mt-2">{{ hospitalization.admission_diagnosis }}</p>
+                            </div>
+                            <div class="mb-0">
+                                <strong>Motif d'admission:</strong>
+                                <p class="mt-2">{{ hospitalization.admission_reason }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Notes -->
+            {% if progress_notes %}
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-notes-medical me-2"></i>Notes de Progression
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% for note in progress_notes %}
+                            <div class="border rounded p-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong>Dr. {{ note.doctor.user.last_name }}</strong>
+                                        <span class="text-muted">{{ note.doctor.user.first_name }}</span>
+                                    </div>
+                                    <small class="text-muted">{{ note.date_time|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <p>{{ note.note_content }}</p>
+                                {% if note.vital_signs %}
+                                <div class="bg-light p-2 rounded">
+                                    <strong>Signes vitaux:</strong> {{ note.vital_signs }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Discharge Report -->
+            {% if discharge_report %}
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-clipboard-check me-2"></i>Rapport de Sortie
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Type de sortie:</strong><br>
+                                    <span class="badge bg-info">{{ discharge_report.get_discharge_type_display }}</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>État à la sortie:</strong><br>
+                                    <span class="badge bg-success">{{ discharge_report.get_discharge_condition_display }}</span>
+                                </div>
+                            </div>
+                            <hr>
+                            <strong>Diagnostic final:</strong>
+                            <p>{{ discharge_report.final_diagnosis }}</p>
+                            
+                            <strong>Résumé des traitements:</strong>
+                            <p>{{ discharge_report.treatment_summary }}</p>
+                            
+                            <strong>Instructions de suivi:</strong>
+                            <p>{{ discharge_report.follow_up_instructions }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+{% if can_add_note %}
+<div class="modal fade" id="addNoteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patients:add_progress_note' hospitalization.pk %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajouter Note de Progression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Note clinique <span class="text-danger">*</span></label>
+                        <textarea class="form-control" name="note_content" rows="4" 
+                                  placeholder="Observations médicales..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Signes vitaux</label>
+                        <textarea class="form-control" name="vital_signs" rows="2" 
+                                  placeholder="TA, pouls, température, etc."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">Ajouter Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

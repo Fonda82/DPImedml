@@ -1,0 +1,690 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tableau de bord de l'administrateur{% endblock %}
+
+{% block page_title %}Tableau de bord Administrateur{% endblock %}
+{% block page_subtitle %}Gestion de l'établissement : {{ facility_name|default:"CSREF Commune III" }}{% endblock %}
+
+{% block content %}
+<!-- Compact Quick Actions Bar -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="quick-actions-bar bg-white rounded shadow-sm p-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                <h6 class="mb-0 text-muted">Actions rapides</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'patients:create' %}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-user-plus me-1"></i> Nouveau patient
+                    </a>
+                    <a href="{% url 'accounts:staff_create' %}" class="btn btn-sm btn-success">
+                        <i class="fa-solid fa-user-md me-1"></i> Ajouter personnel
+                    </a>
+                    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-info">
+                        <i class="fa-solid fa-calendar-plus me-1"></i> Planifier RDV
+                    </a>
+                    <a href="{% url 'vouchers:create' %}" class="btn btn-sm btn-warning">
+                        <i class="fa-solid fa-ticket me-1"></i> Créer bon
+                    </a>
+                    <a href="#" class="btn btn-sm btn-dark">
+                        <i class="fa-solid fa-cog me-1"></i> Paramètres
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Facility KPIs -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-green">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-users-medical"></i>
+                </div>
+                <h6 class="kpi-title">Patients de l'établissement</h6>
+            </div>
+            <div class="kpi-value">{{ facility_patients|default:32 }}</div>
+            <div class="kpi-context">{{ active_treatments|default:28 }} traitements actifs</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 50%; background: #4caf50;"></div>
+            </div>
+                         <div class="kpi-footer">
+                 <span class="kpi-trend up">+5 ce mois</span>
+                 <small>Capacité: 40 patients</small>
+             </div>
+         </div>
+            </div>
+            
+     <div class="col-lg-3 col-md-6 mb-3">
+         <div class="kpi-card mali-yellow">
+             <div class="kpi-header">
+                 <div class="kpi-icon">
+                     <i class="fa-solid fa-calendar-day"></i>
+                 </div>
+                 <h6 class="kpi-title">Rendez-vous du jour</h6>
+             </div>
+             <div class="kpi-value">{{ todays_appointments|default:12 }}<small>/{{ daily_capacity|default:18 }}</small></div>
+             <div class="kpi-context">{{ completed_today|default:8 }} terminés</div>
+             <div class="kpi-progress">
+                 <div class="progress-bar" style="width: 35%; background: #2196f3;"></div>
+             </div>
+             <div class="kpi-footer">
+                 <span class="kpi-trend stable">Planning ok</span>
+                 <small>Prochaine: 15h00</small>
+             </div>
+         </div>
+     </div>
+     
+     <div class="col-lg-3 col-md-6 mb-3">
+         <div class="kpi-card mali-red">
+             <div class="kpi-header">
+                 <div class="kpi-icon">
+                     <i class="fa-solid fa-user-doctor"></i>
+                 </div>
+                 <h6 class="kpi-title">Équipe médicale</h6>
+             </div>
+             <div class="kpi-value">{{ medical_staff|default:6 }}</div>
+             <div class="kpi-context">{{ active_staff|default:5 }} actifs aujourd'hui</div>
+             <div class="kpi-progress">
+                 <div class="progress-bar" style="width: {{ staff_availability|default:83 }}%"></div>
+             </div>
+             <div class="kpi-footer">
+                 <span class="kpi-trend up">Tous présents</span>
+                 <small>Effectif optimal</small>
+             </div>
+         </div>
+            </div>
+            
+     <div class="col-lg-3 col-md-6 mb-3">
+         <div class="kpi-card mali-primary">
+             <div class="kpi-header">
+                 <div class="kpi-icon">
+                     <i class="fa-solid fa-ticket"></i>
+                 </div>
+                 <h6 class="kpi-title">Bons de service</h6>
+             </div>
+             <div class="kpi-value">{{ pending_vouchers|default:8 }}</div>
+             <div class="kpi-context">{{ vouchers_this_week|default:23 }} cette semaine</div>
+             <div class="kpi-progress">
+                 <div class="progress-bar" style="width: {{ voucher_efficiency|default:75 }}%"></div>
+             </div>
+             <div class="kpi-footer">
+                 <span class="kpi-trend down">-2 en attente</span>
+                 <small>Traitement rapide</small>
+             </div>
+         </div>
+     </div>
+            </div>
+            
+<!-- TDR Enhancement: Inter-facility Communication KPIs -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border-left: 4px solid #4caf50;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #4caf50;">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </div>
+                <h6 class="kpi-title">Références reçues</h6>
+            </div>
+            <div class="kpi-value">{{ incoming_referrals|default:5 }}</div>
+            <div class="kpi-context">références d'autres établissements</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 50%; background: #4caf50;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+2 cette semaine</span>
+                <small>Réseau actif</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 4px solid #2196f3;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #2196f3;">
+                    <i class="fa-solid fa-bed-pulse"></i>
+                </div>
+                <h6 class="kpi-title">Patients hospitalisés</h6>
+            </div>
+            <div class="kpi-value">{{ current_hospitalizations|default:7 }}</div>
+            <div class="kpi-context">patients en hospitalisation</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 35%; background: #2196f3;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend stable">Capacité: 20 lits</span>
+                <small>3 sorties prévues</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%); border-left: 4px solid #ff9800;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #ff9800;">
+                    <i class="fa-solid fa-comments-medical"></i>
+                </div>
+                <h6 class="kpi-title">Communications réseau</h6>
+            </div>
+            <div class="kpi-value">12</div>
+            <div class="kpi-context">messages inter-établissements</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 60%; background: #ff9800;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+4 cette semaine</span>
+                <small>8 répondus</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left: 4px solid #9c27b0;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #9c27b0;">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <h6 class="kpi-title">Statut réseau Mali</h6>
+            </div>
+            <div class="kpi-value">98<small>%</small></div>
+            <div class="kpi-context">connectivité réseau</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 98%; background: #9c27b0;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">Réseau optimal</span>
+                <small>11 établissements</small>
+            </div>
+        </div>
+    </div>
+            </div>
+            
+<!-- Facility Analytics Row -->
+<div class="row mb-4">
+    <!-- Daily Operations Overview -->
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-calendar-day me-2"></i>Planning du jour</h5>
+                <div class="widget-actions">
+                    <select class="form-select form-select-sm">
+                        <option>Aujourd'hui</option>
+                        <option>Demain</option>
+                        <option>Cette semaine</option>
+                    </select>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="daily-overview-container">
+                    <canvas id="dailyScheduleChart" height="200"></canvas>
+                </div>
+                <div class="schedule-metrics mt-3">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="schedule-item">
+                                <span class="schedule-time">08h-12h</span>
+                                <span class="schedule-count">8 RDV</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="schedule-item">
+                                <span class="schedule-time">14h-18h</span>
+                                <span class="schedule-count">6 RDV</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="schedule-item occupied">
+                                <span class="schedule-time">Occupé</span>
+                                <span class="schedule-count">78%</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="schedule-item available">
+                                <span class="schedule-time">Disponible</span>
+                                <span class="schedule-count">4 créneaux</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Staff Performance Analytics -->
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-users-medical me-2"></i>Performance équipe</h5>
+                <div class="widget-actions">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <canvas id="staffPerformanceChart" height="200"></canvas>
+                <div class="staff-summary mt-3">
+                    <div class="staff-performance-item">
+                        <div class="staff-info">
+                            <h6>Dr. Aminata Traoré</h6>
+                            <small class="staff-role">Pédiatre</small>
+                        </div>
+                        <div class="performance-badge performance-excellent">95%</div>
+                    </div>
+                    <div class="staff-performance-item">
+                        <div class="staff-info">
+                            <h6>Dr. Ibrahim Keita</h6>
+                            <small class="staff-role">Kinésithérapeute</small>
+            </div>
+                        <div class="performance-badge performance-good">88%</div>
+            </div>
+                    <div class="staff-performance-item">
+                        <div class="staff-info">
+                            <h6>Dr. Fatoumata Diallo</h6>
+                            <small class="staff-role">Orthophoniste</small>
+                </div>
+                        <div class="performance-badge performance-excellent">92%</div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Patient Flow & Capacity -->
+    <div class="col-xl-4 col-lg-12 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-chart-area me-2"></i>Flux des patients</h5>
+                <div class="widget-actions">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="capacity-overview mb-3">
+                    <div class="capacity-item">
+                        <div class="capacity-label">Capacité actuelle</div>
+                        <div class="capacity-value">32/40 <small>patients</small></div>
+                        <div class="capacity-bar">
+                            <div class="bar-fill bg-success" style="width: 80%"></div>
+            </div>
+            </div>
+                </div>
+                <div class="flow-breakdown">
+                    <div class="flow-item">
+                        <div class="flow-icon bg-primary">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div class="flow-details">
+                            <span class="flow-count">+5</span>
+                            <span class="flow-label">Nouveaux</span>
+                        </div>
+                    </div>
+                    <div class="flow-item">
+                        <div class="flow-icon bg-success">
+                            <i class="fa-solid fa-check-circle"></i>
+                        </div>
+                        <div class="flow-details">
+                            <span class="flow-count">12</span>
+                            <span class="flow-label">Consultations</span>
+                        </div>
+                    </div>
+                    <div class="flow-item">
+                        <div class="flow-icon bg-warning">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="flow-details">
+                            <span class="flow-count">3</span>
+                            <span class="flow-label">En attente</span>
+                        </div>
+                    </div>
+                    <div class="flow-item">
+                        <div class="flow-icon bg-info">
+                            <i class="fa-solid fa-dumbbell"></i>
+                        </div>
+                        <div class="flow-details">
+                            <span class="flow-count">8</span>
+                            <span class="flow-label">Thérapies</span>
+                        </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Facility Management Row -->
+<div class="row mb-4">
+    <!-- Today's Appointments Table -->
+    <div class="col-xl-8 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-calendar-check me-2"></i>Rendez-vous d'aujourd'hui</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-plus me-1"></i> Nouveau RDV
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Patient</th>
+                                <th>Heure</th>
+                                <th>Médecin</th>
+                                <th>Type</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            IK
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Ibrahim Koné</div>
+                                            <small class="text-muted">7 ans • Commune I</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>09:00</td>
+                                <td>Dr. Traoré</td>
+                                <td><span class="badge bg-light text-dark">Consultation</span></td>
+                                <td><span class="badge bg-success">Confirmé</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            FD
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Fatoumata Diallo</div>
+                                            <small class="text-muted">5 ans • Commune II</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>10:30</td>
+                                <td>Dr. Keita</td>
+                                <td><span class="badge bg-light text-dark">Kinésithérapie</span></td>
+                                <td><span class="badge bg-warning">En cours</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-info text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            MK
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Mamadou Keita</div>
+                                            <small class="text-muted">3 ans • Commune III</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>14:00</td>
+                                <td>Dr. Diallo</td>
+                                <td><span class="badge bg-light text-dark">Orthophonie</span></td>
+                                <td><span class="badge bg-primary">Programmé</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-outline-success"><i class="fa-solid fa-check"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Voucher Analytics -->
+    <div class="col-xl-4 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-ticket me-2"></i>Gestion des bons</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'vouchers:create' %}" class="btn btn-sm btn-primary">
+                        Créer bon
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <canvas id="voucherStatusChart" height="200"></canvas>
+                <div class="voucher-summary mt-3">
+                    <div class="voucher-stat-item">
+                        <div class="voucher-stat-label">Bons actifs</div>
+                        <div class="voucher-stat-value text-success">15</div>
+                </div>
+                    <div class="voucher-stat-item">
+                        <div class="voucher-stat-label">En attente</div>
+                        <div class="voucher-stat-value text-warning">8</div>
+                                    </div>
+                    <div class="voucher-stat-item">
+                        <div class="voucher-stat-label">Utilisés aujourd'hui</div>
+                        <div class="voucher-stat-value text-primary">12</div>
+                    </div>
+                    <div class="voucher-stat-item">
+                        <div class="voucher-stat-label">Efficacité</div>
+                        <div class="voucher-stat-value text-info">94%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics & Trends Row -->
+<div class="row">
+    <!-- Weekly Trends -->
+    <div class="col-xl-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-chart-line me-2"></i>Tendances hebdomadaires</h5>
+                <div class="widget-actions">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <canvas id="weeklyTrendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Facility Efficiency -->
+    <div class="col-xl-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-gauge-high me-2"></i>Efficacité de l'établissement</h5>
+                <div class="widget-actions">
+                    <select class="form-select form-select-sm">
+                        <option>Ce mois</option>
+                        <option>Mois dernier</option>
+                        <option>Trimestre</option>
+                    </select>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="efficiency-overview">
+                    <div class="efficiency-metric">
+                        <div class="metric-icon bg-success">
+                            <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                        <div class="metric-content">
+                            <div class="metric-value">94%</div>
+                            <div class="metric-label">Taux d'occupation</div>
+                            <div class="metric-trend up">+5% vs mois dernier</div>
+                            </div>
+                    </div>
+                    <div class="efficiency-metric">
+                        <div class="metric-icon bg-primary">
+                            <i class="fa-solid fa-clock"></i>
+                                </div>
+                        <div class="metric-content">
+                            <div class="metric-value">12min</div>
+                            <div class="metric-label">Temps d'attente moyen</div>
+                            <div class="metric-trend down">-3min vs mois dernier</div>
+                            </div>
+                    </div>
+                    <div class="efficiency-metric">
+                        <div class="metric-icon bg-warning">
+                            <i class="fa-solid fa-users"></i>
+                                </div>
+                        <div class="metric-content">
+                            <div class="metric-value">96%</div>
+                            <div class="metric-label">Satisfaction patients</div>
+                            <div class="metric-trend up">+2% vs mois dernier</div>
+                            </div>
+                    </div>
+                    <div class="efficiency-metric">
+                        <div class="metric-icon bg-info">
+                            <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                        <div class="metric-content">
+                            <div class="metric-value">88%</div>
+                            <div class="metric-label">Performance globale</div>
+                            <div class="metric-trend up">+4% vs mois dernier</div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Daily Schedule Chart
+    const dailyCtx = document.getElementById('dailyScheduleChart');
+    if (dailyCtx) {
+        new Chart(dailyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Matin', 'Après-midi', 'Disponible'],
+                datasets: [{
+                    data: [8, 6, 4],
+                    backgroundColor: ['#0C7C59', '#14A97C', '#FCD116'],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // Staff Performance Chart
+    const staffCtx = document.getElementById('staffPerformanceChart');
+    if (staffCtx) {
+        new Chart(staffCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Ponctualité', 'Qualité soins', 'Communication', 'Efficacité', 'Satisfaction'],
+                datasets: [{
+                    label: 'Performance moyenne',
+                    data: [95, 88, 92, 90, 94],
+                    borderColor: '#0C7C59',
+                    backgroundColor: 'rgba(12, 124, 89, 0.2)',
+                    pointBackgroundColor: '#0C7C59'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { r: { beginAtZero: true, max: 100 } },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+    
+    // Voucher Status Chart
+    const voucherCtx = document.getElementById('voucherStatusChart');
+    if (voucherCtx) {
+        new Chart(voucherCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Actifs', 'En attente', 'Utilisés', 'Expirés'],
+                datasets: [{
+                    data: [15, 8, 12, 3],
+                    backgroundColor: ['#0C7C59', '#FCD116', '#14A97C', '#CE1126'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+    
+    // Weekly Trends Chart
+    const trendsCtx = document.getElementById('weeklyTrendsChart');
+    if (trendsCtx) {
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                datasets: [{
+                    label: 'Patients',
+                    data: [28, 32, 30, 35],
+                    borderColor: '#0C7C59',
+                    backgroundColor: 'rgba(12, 124, 89, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Consultations',
+                    data: [45, 52, 48, 58],
+                    borderColor: '#FCD116',
+                    backgroundColor: 'rgba(252, 209, 22, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

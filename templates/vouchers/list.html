@@ -1,0 +1,550 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bons de Prise en Charge{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+    <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-ticket-simple me-2"></i>Bons de Prise en Charge
+        </h1>
+                <p class="list-subtitle">Système de gestion des bons de service - République du Mali</p>
+    </div>
+            <div class="list-actions">
+                <span class="badge bg-light text-dark">{{ total_count }} bons</span>
+                <a href="{% url 'vouchers:create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Nouveau Bon
+        </a>
+    </div>
+</div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.issued_count|default:89 }}</div>
+            <div class="stats-card-label">Bons Émis</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.validated_count|default:67 }}</div>
+            <div class="stats-card-label">Bons Validés</div>
+        </div>
+        
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-handshake"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.used_count|default:54 }}</div>
+            <div class="stats-card-label">Services Fournis</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.expiring_count|default:12 }}</div>
+            <div class="stats-card-label">Expirant Bientôt</div>
+                        </div>
+                    </div>
+                    
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" id="voucher-search" class="filter-input" 
+                       placeholder="Code, patient, service..." 
+                       value="{{ filters.search_query }}">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select id="status-filter" class="filter-select">
+                            <option value="">Tous statuts</option>
+                            <option value="issued" {% if filters.status_filter == 'issued' %}selected{% endif %}>Émis</option>
+                            <option value="validated" {% if filters.status_filter == 'validated' %}selected{% endif %}>Validé</option>
+                            <option value="used" {% if filters.status_filter == 'used' %}selected{% endif %}>Utilisé</option>
+                            <option value="expired" {% if filters.status_filter == 'expired' %}selected{% endif %}>Expiré</option>
+                        </select>
+                    </div>
+                    
+            <div class="filter-group">
+                <label class="filter-label">Service</label>
+                <select id="service-filter" class="filter-select">
+                            <option value="">Tous services</option>
+                            {% for service in service_types %}
+                            <option value="{{ service }}" {% if filters.service_filter == service %}selected{% endif %}>
+                                {{ service }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+            <div class="filter-group">
+                <label class="filter-label">Établissement</label>
+                <select id="facility-filter" class="filter-select">
+                            <option value="">Tous établissements</option>
+                            {% for facility in facilities %}
+                            <option value="{{ facility.id }}" {% if filters.facility_filter == facility.id|stringformat:"s" %}selected{% endif %}>
+                                {{ facility.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+            <div class="filter-group">
+                <label class="filter-label">Période</label>
+                <select id="date-filter" class="filter-select">
+                            <option value="">Toutes dates</option>
+                            <option value="today" {% if filters.date_filter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                            <option value="week" {% if filters.date_filter == 'week' %}selected{% endif %}>Cette semaine</option>
+                            <option value="month" {% if filters.date_filter == 'month' %}selected{% endif %}>Ce mois</option>
+                            <option value="expiring" {% if filters.date_filter == 'expiring' %}selected{% endif %}>Expirant bientôt</option>
+                        </select>
+                </div>
+                
+            <div class="filter-actions">
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-qrcode"></i>QR Codes
+                </button>
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-file-excel"></i>Export
+                </button>
+                    </div>
+                </div>
+                
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button type="button" class="quick-filter-btn" data-status="issued">
+                <i class="fa-solid fa-ticket"></i>Émis
+                            </button>
+            <button type="button" class="quick-filter-btn" data-status="validated">
+                <i class="fa-solid fa-check-circle"></i>Validés
+                            </button>
+            <button type="button" class="quick-filter-btn" data-status="used">
+                <i class="fa-solid fa-handshake"></i>Utilisés
+                            </button>
+            <button type="button" class="quick-filter-btn" data-filter="expiring">
+                <i class="fa-solid fa-clock"></i>Expirant
+                            </button>
+            <button type="button" class="quick-filter-btn" id="clear-all-filters">
+                <i class="fa-solid fa-times"></i>Effacer
+                            </button>
+                    </div>
+                </div>
+                
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Bons de Prise en Charge
+            </h6>
+                </div>
+                
+                    {% if vouchers %}
+                    <div class="table-responsive">
+            <table class="list-table">
+                            <thead>
+                                <tr>
+                        <th>Code du Bon</th>
+                        <th>Patient</th>
+                        <th>Service</th>
+                        <th>Établissement</th>
+                        <th>Expiration</th>
+                        <th>Statut</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vouchers-table-body">
+                                {% for voucher in vouchers %}
+                                <tr data-voucher-id="{{ voucher.id }}">
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ voucher.voucher_id }}</div>
+                                <div class="item-user-meta">{{ voucher.issue_date|date:"d/m/Y" }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ voucher.patient.first_name|slice:":1" }}{{ voucher.patient.last_name|slice:":1" }}
+                                            </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ voucher.patient.first_name }} {{ voucher.patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ voucher.patient.patient_id }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ voucher.service_type }}</div>
+                                            {% if voucher.description %}
+                                <div class="item-user-meta">{{ voucher.description|truncatechars:30 }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ voucher.target_facility.name }}</div>
+                                            {% if voucher.issuing_facility %}
+                                <div class="item-user-meta">Émis par: {{ voucher.issuing_facility.name }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ voucher.expiry_date|date:"d/m/Y" }}</div>
+                                {% if voucher.is_expired %}
+                                <div class="item-user-meta text-danger">Expiré</div>
+                                {% elif voucher.days_until_expiry <= 7 %}
+                                <div class="item-user-meta text-warning">Expire bientôt</div>
+                                {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                            {% if voucher.status == 'issued' %}
+                            <span class="status-badge status-badge-warning">
+                                <i class="fa-solid fa-ticket"></i>Émis
+                            </span>
+                                            {% elif voucher.status == 'validated' %}
+                            <span class="status-badge status-badge-info">
+                                <i class="fa-solid fa-check"></i>Validé
+                            </span>
+                                            {% elif voucher.status == 'used' %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-handshake"></i>Utilisé
+                            </span>
+                                            {% elif voucher.status == 'expired' %}
+                            <span class="status-badge status-badge-danger">
+                                <i class="fa-solid fa-clock"></i>Expiré
+                            </span>
+                                            {% endif %}
+                                    </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'vouchers:detail' voucher.id %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                            {% if voucher.status == 'issued' %}
+                                <button class="action-btn action-btn-success" 
+                                        title="Valider" 
+                                        onclick="showComingSoon('Validation de bon')">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                <button class="action-btn action-btn-warning" 
+                                        title="QR Code" 
+                                        onclick="showComingSoon('Vue QR Code')">
+                                                <i class="fa-solid fa-qrcode"></i>
+                                            </button>
+                                <button class="action-btn" 
+                                        title="Imprimer" 
+                                        onclick="showComingSoon('Impression de bon')">
+                                                <i class="fa-solid fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-ticket"></i>
+                        </div>
+            <h6 class="empty-state-title">Aucun bon trouvé</h6>
+            <p class="empty-state-description">
+                            {% if filters.search_query or filters.status_filter or filters.service_filter or filters.facility_filter %}
+                                Aucun bon ne correspond aux critères de filtrage.
+                            {% else %}
+                                Il n'y a pas de bons de prise en charge pour le moment.
+                            {% endif %}
+                        </p>
+            <a href="{% url 'vouchers:create' %}" class="btn-primary">
+                <i class="fa-solid fa-plus"></i>Créer le Premier Bon
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    let filterTimeout;
+    
+    // DOM Elements
+    const $searchInput = $('#voucher-search');
+    const $statusFilter = $('#status-filter');
+    const $serviceFilter = $('#service-filter');
+    const $facilityFilter = $('#facility-filter');
+    const $dateFilter = $('#date-filter');
+    const $tableBody = $('#vouchers-table-body');
+    
+    // Search Input Handler with debouncing
+    $searchInput.on('input', function() {
+        $(this).addClass('searching');
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(function() {
+            applyFilters();
+        }, 300);
+    });
+    
+    // Filter dropdowns change handlers
+    $statusFilter.add($serviceFilter).add($facilityFilter).add($dateFilter).on('change', function() {
+        applyFilters();
+    });
+    
+    // Quick Filter Buttons
+    $('.quick-filter-btn').on('click', function() {
+        const $this = $(this);
+        const status = $this.data('status');
+        const filter = $this.data('filter');
+        
+        $('.quick-filter-btn').removeClass('active');
+        
+        if ($this.attr('id') === 'clear-all-filters') {
+            clearAllFilters();
+        } else if (status) {
+            $statusFilter.val(status);
+            $this.addClass('active');
+            applyFilters();
+        } else if (filter) {
+            $dateFilter.val(filter);
+            $this.addClass('active');
+            applyFilters();
+        }
+    });
+    
+    // Clear All Filters Function
+    function clearAllFilters() {
+        $searchInput.val('');
+        $statusFilter.val('');
+        $serviceFilter.val('');
+        $facilityFilter.val('');
+        $dateFilter.val('');
+        $('.quick-filter-btn').removeClass('active');
+        applyFilters();
+    }
+    
+    // Apply filters with AJAX
+    function applyFilters() {
+        const searchQuery = $searchInput.val().trim();
+        const statusFilter = $statusFilter.val();
+        const serviceFilter = $serviceFilter.val();
+        const facilityFilter = $facilityFilter.val();
+        const dateFilter = $dateFilter.val();
+        
+        $.ajax({
+            url: '{% url "vouchers:list" %}',
+            method: 'GET',
+            data: {
+                'search': searchQuery,
+                'status': statusFilter,
+                'service': serviceFilter,
+                'facility': facilityFilter,
+                'date_filter': dateFilter
+            },
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                updateVouchersTable(response);
+                $searchInput.removeClass('searching');
+            },
+            error: function(xhr, status, error) {
+                console.error('Filter error:', error);
+                $searchInput.removeClass('searching');
+                showNotification('Erreur lors du filtrage', 'error');
+            }
+        });
+    }
+    
+    // Update vouchers table with results
+    function updateVouchersTable(response) {
+        $tableBody.empty();
+        
+        // Update title
+        $('.list-table-title').html('<i class="fa-solid fa-list me-2"></i>Bons de Prise en Charge (' + response.total_count + ')');
+        
+        if (response.vouchers.length === 0) {
+            // Show empty state
+            const $container = $('.list-table-container');
+            $container.find('.table-responsive').hide();
+            if ($container.find('.empty-state').length === 0) {
+                $container.append(`
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="fa-solid fa-search"></i>
+                        </div>
+                        <h6 class="empty-state-title">Aucun bon trouvé</h6>
+                        <p class="empty-state-description">
+                            ${response.filters.search_query ? 'Aucun résultat pour "' + response.filters.search_query + '"' : 'Aucun bon ne correspond aux critères'}
+                        </p>
+                        <button type="button" class="btn-secondary" onclick="clearAllFilters()">
+                            <i class="fa-solid fa-times"></i>Effacer les filtres
+                        </button>
+                    </div>
+                `);
+            }
+        } else {
+            // Show table
+            $('.list-table-container .table-responsive').show();
+            $('.list-table-container .empty-state').remove();
+            
+            response.vouchers.forEach(function(voucher) {
+                let expiryInfo = '';
+                if (voucher.is_expired) {
+                    expiryInfo = '<div class="item-user-meta text-danger">Expiré</div>';
+                } else if (voucher.is_expiring) {
+                    expiryInfo = '<div class="item-user-meta text-warning">Expire bientôt</div>';
+                }
+                
+                let statusBadge = '';
+                switch(voucher.status) {
+                    case 'issued':
+                        statusBadge = '<span class="status-badge status-badge-warning"><i class="fa-solid fa-ticket"></i>Émis</span>';
+                        break;
+                    case 'validated':
+                        statusBadge = '<span class="status-badge status-badge-info"><i class="fa-solid fa-check"></i>Validé</span>';
+                        break;
+                    case 'used':
+                        statusBadge = '<span class="status-badge status-badge-success"><i class="fa-solid fa-handshake"></i>Utilisé</span>';
+                        break;
+                    case 'expired':
+                        statusBadge = '<span class="status-badge status-badge-danger"><i class="fa-solid fa-clock"></i>Expiré</span>';
+                        break;
+                }
+                
+                const validationBtn = voucher.status === 'issued' ? 
+                    `<button class="action-btn action-btn-success" title="Valider">
+                        <i class="fa-solid fa-check"></i>
+                    </button>` : '';
+                
+                $tableBody.append(`
+                    <tr>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">${voucher.voucher_id}</div>
+                                <div class="item-user-meta">${voucher.issue_date}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    ${voucher.patient_name.split(' ').map(n => n.charAt(0)).join('')}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">${voucher.patient_name}</div>
+                                    <div class="item-user-meta">${voucher.patient_id}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">${voucher.service_type}</div>
+                                ${voucher.description ? '<div class="item-user-meta">' + voucher.description.substring(0, 30) + '</div>' : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">${voucher.target_facility}</div>
+                                ${voucher.issuing_facility ? '<div class="item-user-meta">Émis par: ' + voucher.issuing_facility + '</div>' : ''}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">${voucher.expiry_date}</div>
+                                ${expiryInfo}
+                            </div>
+                        </td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="${voucher.detail_url}" class="action-btn action-btn-primary" title="Voir">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                ${validationBtn}
+                                <button class="action-btn action-btn-warning" title="QR Code">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+        
+        $tableBody.find('tr').hide().fadeIn(300);
+    }
+    
+    function showNotification(message, type) {
+        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        const notification = $(`
+            <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                 style="top: 20px; right: 20px; z-index: 9999;">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+        $('body').append(notification);
+        setTimeout(() => notification.remove(), 5000);
+    }
+    
+    window.clearAllFilters = clearAllFilters;
+});
+
+function showComingSoon(feature) {
+    alert(`${feature} - Fonctionnalité en développement`);
+}
+</script>
+
+<style>
+.searching {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%230C7C59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.quick-filter-btn.active {
+    background: linear-gradient(135deg, #0C7C59, #14A085);
+    color: white;
+    border-color: #0C7C59;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,458 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Documents Médicaux - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.mali-header {
+    background: linear-gradient(135deg, #0C7C59 0%, #14A085 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.documents-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    background: linear-gradient(135deg, #0C7C59, #FCD116);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+    margin: -2rem -2rem 1.5rem -2rem;
+}
+
+.filter-section {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-left: 4px solid #0C7C59;
+}
+
+.document-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #e9ecef;
+}
+
+.document-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.document-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.document-icon.pdf {
+    color: #dc3545;
+}
+
+.document-icon.image {
+    color: #007bff;
+}
+
+.document-icon.doc {
+    color: #0C7C59;
+}
+
+.document-icon.xls {
+    color: #28a745;
+}
+
+.document-icon.other {
+    color: #6c757d;
+}
+    
+    .document-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .document-info {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .document-actions {
+        margin-top: 15px;
+    }
+    
+    .document-category {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+    
+    .category-report {
+        background-color: #3498db;
+        color: white;
+    }
+    
+    .category-prescription {
+        background-color: #2ecc71;
+        color: white;
+    }
+    
+    .category-imaging {
+        background-color: #9b59b6;
+        color: white;
+    }
+    
+    .category-lab {
+        background-color: #f39c12;
+        color: white;
+    }
+    
+    .category-other {
+        background-color: #95a5a6;
+        color: white;
+    }
+    
+    .document-preview {
+        max-height: 500px;
+        max-width: 100%;
+    }
+    
+    .dropzone {
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+    
+    .dropzone:hover {
+        border-color: #3498db;
+    }
+    
+    .dropzone-icon {
+        font-size: 2.5rem;
+        color: #95a5a6;
+        margin-bottom: 10px;
+    }
+    
+    .filter-btn.active {
+        background-color: #3498db;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mali-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-folder-open me-3"></i>
+                    Documents Médicaux
+                </h1>
+                <p class="mb-0 opacity-90">
+                    <i class="fas fa-user me-2"></i>{{ patient.first_name }} {{ patient.last_name }}
+                    <span class="badge bg-light text-dark ms-2">{{ patient.patient_id }}</span>
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'patients:detail' patient.id %}" class="btn btn-light me-2">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au dossier
+                </a>
+                <button type="button" class="btn btn-mali" data-bs-toggle="modal" data-bs-target="#addDocumentModal">
+                    <i class="fas fa-plus me-2"></i>Ajouter Document
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="documents-card">
+                <div class="section-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-file-medical me-2"></i>
+                        Gestion des Documents
+                    </h4>
+                </div>
+                
+                <!-- Filter Section -->
+                <div class="filter-section">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-2">
+                                <i class="fas fa-filter me-2"></i>Filtrer par catégorie
+                            </h6>
+                            <div class="filter-buttons">
+                                <button type="button" class="btn filter-btn active" data-filter="all">
+                                    <i class="fas fa-list me-1"></i>Tous
+                                </button>
+                                <button type="button" class="btn filter-btn" data-filter="report">
+                                    <i class="fas fa-file-alt me-1"></i>Rapports
+                                </button>
+                                <button type="button" class="btn filter-btn" data-filter="prescription">
+                                    <i class="fas fa-prescription me-1"></i>Prescriptions
+                                </button>
+                                <button type="button" class="btn filter-btn" data-filter="imaging">
+                                    <i class="fas fa-x-ray me-1"></i>Imagerie
+                                </button>
+                                <button type="button" class="btn filter-btn" data-filter="lab">
+                                    <i class="fas fa-flask me-1"></i>Laboratoire
+                                </button>
+                                <button type="button" class="btn filter-btn" data-filter="other">
+                                    <i class="fas fa-file me-1"></i>Autres
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <span class="text-muted me-2">
+                                    <i class="fas fa-file me-1"></i>
+                                    {{ documents|length }} document{{ documents|length|pluralize }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+                    <div class="row" id="documents-container">
+                        {% for document in documents %}
+                            <div class="col-md-3 col-sm-6 mb-4 document-item" data-category="{{ document.category|lower }}">
+                                <div class="card document-card">
+                                    <div class="card-body text-center">
+                                        {% if document.file_type == 'pdf' %}
+                                            <i class="fas fa-file-pdf document-icon pdf"></i>
+                                        {% elif document.file_type == 'image' %}
+                                            <i class="fas fa-file-image document-icon image"></i>
+                                        {% elif document.file_type == 'doc' %}
+                                            <i class="fas fa-file-word document-icon doc"></i>
+                                        {% elif document.file_type == 'xls' %}
+                                            <i class="fas fa-file-excel document-icon xls"></i>
+                                        {% else %}
+                                            <i class="fas fa-file-alt document-icon other"></i>
+                                        {% endif %}
+                                        
+                                        <span class="document-category category-{{ document.category|lower }}">
+                                            {% if document.category == 'REPORT' %}
+                                                Rapport
+                                            {% elif document.category == 'PRESCRIPTION' %}
+                                                Prescription
+                                            {% elif document.category == 'IMAGING' %}
+                                                Imagerie
+                                            {% elif document.category == 'LAB' %}
+                                                Laboratoire
+                                            {% else %}
+                                                Autre
+                                            {% endif %}
+                                        </span>
+                                        
+                                        <h5 class="document-title" title="{{ document.title }}">{{ document.title }}</h5>
+                                        <p class="document-info">
+                                            Ajouté le {{ document.upload_date|date:"d/m/Y" }}<br>
+                                            Par: Dr. {{ document.uploaded_by.first_name }} {{ document.uploaded_by.last_name }}
+                                        </p>
+                                        
+                                        <div class="document-actions">
+                                            <button class="btn btn-sm btn-info preview-btn" data-toggle="modal" data-target="#previewModal" 
+                                                    data-title="{{ document.title }}" 
+                                                    data-file="{{ document.file.url }}" 
+                                                    data-type="{{ document.file_type }}">
+                                                <i class="fas fa-eye"></i> Aperçu
+                                            </button>
+                                            <a href="{{ document.file.url }}" download class="btn btn-sm btn-secondary">
+                                                <i class="fas fa-download"></i> Télécharger
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">Aucun document disponible</h4>
+                                <p>Aucun document n'a été téléchargé pour ce patient.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Document Modal -->
+<div class="modal fade" id="addDocumentModal" tabindex="-1" role="dialog" aria-labelledby="addDocumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDocumentModalLabel">Ajouter un document médical</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'patients:add_document' patient.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="title">Titre du document</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Catégorie</label>
+                        <select class="form-control" id="category" name="category" required>
+                            <option value="REPORT">Rapport</option>
+                            <option value="PRESCRIPTION">Prescription</option>
+                            <option value="IMAGING">Imagerie</option>
+                            <option value="LAB">Laboratoire</option>
+                            <option value="OTHER">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Document</label>
+                        <div class="dropzone" id="documentDropzone">
+                            <i class="fas fa-cloud-upload-alt dropzone-icon"></i>
+                            <p>Déposez votre fichier ici ou cliquez pour sélectionner</p>
+                            <p class="text-muted small">Formats acceptés: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX (Max: 10MB)</p>
+                            <input type="file" name="document" id="document" class="d-none" required>
+                        </div>
+                        <div id="file-preview" class="mt-3 d-none">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> 
+                                <span id="file-name"></span>
+                                <button type="button" class="close" id="remove-file">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Date du document</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Télécharger</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Aperçu du document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="preview-container">
+                    <!-- Preview content will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" id="download-btn" download>
+                    <i class="fas fa-download"></i> Télécharger
+                </a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Document filtering
+        $('.filter-btn').click(function() {
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+            
+            var filter = $(this).data('filter');
+            
+            if (filter === 'all') {
+                $('.document-item').show();
+            } else {
+                $('.document-item').hide();
+                $('.document-item[data-category="' + filter + '"]').show();
+            }
+        });
+        
+        // Dropzone functionality
+        $('#documentDropzone').click(function() {
+            $('#document').click();
+        });
+        
+        $('#document').change(function() {
+            if (this.files && this.files[0]) {
+                var fileName = this.files[0].name;
+                $('#file-name').text(fileName);
+                $('#file-preview').removeClass('d-none');
+            }
+        });
+        
+        $('#remove-file').click(function() {
+            $('#document').val('');
+            $('#file-preview').addClass('d-none');
+        });
+        
+        // Document preview
+        $('.preview-btn').click(function() {
+            var title = $(this).data('title');
+            var fileUrl = $(this).data('file');
+            var fileType = $(this).data('type');
+            
+            $('#previewModalLabel').text(title);
+            $('#download-btn').attr('href', fileUrl);
+            
+            var previewContainer = $('#preview-container');
+            previewContainer.empty();
+            
+            if (fileType === 'image') {
+                previewContainer.html('<img src="' + fileUrl + '" class="document-preview" alt="' + title + '">');
+            } else if (fileType === 'pdf') {
+                previewContainer.html('<iframe src="' + fileUrl + '" class="document-preview" style="width: 100%; height: 500px;"></iframe>');
+            } else {
+                previewContainer.html('<div class="alert alert-info"><i class="fas fa-info-circle"></i> L\'aperçu n\'est pas disponible pour ce type de fichier. Veuillez le télécharger pour le consulter.</div>');
+            }
+        });
+        
+        // Initialize datepicker
+        $('#date').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
+        });
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Nouvelle Hospitalisation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">Nouvelle Hospitalisation</h1>
+                    <p class="text-muted">Admettre un patient dans l'établissement</p>
+                </div>
+                <div>
+                    <a href="{% url 'patients:hospitalizations' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </div>
+
+            <form method="post" class="row">
+                {% csrf_token %}
+                
+                <!-- Patient Selection -->
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-user me-2"></i>Sélection Patient
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Patient <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="patient" required>
+                                        <option value="">Choisir un patient</option>
+                                        {% for patient in patients %}
+                                        <option value="{{ patient.id }}">
+                                            {{ patient.first_name }} {{ patient.last_name }} - {{ patient.age }} ans
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Médecin responsable</label>
+                                    <select class="form-select" name="attending_doctor">
+                                        <option value="">Assigner un médecin</option>
+                                        {% for doctor in doctors %}
+                                        <option value="{{ doctor.id }}">
+                                            Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admission Details -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-clipboard-list me-2"></i>Détails d'Admission
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Service/Chambre <span class="text-danger">*</span></label>
+                                <select class="form-select" name="room_number" required>
+                                    <option value="">Choisir un service</option>
+                                    {% for room_code, room_name in room_choices %}
+                                    <option value="{{ room_code }}">{{ room_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Numéro de lit <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="bed_number" 
+                                       placeholder="ex: A01, B12" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Motif d'admission <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="admission_reason" rows="3" 
+                                          placeholder="Raison de l'hospitalisation" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Information -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fa-solid fa-stethoscope me-2"></i>Informations Médicales
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Diagnostic d'admission <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="admission_diagnosis" 
+                                       placeholder="Diagnostic principal" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Notes cliniques</label>
+                                <textarea class="form-control" name="clinical_notes" rows="4" 
+                                          placeholder="Observations médicales à l'admission"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'patients:hospitalizations' %}" class="btn btn-outline-secondary">
+                                    <i class="fa-solid fa-times me-2"></i>Annuler
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa-solid fa-hospital me-2"></i>Admettre le Patient
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

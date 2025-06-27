@@ -1,0 +1,521 @@
+/* Vital Signs Dashboard CSS - Mali Healthcare System */
+
+/* Mali Flag Colors Theme */
+:root {
+    --mali-green: #0C7C59;
+    --mali-yellow: #FCD116;
+    --mali-red: #CE1126;
+    --mali-green-light: rgba(12, 124, 89, 0.1);
+    --mali-yellow-light: rgba(252, 209, 22, 0.1);
+    --mali-red-light: rgba(206, 17, 38, 0.1);
+    --mali-green-dark: rgba(12, 124, 89, 0.8);
+    --mali-yellow-dark: rgba(252, 209, 22, 0.8);
+}
+
+/* Dashboard Cards */
+.vital-signs-header {
+    background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(12, 124, 89, 0.3);
+}
+
+.vital-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.vital-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(12, 124, 89, 0.2);
+    border-color: var(--mali-green);
+}
+
+/* Vital Signs Values */
+.vital-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.vital-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vital-unit {
+    font-size: 1.2rem;
+    color: var(--mali-green);
+    font-weight: 600;
+}
+
+/* Alerts */
+.alert-card {
+    border-left: 4px solid;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    border-radius: 0 8px 8px 0;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.alert-danger {
+    border-left-color: var(--mali-red);
+    background: var(--mali-red-light);
+}
+
+.alert-warning {
+    border-left-color: var(--mali-yellow);
+    background: var(--mali-yellow-light);
+}
+
+.alert-success {
+    border-left-color: var(--mali-green);
+    background: var(--mali-green-light);
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+    animation: pulse 2s infinite;
+}
+
+/* Trend Indicators */
+.trend-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.trend-up {
+    background: var(--mali-green-light);
+    color: var(--mali-green);
+    border: 1px solid var(--mali-green);
+}
+
+.trend-down {
+    background: var(--mali-red-light);
+    color: var(--mali-red);
+    border: 1px solid var(--mali-red);
+}
+
+.trend-stable {
+    background: var(--mali-yellow-light);
+    color: #f57c00;
+    border: 1px solid #f57c00;
+}
+
+.trend-warning {
+    background: var(--mali-yellow-light);
+    color: #f57c00;
+    border: 1px solid var(--mali-yellow);
+}
+
+/* Charts */
+.growth-chart-container {
+    position: relative;
+    height: 400px;
+    margin: 1rem 0;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.chart-tabs {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 1.5rem;
+}
+
+.chart-tab {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    color: #6c757d;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    border-radius: 8px 8px 0 0;
+}
+
+.chart-tab.active {
+    color: var(--mali-green);
+    border-bottom-color: var(--mali-green);
+    background: var(--mali-green-light);
+}
+
+.chart-tab:hover {
+    color: var(--mali-green);
+    background: var(--mali-green-light);
+}
+
+.chart-tab:hover::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--mali-green);
+    opacity: 0.5;
+}
+
+/* Time Filters */
+.time-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.time-filter {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.time-filter.active {
+    background: var(--mali-green);
+    color: white;
+    border-color: var(--mali-green);
+    box-shadow: 0 2px 8px rgba(12, 124, 89, 0.3);
+}
+
+.time-filter:hover {
+    border-color: var(--mali-green);
+    color: var(--mali-green);
+    transform: translateY(-1px);
+}
+
+/* Nutritional Status */
+.nutritional-status {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-align: center;
+    margin: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.status-normal {
+    background: var(--mali-green-light);
+    color: var(--mali-green);
+    border: 2px solid var(--mali-green);
+}
+
+.status-warning {
+    background: var(--mali-yellow-light);
+    color: #f57c00;
+    border: 2px solid var(--mali-yellow);
+}
+
+.status-danger {
+    background: var(--mali-red-light);
+    color: var(--mali-red);
+    border: 2px solid var(--mali-red);
+}
+
+/* Page Layout */
+.page-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.btn-mali {
+    background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(12, 124, 89, 0.2);
+}
+
+.btn-mali:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(12, 124, 89, 0.3);
+    color: white;
+}
+
+.btn-mali:focus {
+    box-shadow: 0 0 0 0.2rem rgba(12, 124, 89, 0.25);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(12, 124, 89, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--mali-green);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.chart-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+/* Patient Info Card */
+.patient-info-card {
+    background: linear-gradient(135deg, rgba(12, 124, 89, 0.05), rgba(252, 209, 22, 0.05));
+    border: 1px solid rgba(12, 124, 89, 0.1);
+}
+
+.patient-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+/* Table Styling */
+.table-hover tbody tr:hover {
+    background-color: var(--mali-green-light);
+}
+
+.table th {
+    background-color: var(--mali-green-light);
+    color: var(--mali-green);
+    font-weight: 600;
+    border: none;
+}
+
+.badge {
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.badge.bg-success {
+    background: var(--mali-green) !important;
+}
+
+.badge.bg-warning {
+    background: var(--mali-yellow) !important;
+}
+
+.badge.bg-danger {
+    background: var(--mali-red) !important;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .vital-value {
+        font-size: 2rem;
+    }
+
+    .time-filters {
+        justify-content: center;
+    }
+
+    .time-filter {
+        margin: 0.25rem 0;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .chart-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .chart-tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .patient-info-card .row {
+        text-align: center;
+    }
+
+    .patient-avatar {
+        margin: 0 auto 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .vital-card {
+        padding: 1rem;
+    }
+
+    .vital-value {
+        font-size: 1.8rem;
+    }
+
+    .chart-container {
+        padding: 1rem;
+    }
+
+    .growth-chart-container {
+        height: 300px;
+    }
+
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .btn, .chart-tabs, .time-filters {
+        display: none !important;
+    }
+
+    .vital-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+        break-inside: avoid;
+    }
+
+    .growth-chart-container {
+        height: 400px;
+    }
+
+    .page-header {
+        border-bottom: 2px solid #000;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Accessibility */
+.vital-card:focus-within {
+    outline: 2px solid var(--mali-green);
+    outline-offset: 2px;
+}
+
+.chart-tab:focus,
+.time-filter:focus {
+    outline: 2px solid var(--mali-green);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .vital-card {
+        border: 2px solid #000;
+    }
+    
+    .vital-value {
+        color: #000;
+        -webkit-text-fill-color: #000;
+    }
+    
+    .trend-indicator {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .vital-card,
+    .trend-indicator,
+    .chart-tab,
+    .time-filter,
+    .btn-mali {
+        transition: none;
+    }
+    
+    .loading-spinner {
+        animation: none;
+    }
+    
+    .alert-icon {
+        animation: none;
+    }
+} 

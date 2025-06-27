@@ -1,0 +1,1018 @@
+/* Enhanced Responsive System - DPImedml Mali Healthcare */
+/* Mobile-First Approach with Professional Breakpoints */
+
+/* ========================================
+   RESPONSIVE BREAKPOINT SYSTEM
+======================================== */
+
+:root {
+  /* Enhanced Breakpoint Variables */
+  --breakpoint-xs: 0px;        /* Extra small devices */
+  --breakpoint-sm: 576px;      /* Small devices */
+  --breakpoint-md: 768px;      /* Medium devices (tablets) */
+  --breakpoint-lg: 992px;      /* Large devices (desktops) */
+  --breakpoint-xl: 1200px;     /* Extra large devices */
+  --breakpoint-xxl: 1400px;    /* Ultra wide screens */
+  
+  /* Container Max Widths */
+  --container-sm: 540px;
+  --container-md: 720px;
+  --container-lg: 960px;
+  --container-xl: 1140px;
+  --container-xxl: 1320px;
+  
+  /* Mobile-Specific Variables */
+  --mobile-header-height: 60px;
+  --tablet-sidebar-width: 240px;
+  --mobile-bottom-nav-height: 70px;
+}
+
+/* ========================================
+   MOBILE-FIRST BASE STYLES (0px+)
+======================================== */
+
+/* Base mobile styles - applied to all devices */
+.app-container {
+  /* Mobile-first grid layout */
+  grid-template-areas: 
+    "header"
+    "main"
+    "footer";
+  grid-template-columns: 1fr;
+  grid-template-rows: var(--mobile-header-height) 1fr auto;
+}
+
+.app-header {
+  height: var(--mobile-header-height);
+  padding: 0 var(--spacing-md);
+}
+
+.app-sidebar {
+  /* Mobile: Hidden by default, overlay when shown */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  transform: translateX(-100%);
+  transition: transform var(--transition-base);
+  z-index: var(--z-modal);
+}
+
+.content-wrapper {
+  padding: var(--spacing-md);
+}
+
+/* Mobile Typography */
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.875rem; }
+
+/* Mobile Button Adjustments */
+.btn-mali-primary,
+.btn-mali-secondary,
+.btn-medical {
+  padding: 0.875rem 1.25rem;
+  font-size: 0.9rem;
+  min-height: 44px; /* Touch-friendly size */
+}
+
+/* Mobile Card Adjustments */
+.card-modern,
+.card-mali,
+.card-medical {
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--radius-md);
+}
+
+.card-body-modern {
+  padding: var(--spacing-md);
+}
+
+/* Mobile Form Adjustments */
+.form-control-modern {
+  padding: 0.875rem 1rem;
+  min-height: 44px; /* Touch-friendly */
+  font-size: 1rem; /* Prevent zoom on iOS */
+}
+
+/* Mobile Grid System */
+.grid-cols-mobile-1 { grid-template-columns: 1fr; }
+.grid-cols-mobile-2 { grid-template-columns: repeat(2, 1fr); }
+
+/* Mobile Utilities */
+.mobile-hidden { display: none; }
+.mobile-visible { display: block; }
+.mobile-text-center { text-align: center; }
+.mobile-text-left { text-align: left; }
+
+/* ========================================
+   SMALL DEVICES - LANDSCAPE PHONES (576px+)
+======================================== */
+
+@media (min-width: 576px) {
+  .app-header {
+    padding: 0 var(--spacing-lg);
+  }
+  
+  .content-wrapper {
+    padding: var(--spacing-lg);
+  }
+  
+  /* Enhanced Typography */
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  
+  /* Button Improvements */
+  .btn-mali-primary,
+  .btn-mali-secondary,
+  .btn-medical {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Grid System Enhancements */
+  .grid-sm-cols-1 { grid-template-columns: 1fr; }
+  .grid-sm-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-sm-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  
+  /* Small Device Utilities */
+  .sm-hidden { display: none; }
+  .sm-visible { display: block; }
+  .sm-text-center { text-align: center; }
+  .sm-text-left { text-align: left; }
+  .sm-text-right { text-align: right; }
+  
+  /* Container Widths */
+  .container-fluid {
+    max-width: var(--container-sm);
+    margin: 0 auto;
+  }
+}
+
+/* ========================================
+   MEDIUM DEVICES - TABLETS (768px+)
+======================================== */
+
+@media (min-width: 768px) {
+  :root {
+    --header-height: 70px;
+  }
+  
+  .app-container {
+    grid-template-rows: var(--header-height) 1fr auto;
+  }
+  
+  .app-header {
+    height: var(--header-height);
+    padding: 0 var(--spacing-xl);
+  }
+  
+  .content-wrapper {
+    padding: var(--spacing-xl);
+  }
+  
+  /* Tablet Sidebar - Semi-collapsed */
+  .app-sidebar {
+    width: var(--tablet-sidebar-width);
+    position: relative;
+    transform: translateX(0);
+    z-index: var(--z-fixed);
+  }
+  
+  /* Tablet Grid Layout */
+  .app-container {
+    grid-template-areas: 
+      "sidebar header"
+      "sidebar main"
+      "sidebar footer";
+    grid-template-columns: var(--tablet-sidebar-width) 1fr;
+  }
+  
+  /* Enhanced Typography for Tablets */
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  
+  /* Tablet Grid System */
+  .grid-md-cols-1 { grid-template-columns: 1fr; }
+  .grid-md-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-md-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-md-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  /* Enhanced Card Layout for Tablets */
+  .card-body-modern {
+    padding: var(--spacing-lg);
+  }
+  
+  .card-header-modern {
+    padding: var(--spacing-lg);
+  }
+  
+  /* Tablet Utilities */
+  .md-hidden { display: none; }
+  .md-visible { display: block; }
+  .md-text-center { text-align: center; }
+  .md-text-left { text-align: left; }
+  .md-text-right { text-align: right; }
+  
+  /* Container Widths */
+  .container-fluid {
+    max-width: var(--container-md);
+  }
+  
+  /* Tablet-Specific Header Layout */
+  .header-mobile-toggle {
+    display: none;
+  }
+  
+  .header-search {
+    display: flex;
+    min-width: 300px;
+  }
+}
+
+/* ========================================
+   MEDIUM DESKTOP - SMALL DESKTOPS (992px - 1199px)
+   For 19"-20" monitors that need less aggressive spacing
+======================================== */
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  /* Medium Desktop Layout - Optimized for 19"-20" screens */
+  .app-container {
+    grid-template-columns: var(--sidebar-width) 1fr;
+  }
+  
+  .app-container.sidebar-collapsed {
+    grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+  }
+  
+  .app-sidebar {
+    width: var(--sidebar-width);
+    position: relative;
+    transform: translateX(0);
+  }
+  
+  /* Moderate Typography for Medium Desktops */
+  h1 { font-size: 2.125rem; } /* Smaller than 2.5rem */
+  h2 { font-size: 1.875rem; } /* Smaller than 2.25rem */
+  h3 { font-size: 1.625rem; } /* Smaller than 2rem */
+  h4 { font-size: 1.375rem; } /* Smaller than 1.75rem */
+  h5 { font-size: 1.125rem; }
+  
+  /* Medium Desktop Grid System */
+  .grid-lg-cols-1 { grid-template-columns: 1fr; }
+  .grid-lg-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-lg-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-lg-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-lg-cols-6 { grid-template-columns: repeat(6, 1fr); }
+  
+  /* Moderate Content Layout - Less aggressive padding */
+  .content-wrapper {
+    padding: var(--spacing-xl); /* 2rem instead of 3rem */
+  }
+  
+  .card-body-modern {
+    padding: var(--spacing-lg); /* 1.5rem instead of 2rem */
+  }
+  
+  .card-header-modern {
+    padding: var(--spacing-lg); /* 1.5rem instead of 2rem */
+  }
+  
+  /* Medium Desktop Utilities */
+  .lg-hidden { display: none; }
+  .lg-visible { display: block; }
+  .lg-text-center { text-align: center; }
+  .lg-text-left { text-align: left; }
+  .lg-text-right { text-align: right; }
+  
+  /* Container Widths - More conservative max-width */
+  .container-fluid {
+    max-width: 960px; /* Smaller than var(--container-lg) */
+  }
+  
+  /* Medium Desktop Header */
+  .header-search {
+    min-width: 350px; /* Moderate instead of 400px */
+  }
+  
+  .header-user-info {
+    display: flex;
+  }
+  
+  /* Card Deck Spacing for Medium Screens */
+  .card-deck {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Smaller min width */
+    gap: var(--spacing-lg); /* Smaller gap */
+  }
+}
+
+/* ========================================
+   LARGE DEVICES - STANDARD DESKTOPS (1200px - 1399px)
+   For 21"-22" monitors with balanced spacing
+======================================== */
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+  /* Standard Desktop Typography */
+  h1 { font-size: 2.375rem; } /* Between medium and ultra-large */
+  h2 { font-size: 2.125rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
+  
+  /* Standard Desktop Grid System */
+  .grid-xl-cols-1 { grid-template-columns: 1fr; }
+  .grid-xl-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-xl-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-xl-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-xl-cols-6 { grid-template-columns: repeat(6, 1fr); }
+  .grid-xl-cols-12 { grid-template-columns: repeat(12, 1fr); }
+  
+  /* Balanced Content Layout */
+  .content-wrapper {
+    padding: calc(var(--spacing-xl) + var(--spacing-md)); /* 2.5rem */
+  }
+  
+  .card-body-modern {
+    padding: calc(var(--spacing-lg) + var(--spacing-sm)); /* 1.75rem */
+  }
+  
+  /* Container Widths */
+  .container-fluid {
+    max-width: var(--container-xl); /* 1140px */
+  }
+  
+  /* Standard Desktop Header */
+  .header-search {
+    min-width: 375px;
+  }
+  
+  /* XL Utilities */
+  .xl-hidden { display: none; }
+  .xl-visible { display: block; }
+  .xl-text-center { text-align: center; }
+  .xl-text-left { text-align: left; }
+  .xl-text-right { text-align: right; }
+  
+  /* Card Deck Spacing for Standard Screens */
+  .card-deck {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl); /* Standard gap */
+  }
+}
+
+/* ========================================
+   LARGE DEVICES - DESKTOPS (992px+)
+   Legacy fallback - now only applies when no specific range matches
+======================================== */
+
+@media (min-width: 992px) {
+  /* Full Desktop Layout */
+  .app-container {
+    grid-template-columns: var(--sidebar-width) 1fr;
+  }
+  
+  .app-container.sidebar-collapsed {
+    grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+  }
+  
+  .app-sidebar {
+    width: var(--sidebar-width);
+    position: relative;
+    transform: translateX(0);
+  }
+  
+  /* Desktop Utilities - Available to all desktop sizes */
+  .lg-hidden { display: none; }
+  .lg-visible { display: block; }
+  .lg-text-center { text-align: center; }
+  .lg-text-left { text-align: left; }
+  .lg-text-right { text-align: right; }
+  
+  .header-user-info {
+    display: flex;
+  }
+}
+
+/* ========================================
+   EXTRA LARGE DEVICES - LARGE DESKTOPS (1400px+)
+   For 24"+ monitors with generous spacing
+======================================== */
+
+@media (min-width: 1400px) {
+  /* Large Desktop Typography */
+  h1 { font-size: 2.75rem; } /* Larger for big screens */
+  h2 { font-size: 2.375rem; }
+  h3 { font-size: 2rem; }
+  h4 { font-size: 1.75rem; }
+  h5 { font-size: 1.375rem; }
+  
+  /* Ultra Wide Grid System */
+  .grid-xxl-cols-1 { grid-template-columns: 1fr; }
+  .grid-xxl-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-xxl-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-xxl-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-xxl-cols-6 { grid-template-columns: repeat(6, 1fr); }
+  .grid-xxl-cols-12 { grid-template-columns: repeat(12, 1fr); }
+  
+  /* Generous Content Layout for Large Screens */
+  .content-wrapper {
+    padding: var(--spacing-xxl); /* 3rem - only for large screens */
+  }
+  
+  .card-body-modern {
+    padding: var(--spacing-xl); /* 2rem - only for large screens */
+  }
+  
+  /* Container Widths */
+  .container-fluid {
+    max-width: var(--container-xxl); /* 1320px */
+  }
+  
+  /* Large Desktop Header */
+  .header-search {
+    min-width: 450px; /* Wider search for large screens */
+  }
+  
+  /* XXL Utilities */
+  .xxl-hidden { display: none; }
+  .xxl-visible { display: block; }
+  
+  /* Card Deck Spacing for Large Screens */
+  .card-deck {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Larger cards */
+    gap: var(--spacing-xxl); /* Generous gap */
+  }
+}
+
+
+
+/* ========================================
+   MOBILE BOTTOM NAVIGATION
+======================================== */
+
+@media (max-width: 767.98px) {
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-bottom-nav-height);
+    background: linear-gradient(135deg, var(--mali-green) 0%, #0E8A5F 100%);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: var(--z-fixed);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    min-width: 60px;
+  }
+  
+  .mobile-bottom-nav-item.active,
+  .mobile-bottom-nav-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  .mobile-bottom-nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Add bottom padding to main content for bottom nav */
+  .app-main {
+    padding-bottom: calc(var(--mobile-bottom-nav-height) + var(--spacing-md));
+  }
+}
+
+/* ========================================
+   RESPONSIVE SIDEBAR ENHANCEMENTS
+======================================== */
+
+/* Tablet Sidebar Enhancements */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .sidebar-menu-text {
+    font-size: 0.875rem;
+  }
+  
+  .sidebar-menu-icon-enhanced {
+    margin-right: 0.5rem;
+  }
+  
+  .sidebar-header h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Desktop Sidebar Enhancements */
+@media (min-width: 992px) {
+  .app-sidebar.collapsed .sidebar-menu-text {
+    display: none;
+  }
+  
+  .app-sidebar.collapsed .sidebar-menu-icon-enhanced {
+    margin-right: 0;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .app-sidebar.collapsed .sidebar-header h3 {
+    font-size: 0;
+  }
+  
+  .app-sidebar.collapsed .sidebar-header h3::before {
+    content: "DM";
+    font-size: 1rem;
+  }
+}
+
+/* ========================================
+   RESPONSIVE HEADER ENHANCEMENTS
+======================================== */
+
+/* Mobile Header */
+@media (max-width: 767.98px) {
+  .header-search {
+    display: none;
+  }
+  
+  .header-user-info {
+    display: none;
+  }
+  
+  .mobile-header-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+  }
+}
+
+/* Tablet Header */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .header-user-name {
+    display: none;
+  }
+  
+  .header-user-role {
+    display: none;
+  }
+}
+
+/* ========================================
+   RESPONSIVE CARD LAYOUTS
+======================================== */
+
+/* Mobile Card Stacking */
+@media (max-width: 767.98px) {
+  .card-deck {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .card-deck .card-modern,
+  .card-deck .card-mali,
+  .card-deck .card-medical {
+    width: 100%;
+  }
+}
+
+/* Tablet Card Layout */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .card-deck {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+}
+
+/* Desktop Card Layout */
+@media (min-width: 992px) {
+  .card-deck {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+  }
+}
+
+/* ========================================
+   RESPONSIVE FORM LAYOUTS
+======================================== */
+
+/* Mobile Form Layout */
+@media (max-width: 767.98px) {
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .form-col {
+    width: 100%;
+  }
+}
+
+/* Tablet Form Layout */
+@media (min-width: 768px) {
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+  
+  .form-col-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Medium Desktop Form Layout */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .form-row {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for medium screens */
+    gap: var(--spacing-lg);
+  }
+  
+  .form-col-half {
+    grid-column: span 1;
+  }
+  
+  .form-col-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Standard Desktop Form Layout */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+  .form-row {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for standard screens */
+    gap: var(--spacing-lg);
+  }
+  
+  .form-col-half {
+    grid-column: span 1;
+  }
+  
+  .form-col-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Large Desktop Form Layout */
+@media (min-width: 1400px) {
+  .form-row {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for large screens */
+    gap: var(--spacing-xl);
+  }
+  
+  .form-col-half {
+    grid-column: span 2; /* Half of 4 columns */
+  }
+  
+  .form-col-full {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+======================================== */
+
+/* Display Utilities */
+.d-mobile-none { display: none; }
+.d-mobile-block { display: block; }
+.d-mobile-flex { display: flex; }
+
+@media (min-width: 576px) {
+  .d-sm-none { display: none; }
+  .d-sm-block { display: block; }
+  .d-sm-flex { display: flex; }
+}
+
+@media (min-width: 768px) {
+  .d-md-none { display: none; }
+  .d-md-block { display: block; }
+  .d-md-flex { display: flex; }
+}
+
+@media (min-width: 992px) {
+  .d-lg-none { display: none; }
+  .d-lg-block { display: block; }
+  .d-lg-flex { display: flex; }
+}
+
+@media (min-width: 1200px) {
+  .d-xl-none { display: none; }
+  .d-xl-block { display: block; }
+  .d-xl-flex { display: flex; }
+}
+
+/* Text Alignment Utilities */
+.text-mobile-center { text-align: center; }
+.text-mobile-left { text-align: left; }
+.text-mobile-right { text-align: right; }
+
+@media (min-width: 768px) {
+  .text-md-center { text-align: center; }
+  .text-md-left { text-align: left; }
+  .text-md-right { text-align: right; }
+}
+
+@media (min-width: 992px) {
+  .text-lg-center { text-align: center; }
+  .text-lg-left { text-align: left; }
+  .text-lg-right { text-align: right; }
+}
+
+/* ========================================
+   RESPONSIVE ANIMATIONS
+======================================== */
+
+/* Reduced motion for mobile devices with limited battery */
+@media (max-width: 767.98px) {
+  .card-modern:hover,
+  .card-mali:hover,
+  .card-medical:hover {
+    transform: none;
+  }
+  
+  .btn-mali-primary:hover,
+  .btn-mali-secondary:hover,
+  .btn-medical:hover {
+    transform: none;
+  }
+}
+
+/* Enhanced animations for larger screens */
+@media (min-width: 992px) {
+  .card-modern:hover {
+    transform: translateY(-6px);
+  }
+  
+  .btn-mali-primary:hover,
+  .btn-mali-secondary:hover,
+  .btn-medical:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* ========================================
+   DASHBOARD-SPECIFIC RESPONSIVE IMPROVEMENTS
+======================================== */
+
+/* Medium Desktop Dashboard - Optimized for 19"-20" screens */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  /* Content Wrapper - Moderate spacing */
+  .content-wrapper {
+    padding: 1.5rem; /* Less than 2rem */
+  }
+  
+  /* KPI Cards - Tighter spacing */
+  .kpi-card {
+    padding: 1rem; /* Less padding */
+    margin-bottom: 1rem; /* Tighter margins */
+  }
+  
+  .kpi-value {
+    font-size: 1.75rem; /* Smaller font */
+  }
+  
+  .kpi-title {
+    font-size: 0.875rem; /* Smaller title */
+  }
+  
+  /* Analytics Widgets - Compact */
+  .analytics-widget {
+    margin-bottom: 1.5rem; /* Reduced from 2rem */
+  }
+  
+  .analytics-widget .widget-body {
+    padding: 1.25rem; /* Less padding */
+  }
+  
+  .analytics-widget .widget-header {
+    padding: 1rem 1.25rem; /* Less padding */
+  }
+  
+  /* Bootstrap Grid Spacing - Tighter */
+  .row {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+  }
+  
+  .row > * {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Tables - Better spacing */
+  .table th,
+  .table td {
+    padding: 0.5rem 0.75rem; /* Reduced padding */
+    font-size: 0.875rem; /* Smaller text */
+  }
+  
+  /* Card Titles and Content */
+  .card-header {
+    padding: 0.75rem 1rem; /* Less padding */
+  }
+  
+  .card-body {
+    padding: 1rem; /* Less padding */
+  }
+}
+
+/* Standard Desktop Dashboard - Balanced for 21"-22" screens */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+  /* Content Wrapper - Balanced spacing */
+  .content-wrapper {
+    padding: 2rem;
+  }
+  
+  /* KPI Cards - Standard spacing */
+  .kpi-card {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .kpi-value {
+    font-size: 2rem;
+  }
+  
+  .kpi-title {
+    font-size: 1rem;
+  }
+  
+  /* Analytics Widgets - Standard */
+  .analytics-widget {
+    margin-bottom: 2rem;
+  }
+  
+  .analytics-widget .widget-body {
+    padding: 1.5rem;
+  }
+  
+  .analytics-widget .widget-header {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  /* Bootstrap Grid - Standard spacing */
+  .row {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  
+  .row > * {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Tables - Standard spacing */
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Cards - Standard spacing */
+  .card-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .card-body {
+    padding: 1.25rem;
+  }
+}
+
+/* Large Desktop Dashboard - Generous for 24"+ screens */
+@media (min-width: 1400px) {
+  /* Content Wrapper - Generous spacing */
+  .content-wrapper {
+    padding: 2.5rem;
+  }
+  
+  /* KPI Cards - Generous spacing */
+  .kpi-card {
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .kpi-value {
+    font-size: 2.25rem;
+  }
+  
+  .kpi-title {
+    font-size: 1.1rem;
+  }
+  
+  /* Analytics Widgets - Generous */
+  .analytics-widget {
+    margin-bottom: 2.5rem;
+  }
+  
+  .analytics-widget .widget-body {
+    padding: 2rem;
+  }
+  
+  .analytics-widget .widget-header {
+    padding: 1.5rem 2rem;
+  }
+  
+  /* Bootstrap Grid - Generous spacing */
+  .row {
+    margin-left: -1.25rem;
+    margin-right: -1.25rem;
+  }
+  
+  .row > * {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  
+  /* Tables - Generous spacing */
+  .table th,
+  .table td {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  
+  /* Cards - Generous spacing */
+  .card-header {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY ENHANCEMENTS
+======================================== */
+
+/* Focus indicators for keyboard navigation */
+@media (min-width: 992px) {
+  .app-sidebar:focus-within {
+    outline: 2px solid var(--mali-yellow);
+    outline-offset: 2px;
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .app-container {
+    border: 3px solid;
+  }
+  
+  .card-modern,
+  .card-mali,
+  .card-medical {
+    border: 2px solid;
+  }
+}
+
+/* Print styles for responsive design */
+@media print {
+  .mobile-bottom-nav,
+  .app-sidebar,
+  .app-header {
+    display: none;
+  }
+  
+  .app-container {
+    grid-template-areas: "main";
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+  
+  .content-wrapper {
+    padding: 0;
+  }
+} 

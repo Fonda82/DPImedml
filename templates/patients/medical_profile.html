@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dossier Médical | {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="detail-title">
+                    <i class="fa-solid fa-file-medical me-2"></i>Mon Dossier Médical
+                </h1>
+                <p class="detail-subtitle">Informations médicales détaillées et historique complet</p>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'dashboard:patient' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+                <button class="btn-primary-create" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i>Imprimer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Profile Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-file-medical form-section-icon"></i>
+                    <h5 class="form-section-title">Informations Médicales</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="entity-info-card">
+                                <div class="text-center mb-3">
+                                    <div class="entity-avatar entity-avatar-large">
+                                        {% if patient.photo %}
+                                            <img src="{{ patient.photo.url }}" alt="{{ patient.first_name }}" class="rounded-circle w-100 h-100" style="object-fit: cover;">
+                                        {% else %}
+                                            {{ patient.first_name|default:"Ibrahim"|slice:":1" }}{{ patient.last_name|default:"Koné"|slice:":1" }}
+                                        {% endif %}
+                                    </div>
+                                    <h5 class="entity-name mb-3">{{ patient.first_name|default:"Ibrahim" }} {{ patient.last_name|default:"Koné" }}</h5>
+                                </div>
+                                
+                                <div class="entity-details">
+                                    <div class="entity-detail-item">
+                                        <i class="fa-solid fa-id-card entity-detail-icon"></i>
+                                        <span class="entity-detail-label">ID Patient:</span>
+                                        <span class="entity-detail-value">{{ patient.patient_id|default:"PED-001" }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <i class="fa-solid fa-birthday-cake entity-detail-icon"></i>
+                                        <span class="entity-detail-label">Date de naissance:</span>
+                                        <span class="entity-detail-value">{{ patient.date_of_birth|date:"d/m/Y"|default:"15/03/2017" }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <i class="fa-solid fa-calendar entity-detail-icon"></i>
+                                        <span class="entity-detail-label">Âge:</span>
+                                        <span class="entity-detail-value">{{ patient.age|default:7 }} ans</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <i class="fa-solid fa-venus-mars entity-detail-icon"></i>
+                                        <span class="entity-detail-label">Sexe:</span>
+                                        <span class="entity-detail-value">{{ patient.get_gender_display|default:"Masculin" }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <i class="fa-solid fa-tint entity-detail-icon"></i>
+                                        <span class="entity-detail-label">Groupe sanguin:</span>
+                                        <span class="entity-detail-value">{{ patient.blood_group|default:"O+" }}</span>
+                                    </div>
+                                    <div class="entity-detail-item">
+                                        <i class="fa-solid fa-allergies entity-detail-icon"></i>
+                                        <span class="entity-detail-label">Allergies:</span>
+                                        <span class="entity-detail-value">{{ patient.allergies|default:"Aucune connue" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <!-- Contact Information -->
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="fa-solid fa-address-book me-2"></i>Coordonnées
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="entity-info-card">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa-solid fa-map-marker-alt text-primary me-3"></i>
+                                                    <div>
+                                                        <small class="text-muted">Adresse</small>
+                                                        <div>{{ patient.address|default:"Commune I, Bamako" }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="entity-info-card">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa-solid fa-phone text-success me-3"></i>
+                                                    <div>
+                                                        <small class="text-muted">Téléphone</small>
+                                                        <div>{{ patient.phone_number|default:"+223 76 12 34 56" }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="entity-info-card">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa-solid fa-user-friends text-warning me-3"></i>
+                                                    <div>
+                                                        <small class="text-muted">Tuteur/Parent</small>
+                                                        <div>{{ patient.guardian_name|default:"Mme Aminata Koné" }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="entity-info-card">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa-solid fa-calendar text-info me-3"></i>
+                                                    <div>
+                                                        <small class="text-muted">Date d'inscription</small>
+                                                        <div>{{ patient.created_at|date:"d/m/Y"|default:"01/02/2024" }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Primary Diagnosis -->
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="fa-solid fa-diagnoses me-2"></i>Diagnostic Principal
+                                    </h6>
+                                    <div class="form-info">
+                                        <div class="form-info-content">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <span class="status-badge status-badge-primary">G80.1</span>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">{{ patient.primary_diagnosis|default:"Paralysie cérébrale spastique diplégie" }}</div>
+                                                    <div class="text-muted">Trouble neuromoteur affectant principalement les membres inférieurs</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Secondary Diagnoses -->
+                                <div class="col-12">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="fa-solid fa-list-ul me-2"></i>Diagnostics Secondaires
+                                    </h6>
+                                    <div>
+                                        <span class="status-badge status-badge-warning me-2 mb-2">F80.1 - Trouble expressif du langage</span>
+                                        <span class="status-badge status-badge-info me-2 mb-2">E43 - Malnutrition modérée</span>
+                                        <span class="status-badge status-badge-secondary me-2 mb-2">H54.0 - Déficience visuelle légère</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Medical History -->
+        <div class="col-12 mb-4">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-history form-section-icon"></i>
+                    <h5 class="form-section-title">Historique Médical</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="table-responsive">
+                        <table class="list-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Diagnostic</th>
+                                    <th>Médecin</th>
+                                    <th>Établissement</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in medical_history %}
+                                <tr>
+                                    <td>{{ record.date|date:"d/m/Y" }}</td>
+                                    <td>Consultation</td>
+                                    <td>{{ record.diagnosis|default:"Non renseigné" }}</td>
+                                    <td>{% if record.doctor %}Dr. {{ record.doctor.user.first_name }} {{ record.doctor.user.last_name }}{% else %}Non renseigné{% endif %}</td>
+                                    <td>{% if record.facility %}{{ record.facility.name }}{% else %}Non renseigné{% endif %}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button type="button" class="action-btn action-btn-primary" data-bs-toggle="modal" data-bs-target="#recordModal{{ record.id }}" title="Voir détails">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <i class="fa-solid fa-file-medical"></i>
+                                            </div>
+                                            <h6 class="empty-state-title">Aucun historique médical disponible</h6>
+                                            <p class="empty-state-description">Aucune consultation enregistrée</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prescriptions History -->
+        <div class="col-md-6 mb-4">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-prescription form-section-icon"></i>
+                    <h5 class="form-section-title">Prescriptions</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="table-responsive">
+                        <table class="list-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Médicament</th>
+                                    <th>Dosage</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prescription in prescriptions %}
+                                <tr>
+                                    <td>{{ prescription.date }}</td>
+                                    <td>{{ prescription.medication }}</td>
+                                    <td>{{ prescription.dosage }}</td>
+                                    <td>
+                                        {% if prescription.status == "Actif" %}
+                                        <span class="status-badge status-badge-success">{{ prescription.status }}</span>
+                                        {% elif prescription.status == "Terminé" %}
+                                        <span class="status-badge status-badge-secondary">{{ prescription.status }}</span>
+                                        {% else %}
+                                        <span class="status-badge status-badge-warning">{{ prescription.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <i class="fa-solid fa-prescription"></i>
+                                            </div>
+                                            <h6 class="empty-state-title">Aucune prescription disponible</h6>
+                                            <p class="empty-state-description">Aucune prescription enregistrée</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rehabilitation Sessions -->
+        <div class="col-md-6 mb-4">
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-dumbbell form-section-icon"></i>
+                    <h5 class="form-section-title">Séances de Réadaptation</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="table-responsive">
+                        <table class="list-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Objectif</th>
+                                    <th>Thérapeute</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for session in rehabilitation_sessions %}
+                                <tr>
+                                    <td>{{ session.date }}</td>
+                                    <td>{{ session.type }}</td>
+                                    <td>{{ session.focus }}</td>
+                                    <td>{{ session.therapist.first_name }} {{ session.therapist.last_name }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <i class="fa-solid fa-dumbbell"></i>
+                                            </div>
+                                            <h6 class="empty-state-title">Aucune séance de réadaptation disponible</h6>
+                                            <p class="empty-state-description">Aucune séance enregistrée</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medical Record Detailed Modal -->
+{% for record in medical_history %}
+<div class="modal fade" id="recordModal{{ record.id }}" tabindex="-1" aria-labelledby="recordModalLabel{{ record.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recordModalLabel{{ record.id }}">Consultation du {{ record.date|date:"d/m/Y" }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Informations générales</h6>
+                        <div class="entity-info-card">
+                            <div class="entity-details">
+                                <div class="entity-detail-item">
+                                    <span class="entity-detail-label">Date:</span>
+                                    <span class="entity-detail-value">{{ record.date|date:"d/m/Y" }}</span>
+                                </div>
+                                <div class="entity-detail-item">
+                                    <span class="entity-detail-label">Type:</span>
+                                    <span class="entity-detail-value">Consultation</span>
+                                </div>
+                                <div class="entity-detail-item">
+                                    <span class="entity-detail-label">Médecin:</span>
+                                    <span class="entity-detail-value">{% if record.doctor %}Dr. {{ record.doctor.user.first_name }} {{ record.doctor.user.last_name }}{% else %}Non renseigné{% endif %}</span>
+                                </div>
+                                <div class="entity-detail-item">
+                                    <span class="entity-detail-label">Établissement:</span>
+                                    <span class="entity-detail-value">{% if record.facility %}{{ record.facility.name }}{% else %}Non renseigné{% endif %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Diagnostic</h6>
+                        <div class="form-info">
+                            <div class="form-info-content">
+                                <p><strong>{{ record.diagnosis|default:"Non renseigné" }}</strong></p>
+                            </div>
+                        </div>
+                        <h6 class="text-primary mt-3">Description</h6>
+                        <div class="form-info">
+                            <div class="form-info-content">
+                                <p>{{ record.description|default:"Non renseignée" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 class="text-primary">Recommandations</h6>
+                        <div class="form-info">
+                            <div class="form-info-content">
+                                <p>{{ record.recommendations|default:"Aucune recommandation" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary-create" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

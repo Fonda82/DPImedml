@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bon {{ voucher.voucher_id }} | Système de Réhabilitation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <div class="detail-header-content">
+            <div class="detail-title-section">
+                <div class="detail-breadcrumb">
+                    <i class="fas fa-ticket-alt text-primary me-2"></i>
+                    <a href="{% url 'vouchers:list' %}" class="text-decoration-none">Bons de Prise en Charge</a>
+                    <i class="fas fa-chevron-right mx-2 text-muted"></i>
+                    <span class="text-muted">{{ voucher.voucher_id }}</span>
+                </div>
+                <h1 class="detail-title">
+                    <i class="fas fa-ticket-alt me-3"></i>
+                    Bon {{ voucher.voucher_id }}
+                </h1>
+                <div class="detail-subtitle">
+                    <span class="badge 
+                        {% if voucher.status == 'issued' %}status-pending
+                        {% elif voucher.status == 'validated' %}status-active
+                        {% elif voucher.status == 'used' %}status-completed
+                        {% elif voucher.status == 'expired' %}status-inactive
+                        {% elif voucher.status == 'cancelled' %}status-cancelled
+                        {% endif %} me-2">
+                        {% if voucher.status == 'issued' %}
+                            <i class="fas fa-ticket-alt me-1"></i>Émis
+                        {% elif voucher.status == 'validated' %}
+                            <i class="fas fa-check me-1"></i>Validé
+                        {% elif voucher.status == 'used' %}
+                            <i class="fas fa-handshake me-1"></i>Utilisé
+                        {% elif voucher.status == 'expired' %}
+                            <i class="fas fa-clock me-1"></i>Expiré
+                        {% elif voucher.status == 'cancelled' %}
+                            <i class="fas fa-times me-1"></i>Annulé
+                        {% endif %}
+                    </span>
+                    <span class="text-muted">République du Mali</span>
+                </div>
+            </div>
+            <div class="detail-actions">
+                <button class="btn btn-primary-detail" onclick="showComingSoon('Impression')">
+                    <i class="fas fa-print me-2"></i>Imprimer
+                </button>
+                <a href="{% url 'vouchers:list' %}" class="btn btn-secondary-detail">
+                    <i class="fas fa-arrow-left me-2"></i>Liste des bons
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Patient Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-user me-2"></i>
+                        Patient Concerné
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="entity-info-card">
+                        <div class="d-flex align-items-center">
+                            <div class="entity-avatar">
+                                {{ voucher.patient.first_name|slice:":1" }}{{ voucher.patient.last_name|slice:":1" }}
+                            </div>
+                            <div class="ms-3">
+                                <h6 class="mb-1">{{ voucher.patient.first_name }} {{ voucher.patient.last_name }}</h6>
+                                <div class="text-muted small">ID: {{ voucher.patient.patient_id }}</div>
+                                <div class="text-muted small">Âge: {{ voucher.patient.age }} ans</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Information -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-briefcase-medical me-2"></i>
+                        Service Demandé
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="form-group-detail">
+                        <label class="form-label-detail">
+                            <i class="fas fa-stethoscope text-primary me-2"></i>Type de Service
+                        </label>
+                        <div class="form-value">{{ voucher.service_type }}</div>
+                    </div>
+                    {% if voucher.description %}
+                    <div class="form-group-detail">
+                        <label class="form-label-detail">
+                            <i class="fas fa-file-alt text-primary me-2"></i>Description
+                        </label>
+                        <div class="form-value">{{ voucher.description }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Voucher Details -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Détails du Bon
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-calendar-plus text-primary me-2"></i>Date d'émission
+                                </label>
+                                <div class="form-value">{{ voucher.issue_date|date:"d/m/Y" }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-user-md text-primary me-2"></i>Médecin prescripteur
+                                </label>
+                                <div class="form-value">Dr. {{ voucher.issuing_doctor.user.first_name }} {{ voucher.issuing_doctor.user.last_name }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-hospital text-primary me-2"></i>Établissement émetteur
+                                </label>
+                                <div class="form-value">{{ voucher.issuing_facility.name }}, {{ voucher.issuing_facility.city }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-calendar-times text-primary me-2"></i>Date d'expiration
+                                </label>
+                                <div class="form-value">{{ voucher.expiry_date|date:"d/m/Y" }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-stethoscope text-primary me-2"></i>Spécialité
+                                </label>
+                                <div class="form-value">{{ voucher.issuing_doctor.specialty|default:"Médecin généraliste" }}</div>
+                            </div>
+                            <div class="form-group-detail">
+                                <label class="form-label-detail">
+                                    <i class="fas fa-building text-primary me-2"></i>Établissement cible
+                                </label>
+                                <div class="form-value">{{ voucher.target_facility.name }}, {{ voucher.target_facility.city }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline History -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-history me-2"></i>
+                        Historique du Bon
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Émission du bon</h6>
+                                <p class="mb-1">Bon émis par Dr. {{ voucher.issuing_doctor.user.last_name }} pour {{ voucher.service_type }}</p>
+                                <small class="text-muted">{{ voucher.issue_date|date:"d/m/Y" }} - {{ voucher.issuing_facility.name }}</small>
+                            </div>
+                        </div>
+                        
+                        {% if voucher.status == 'validated' or voucher.status == 'used' %}
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-info">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Validation</h6>
+                                <p class="mb-1">Bon validé par l'établissement cible</p>
+                                <small class="text-muted">{{ voucher.validation_date|date:"d/m/Y"|default:"Date non disponible" }} - {{ voucher.target_facility.name }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if voucher.status == 'used' %}
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Service fourni</h6>
+                                <p class="mb-1">Le service a été fourni au patient avec succès</p>
+                                <small class="text-muted">{{ voucher.usage_date|date:"d/m/Y"|default:"Date non disponible" }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if voucher.status == 'expired' %}
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-danger">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Expiration</h6>
+                                <p class="mb-1">Le bon a expiré sans être utilisé</p>
+                                <small class="text-muted">{{ voucher.expiry_date|date:"d/m/Y" }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if voucher.status == 'cancelled' %}
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-danger">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">Annulation</h6>
+                                <p class="mb-1">Le bon a été annulé</p>
+                                <small class="text-muted">{{ voucher.cancellation_date|date:"d/m/Y"|default:"Date non disponible" }}</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- QR Code -->
+            <div class="entity-info-card text-center">
+                <h6 class="mb-3">
+                    <i class="fas fa-qrcode me-2"></i>Code QR
+                </h6>
+                {% if voucher.qr_code %}
+                    <img src="{{ voucher.qr_code.url }}" alt="QR Code" class="img-fluid" style="max-width: 150px;">
+                {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-qrcode fa-3x text-muted"></i>
+                        <p class="text-muted mt-2">QR Code non disponible</p>
+                    </div>
+                {% endif %}
+                <p class="text-muted small mt-2">Scannez ce code pour vérifier l'authenticité</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <div class="form-section-title">
+                        <i class="fas fa-bolt me-2"></i>
+                        Actions Rapides
+                    </div>
+                </div>
+                <div class="form-section-content">
+                    {% if voucher.status == 'issued' %}
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary-detail" onclick="showComingSoon('Validation de bon')">
+                            <i class="fas fa-check me-2"></i>Valider le bon
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="showComingSoon('Annulation de bon')">
+                            <i class="fas fa-times me-2"></i>Annuler le bon
+                        </button>
+                    </div>
+                    {% elif voucher.status == 'validated' %}
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary-detail" onclick="showComingSoon('Marquer comme utilisé')">
+                            <i class="fas fa-check-double me-2"></i>Service fourni
+                        </button>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 mt-3">
+                        <button class="btn btn-secondary-detail" onclick="showComingSoon('Impression')">
+                            <i class="fas fa-print me-2"></i>Imprimer
+                        </button>
+                        <button class="btn btn-secondary-detail" onclick="showComingSoon('Envoi par email')">
+                            <i class="fas fa-envelope me-2"></i>Envoyer par email
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information -->
+            <div class="form-info">
+                <div class="form-info-content">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-info-circle me-2 mt-1"></i>
+                        <div>
+                            <strong>Validité</strong><br>
+                            <small>
+                                {% now "Y-m-d" as today %}
+                                {% if voucher.expiry_date|date:"Y-m-d" > today %}
+                                    {{ voucher.expiry_date|timeuntil }} restants
+                                {% else %}
+                                    Expiré
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-info">
+                <div class="form-info-content">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-shield-alt me-2 mt-1"></i>
+                        <div>
+                            <strong>Sécurité</strong><br>
+                            <small>Code unique sécurisé avec QR pour vérification authentique selon les standards maliens.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showComingSoon(feature) {
+    alert('Fonctionnalité "' + feature + '" en cours de développement.\n\nCette fonctionnalité sera disponible dans une prochaine version du système.');
+}
+</script>
+{% endblock %} 

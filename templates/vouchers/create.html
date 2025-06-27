@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Créer un Bon de Prise en Charge | Système de Réhabilitation{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-ticket-alt me-2"></i>Créer un Bon de Prise en Charge
+                </h1>
+                <p class="create-subtitle">République du Mali - Système de Réhabilitation Pédiatrique</p>
+            </div>
+            <div class="create-actions">
+                <a href="{% url 'vouchers:list' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Liste des bons
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <form method="post" action="{% url 'vouchers:create' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Patient Selection Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-user form-section-icon"></i>
+                        <h5 class="form-section-title">Patient Bénéficiaire</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-info-circle"></i>
+                                Sélection du bénéficiaire
+                            </div>
+                            <div class="form-info-content">
+                                Sélectionnez le patient qui bénéficiera de ce bon de service
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="patient" class="form-label required">Patient</label>
+                            <select class="form-select" id="patient" name="patient" required>
+                                <option value="">Sélectionner un patient</option>
+                                {% for patient in patients %}
+                                <option value="{{ patient.id }}">
+                                    {{ patient.first_name }} {{ patient.last_name }} 
+                                    ({{ patient.patient_id }}) - {{ patient.age }} ans
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Veuillez sélectionner un patient</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Details Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-briefcase-medical form-section-icon"></i>
+                        <h5 class="form-section-title">Détails du Service</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-stethoscope"></i>
+                                Configuration du service
+                            </div>
+                            <div class="form-info-content">
+                                Spécifiez le type de service et l'établissement cible
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="service_type" class="form-label required">Type de service</label>
+                                <select class="form-select" id="service_type" name="service_type" required>
+                                    <option value="">Sélectionner le type de service</option>
+                                    <option value="Consultation pédiatrique">Consultation pédiatrique</option>
+                                    <option value="Réadaptation fonctionnelle">Réadaptation fonctionnelle</option>
+                                    <option value="Kinésithérapie">Kinésithérapie</option>
+                                    <option value="Orthophonie">Orthophonie</option>
+                                    <option value="Ergothérapie">Ergothérapie</option>
+                                    <option value="Examen médical">Examen médical</option>
+                                    <option value="Imagerie médicale">Imagerie médicale</option>
+                                    <option value="Analyses de laboratoire">Analyses de laboratoire</option>
+                                    <option value="Appareillage orthopédique">Appareillage orthopédique</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un type de service</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="target_facility" class="form-label required">Établissement cible</label>
+                                <select class="form-select" id="target_facility" name="target_facility" required>
+                                    <option value="">Sélectionner un établissement</option>
+                                    {% for facility in facilities %}
+                                        <option value="{{ facility.id }}">
+                                            {{ facility.name }} - {{ facility.city }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un établissement</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label for="description" class="form-label">Description / Instructions</label>
+                                <textarea class="form-control" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="4"
+                                          placeholder="Décrivez les détails du service, indications médicales, ou instructions spéciales..."></textarea>
+                                <div class="form-text">
+                                    Ajoutez des détails sur le service requis, les indications médicales, ou toute instruction spéciale
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Administrative Details Section -->
+                {% if request.user.profile.user_type == 'facility_admin' or request.user.profile.user_type == 'superadmin' %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-cogs form-section-icon"></i>
+                        <h5 class="form-section-title">Paramètres Administratifs</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="form-info">
+                            <div class="form-info-header">
+                                <i class="fa-solid fa-gear"></i>
+                                Configuration avancée
+                            </div>
+                            <div class="form-info-content">
+                                Configuration avancée du bon (optionnel)
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="issuing_facility" class="form-label">Établissement émetteur</label>
+                                <select class="form-select" id="issuing_facility" name="issuing_facility">
+                                    <option value="">Sélectionner un établissement</option>
+                                    {% for facility in facilities %}
+                                        <option value="{{ facility.id }}" {% if request.user.profile.facility.id == facility.id %}selected{% endif %}>
+                                            {{ facility.name }} - {{ facility.city }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="expiry_days" class="form-label">Validité (jours)</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="expiry_days" 
+                                       name="expiry_days" 
+                                       value="90" 
+                                       min="1" 
+                                       max="365">
+                                <div class="form-text">
+                                    Durée de validité du bon (par défaut 90 jours)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Form Actions -->
+                <div class="form-section">
+                    <div class="form-actions">
+                        <a href="{% url 'vouchers:list' %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-arrow-left"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn-primary-create">
+                            <i class="fa-solid fa-check"></i>Émettre le Bon
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <!-- Guide Section -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-info-circle form-section-icon"></i>
+                    <h5 class="form-section-title">Guide des Bons</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-ticket-alt"></i>
+                            Qu'est-ce qu'un bon de prise en charge ?
+                        </div>
+                        <div class="form-info-content">
+                            Un bon de prise en charge est un document officiel qui autorise un patient à recevoir des services médicaux dans un établissement de santé au Mali.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-clock"></i>
+                            Durée de validité
+                        </div>
+                        <div class="form-info-content">
+                            Les bons sont valides pendant 90 jours par défaut. Cette période peut être ajustée selon les besoins médicaux spécifiques.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-qrcode"></i>
+                            Code QR automatique
+                        </div>
+                        <div class="form-info-content">
+                            Chaque bon génère automatiquement un code QR sécurisé pour faciliter la vérification et le suivi dans le système.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-shield-alt"></i>
+                            Sécurité et traçabilité
+                        </div>
+                        <div class="form-info-content">
+                            Tous les bons sont tracés et sécurisés conformément aux standards de sécurité du système de santé malien.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Statistics -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-chart-bar form-section-icon"></i>
+                    <h5 class="form-section-title">Statistiques Mensuelles</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card text-center">
+                        <div class="h3 text-primary mb-1">127</div>
+                        <div class="text-muted">Bons émis ce mois</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h3 text-success mb-1">98</div>
+                        <div class="text-muted">Bons validés</div>
+                    </div>
+                    
+                    <div class="entity-info-card text-center">
+                        <div class="h3 text-info mb-1">82</div>
+                        <div class="text-muted">Services fournis</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        
+        // Service type selection enhancement
+        document.getElementById('service_type').addEventListener('change', function() {
+            const serviceType = this.value;
+            const descriptionField = document.getElementById('description');
+            
+            if (serviceType === 'Autre') {
+                descriptionField.setAttribute('required', true);
+                descriptionField.setAttribute('placeholder', 'Veuillez décrire le service spécifique requis...');
+                descriptionField.focus();
+            } else {
+                descriptionField.removeAttribute('required');
+                descriptionField.setAttribute('placeholder', 'Décrivez les détails du service, indications médicales, ou instructions spéciales...');
+            }
+        });
+        
+        // Patient selection enhancement
+        document.getElementById('patient').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                console.log('Patient selected:', selectedOption.text);
+            }
+        });
+    });
+</script>
+{% endblock %} 

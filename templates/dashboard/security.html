@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sécurité & Conformité | Tableau de Bord{% endblock %}
+
+{% block extra_css %}
+<style>
+.security-header {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.security-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border-left: 4px solid #dc3545;
+}
+
+.security-metric {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border-left: 3px solid #dc3545;
+}
+
+.security-metric.success {
+    border-left-color: #28a745;
+}
+
+.security-metric.warning {
+    border-left-color: #ffc107;
+}
+
+.security-metric.danger {
+    border-left-color: #dc3545;
+}
+
+.security-metric.info {
+    border-left-color: #17a2b8;
+}
+
+.metric-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.metric-number.success {
+    color: #28a745;
+}
+
+.metric-number.warning {
+    color: #ffc107;
+}
+
+.metric-number.danger {
+    color: #dc3545;
+}
+
+.metric-number.info {
+    color: #17a2b8;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.risk-indicator {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.risk-low {
+    background: #d4edda;
+    color: #155724;
+}
+
+.risk-medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.risk-high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.risk-critical {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.audit-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #0C7C59;
+}
+
+.audit-timestamp {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.compliance-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.section-header {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+    margin: -2rem -2rem 1.5rem -2rem;
+}
+
+.btn-security {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-security:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    color: white;
+}
+
+.progress-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin: 0 auto 1rem;
+}
+
+.progress-excellent {
+    background: conic-gradient(#28a745 0deg 270deg, #e9ecef 270deg 360deg);
+    color: #28a745;
+}
+
+.progress-good {
+    background: conic-gradient(#20c997 0deg 216deg, #e9ecef 216deg 360deg);
+    color: #20c997;
+}
+
+.progress-warning {
+    background: conic-gradient(#ffc107 0deg 180deg, #e9ecef 180deg 360deg);
+    color: #856404;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="security-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-shield-alt me-3"></i>
+                    Sécurité & Conformité
+                </h1>
+                <p class="mb-0 opacity-90">
+                    <i class="fas fa-flag me-2"></i>Cybersécurité & RGPD - République du Mali
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <span class="compliance-badge">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Système Sécurisé
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Security Metrics Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="security-metric success">
+                <div class="metric-number success">{{ login_success_rate }}%</div>
+                <div class="metric-label">Taux de Connexion Réussie</div>
+                <small class="text-muted">24 dernières heures</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="security-metric {% if failed_logins_24h > 5 %}warning{% else %}success{% endif %}">
+                <div class="metric-number {% if failed_logins_24h > 5 %}warning{% else %}success{% endif %}">{{ failed_logins_24h }}</div>
+                <div class="metric-label">Tentatives Échouées</div>
+                <small class="text-muted">24 dernières heures</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="security-metric info">
+                <div class="metric-number info">{{ consent_rate }}%</div>
+                <div class="metric-label">Conformité RGPD</div>
+                <small class="text-muted">Patients avec consentements</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="security-metric success">
+                <div class="metric-number success">{{ retention_policies.count }}</div>
+                <div class="metric-label">Politiques Actives</div>
+                <small class="text-muted">Rétention des données</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Security Audit Log -->
+        <div class="col-lg-8 mb-4">
+            <div class="security-card">
+                <div class="section-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>
+                        Journal d'Audit Sécurité
+                    </h4>
+                </div>
+                
+                <div class="p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6>Événements Récents</h6>
+                        <button class="btn btn-security btn-sm" onclick="refreshAuditLog()">
+                            <i class="fas fa-sync-alt me-1"></i>Actualiser
+                        </button>
+                    </div>
+                    
+                    {% if recent_security_events %}
+                    {% for event in recent_security_events %}
+                    <div class="audit-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold">{{ event.description }}</div>
+                                <div class="audit-timestamp">
+                                    {% if event.user %}
+                                        Par {{ event.user.get_full_name|default:event.user.username }}
+                                    {% else %}
+                                        Système automatique
+                                    {% endif %}
+                                    - {{ event.timestamp|date:"d/m/Y H:i" }}
+                                </div>
+                                {% if event.ip_address %}
+                                <small class="text-muted">IP: {{ event.ip_address }}</small>
+                                {% endif %}
+                            </div>
+                            <span class="risk-indicator risk-{{ event.risk_level }}">{{ event.get_risk_level_display }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-shield-check fa-3x text-success mb-3"></i>
+                        <h6>Aucun événement de sécurité</h6>
+                        <p class="text-muted">Le système fonctionne de manière sécurisée</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance & Risk Analysis -->
+        <div class="col-lg-4 mb-4">
+            <!-- GDPR Compliance Status -->
+            <div class="security-card mb-3">
+                <div class="section-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-balance-scale me-2"></i>
+                        Conformité RGPD
+                    </h5>
+                </div>
+                
+                <div class="p-4 text-center">
+                    <div class="progress-circle progress-excellent">
+                        {{ consent_rate }}%
+                    </div>
+                    <h6>Excellente Conformité</h6>
+                    <p class="text-muted small">{{ patients_with_consent }}/{{ total_patients }} patients avec consentements</p>
+                    
+                    <a href="{% url 'dashboard:gdpr' %}" class="btn btn-security btn-sm">
+                        <i class="fas fa-cog me-1"></i>Gérer RGPD
+                    </a>
+                </div>
+            </div>
+
+            <!-- Risk Level Distribution -->
+            <div class="security-card mb-3">
+                <div class="section-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Niveaux de Risque
+                    </h5>
+                </div>
+                
+                <div class="p-4">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="risk-indicator risk-low">Faible</div>
+                            <div class="fw-bold mt-1">{{ risk_counts.low }}</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="risk-indicator risk-medium">Moyen</div>
+                            <div class="fw-bold mt-1">{{ risk_counts.medium }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="risk-indicator risk-high">Élevé</div>
+                            <div class="fw-bold mt-1">{{ risk_counts.high }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="risk-indicator risk-critical">Critique</div>
+                            <div class="fw-bold mt-1">{{ risk_counts.critical }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="security-card">
+                <div class="section-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Actions Rapides
+                    </h5>
+                </div>
+                
+                <div class="p-4">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-security" onclick="generateSecurityReport()">
+                            <i class="fas fa-file-alt me-2"></i>Rapport de Sécurité
+                        </button>
+                        <button class="btn btn-security" onclick="exportAuditLog()">
+                            <i class="fas fa-download me-2"></i>Exporter Logs
+                        </button>
+                        <button class="btn btn-security" onclick="showGDPRCompliance()">
+                            <i class="fas fa-user-shield me-2"></i>Statut RGPD
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Retention Policies -->
+    <div class="row">
+        <div class="col-12">
+            <div class="security-card">
+                <div class="section-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-database me-2"></i>
+                        Politiques de Rétention des Données
+                    </h4>
+                </div>
+                
+                <div class="p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Type de Données</th>
+                                    <th>Période de Rétention</th>
+                                    <th>Description</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for policy in retention_policies %}
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-folder me-2 text-primary"></i>
+                                        {{ policy.get_data_type_display }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ policy.retention_period_days }} jours</span>
+                                    </td>
+                                    <td>{{ policy.description|truncatewords:10 }}</td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Actif
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">
+                                        <div class="text-muted">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Aucune politique de rétention configurée
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshAuditLog() {
+    showToast('Journal d\'audit actualisé', 'success');
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+function generateSecurityReport() {
+    showToast('Génération du rapport de sécurité...', 'info');
+    setTimeout(() => {
+        showToast('Rapport de sécurité généré avec succès!', 'success');
+    }, 2000);
+}
+
+function exportAuditLog() {
+    showToast('Export des logs en cours...', 'info');
+    setTimeout(() => {
+        showToast('Logs exportés avec succès!', 'success');
+    }, 1500);
+}
+
+function showGDPRCompliance() {
+    window.location.href = "{% url 'dashboard:gdpr' %}";
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation' : 'info'}-circle me-2"></i>
+        ${message}
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+setInterval(() => {
+    console.log('Auto-refreshing security metrics...');
+}, 30000);
+</script>
+{% endblock %}

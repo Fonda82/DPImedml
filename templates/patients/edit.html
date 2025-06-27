@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Modifier Patient | {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.mali-header {
+    background: linear-gradient(135deg, #0C7C59 0%, #14A085 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.edit-form-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section-header {
+    background: linear-gradient(135deg, #0C7C59, #FCD116);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px 8px 0 0;
+    margin: -2rem -2rem 1.5rem -2rem;
+}
+
+.patient-id-badge {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #0C7C59;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0C7C59;
+    box-shadow: 0 0 0 0.2rem rgba(12, 124, 89, 0.25);
+}
+
+.section-divider {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin: 2rem -2rem 1.5rem -2rem;
+    border-left: 4px solid #FCD116;
+}
+
+.btn-mali {
+    background: linear-gradient(135deg, #0C7C59, #14A085);
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-mali:hover {
+    background: linear-gradient(135deg, #14A085, #0C7C59);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(12, 124, 89, 0.25);
+}
+
+.btn-cancel {
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    color: #6c757d;
+    background: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.required-field {
+    color: #dc3545;
+}
+
+.invalid-feedback {
+    display: block;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+    border-color: #dc3545;
+}
+
+.was-validated .form-control:valid,
+.was-validated .form-select:valid {
+    border-color: #28a745;
+}
+
+.input-group-icon {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0C7C59;
+    z-index: 5;
+}
+
+.input-with-icon {
+    padding-left: 3rem;
+}
+
+.form-help-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mali-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-user-edit me-3"></i>
+                    Modifier Patient
+                </h1>
+                <p class="mb-0 opacity-90">
+                    <i class="fas fa-user me-2"></i>{{ patient.first_name }} {{ patient.last_name }}
+                    <span class="badge bg-light text-dark ms-2">{{ patient.patient_id }}</span>
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'patients:detail' pk=patient.pk %}" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Retour au dossier
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="edit-form-card">
+                <div class="section-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Modification des Informations
+                    </h4>
+                </div>
+                
+                <!-- Patient ID Badge -->
+                <div class="patient-id-badge">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                            <strong>
+                                <i class="fas fa-id-card me-2 text-primary"></i>
+                                Identifiant Patient:
+                            </strong>
+                    </div>
+                    <div class="col-md-9">
+                            <span class="h5 mb-0 text-primary">{{ patient.patient_id }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                    
+                    <!-- Personal Information Section -->
+                    <h5 class="mb-4">
+                        <i class="fas fa-user me-2 text-primary"></i>
+                        Informations Personnelles
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="first_name" class="form-label">
+                                    <i class="fas fa-user me-1"></i>
+                                    Prénom <span class="required-field">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" 
+                                       value="{{ patient.first_name }}" required>
+                                <div class="invalid-feedback">
+                                    Veuillez entrer le prénom.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="last_name" class="form-label">
+                                    <i class="fas fa-user me-1"></i>
+                                    Nom <span class="required-field">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" 
+                                       value="{{ patient.last_name }}" required>
+                                <div class="invalid-feedback">
+                                    Veuillez entrer le nom.
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="date_of_birth" class="form-label">
+                                    <i class="fas fa-birthday-cake me-1"></i>
+                                    Date de naissance <span class="required-field">*</span>
+                                </label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                                       value="{{ patient.date_of_birth|date:'Y-m-d' }}" required>
+                                <div class="form-help-text">Format: JJ/MM/AAAA</div>
+                                <div class="invalid-feedback">
+                                    Veuillez entrer la date de naissance.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="gender" class="form-label">
+                                    <i class="fas fa-venus-mars me-1"></i>
+                                    Genre <span class="required-field">*</span>
+                                </label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="">Sélectionner le genre</option>
+                                    <option value="M" {% if patient.gender == "M" %}selected{% endif %}>Masculin</option>
+                                    <option value="F" {% if patient.gender == "F" %}selected{% endif %}>Féminin</option>
+                                    <option value="O" {% if patient.gender == "O" %}selected{% endif %}>Autre</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Veuillez sélectionner un genre.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="section-divider">
+                        <h5 class="mb-0">
+                            <i class="fas fa-phone me-2"></i>
+                            Informations de Contact
+                        </h5>
+                        </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone_number" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>
+                                    Téléphone
+                                </label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number" 
+                                       value="{{ patient.phone_number }}" placeholder="+223 XX XX XX XX">
+                                <div class="form-help-text">Format: +223 XX XX XX XX</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-1"></i>
+                                    Email
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ patient.email }}" placeholder="exemple@email.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information Section -->
+                    <div class="section-divider">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            Adresse au Mali
+                        </h5>
+                        </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="address" class="form-label">
+                                    <i class="fas fa-home me-1"></i>
+                                    Adresse complète
+                                </label>
+                                <input type="text" class="form-control" id="address" name="address" 
+                                       value="{{ patient.address }}" placeholder="Rue, quartier, commune...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="city" class="form-label">
+                                    <i class="fas fa-city me-1"></i>
+                                    Ville/Commune
+                                </label>
+                                <input type="text" class="form-control" id="city" name="city" 
+                                       value="{{ patient.city|default:'Bamako' }}" placeholder="Bamako">
+                                <div class="form-help-text">Principale ville ou commune</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="region" class="form-label">
+                                    <i class="fas fa-map me-1"></i>
+                                    Région du Mali
+                                </label>
+                                <select class="form-select" id="region" name="region">
+                                    <option value="">Sélectionner une région</option>
+                                    <option value="Bamako" {% if patient.region == "Bamako" %}selected{% endif %}>District de Bamako</option>
+                                    <option value="Kayes" {% if patient.region == "Kayes" %}selected{% endif %}>Région de Kayes</option>
+                                    <option value="Koulikoro" {% if patient.region == "Koulikoro" %}selected{% endif %}>Région de Koulikoro</option>
+                                    <option value="Sikasso" {% if patient.region == "Sikasso" %}selected{% endif %}>Région de Sikasso</option>
+                                    <option value="Ségou" {% if patient.region == "Ségou" %}selected{% endif %}>Région de Ségou</option>
+                                    <option value="Mopti" {% if patient.region == "Mopti" %}selected{% endif %}>Région de Mopti</option>
+                                    <option value="Tombouctou" {% if patient.region == "Tombouctou" %}selected{% endif %}>Région de Tombouctou</option>
+                                    <option value="Gao" {% if patient.region == "Gao" %}selected{% endif %}>Région de Gao</option>
+                                    <option value="Kidal" {% if patient.region == "Kidal" %}selected{% endif %}>Région de Kidal</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guardian Information Section -->
+                    <div class="section-divider">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-friends me-2"></i>
+                            Informations du Tuteur/Responsable
+                        </h5>
+                        </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="guardian_name" class="form-label">
+                                    <i class="fas fa-user-friends me-1"></i>
+                                    Nom complet du tuteur
+                                </label>
+                                <input type="text" class="form-control" id="guardian_name" name="guardian_name" 
+                                       value="{{ patient.guardian_name }}" placeholder="Nom et prénom du tuteur">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="guardian_phone" class="form-label">
+                                    <i class="fas fa-phone me-1"></i>
+                                    Téléphone du tuteur
+                                </label>
+                                <input type="tel" class="form-control" id="guardian_phone" name="guardian_phone" 
+                                       value="{{ patient.guardian_phone }}" placeholder="+223 XX XX XX XX">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="guardian_relationship" class="form-label">
+                                    <i class="fas fa-heart me-1"></i>
+                                    Relation avec le patient
+                                </label>
+                                <select class="form-select" id="guardian_relationship" name="guardian_relationship">
+                                    <option value="">Sélectionner la relation</option>
+                                    <option value="Père" {% if patient.guardian_relationship == "Père" %}selected{% endif %}>Père</option>
+                                    <option value="Mère" {% if patient.guardian_relationship == "Mère" %}selected{% endif %}>Mère</option>
+                                    <option value="Grand-père" {% if patient.guardian_relationship == "Grand-père" %}selected{% endif %}>Grand-père</option>
+                                    <option value="Grand-mère" {% if patient.guardian_relationship == "Grand-mère" %}selected{% endif %}>Grand-mère</option>
+                                    <option value="Oncle" {% if patient.guardian_relationship == "Oncle" %}selected{% endif %}>Oncle</option>
+                                    <option value="Tante" {% if patient.guardian_relationship == "Tante" %}selected{% endif %}>Tante</option>
+                                    <option value="Frère" {% if patient.guardian_relationship == "Frère" %}selected{% endif %}>Frère</option>
+                                    <option value="Sœur" {% if patient.guardian_relationship == "Sœur" %}selected{% endif %}>Sœur</option>
+                                    <option value="Tuteur légal" {% if patient.guardian_relationship == "Tuteur légal" %}selected{% endif %}>Tuteur légal</option>
+                                    <option value="Autre" {% if patient.guardian_relationship == "Autre" %}selected{% endif %}>Autre</option>
+                                </select>
+                            </div>
+                            </div>
+                        </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'patients:detail' pk=patient.pk %}" class="btn btn-cancel">
+                            <i class="fas fa-times me-2"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn btn-mali">
+                            <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                        </button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function() {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+// Age calculation
+document.getElementById('date_of_birth').addEventListener('change', function() {
+    const birthDate = new Date(this.value);
+    const today = new Date();
+    const age = Math.floor((today - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+    
+    if (age >= 0) {
+        console.log(`Patient age: ${age} years`);
+    }
+});
+
+// Phone number formatting
+document.querySelectorAll('input[type="tel"]').forEach(function(input) {
+    input.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.startsWith('223')) {
+            value = '+' + value;
+        } else if (value.length > 0 && !value.startsWith('+223')) {
+            value = '+223' + value;
+        }
+        this.value = value;
+    });
+});
+</script>
+{% endblock %} 

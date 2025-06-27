@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: dpimedml
+    runtime: python3
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn dpimedml.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: dpimedml.settings_production
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+    healthCheckPath: /
+    autoDeploy: true
+    disk:
+      name: dpimedml-disk
+      mountPath: /opt/render/project/src/media
+      sizeGB: 1
+
+# Optional: If you want to add a database (currently using SQLite)
+# databases:
+#   - name: dpimedml-db
+#     databaseName: dpimedml
+#     user: dpimedml_user
+#     plan: free 

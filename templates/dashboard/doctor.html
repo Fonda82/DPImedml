@@ -1,0 +1,775 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tableau de Bord Médecin | Système de Réhabilitation{% endblock %}
+
+{% block page_title %}Tableau de Bord Médecin{% endblock %}
+{% block page_subtitle %}Gérez vos patients et rendez-vous{% endblock %}
+
+{% block content %}
+<!-- Compact Quick Actions Bar -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="quick-actions-bar bg-white rounded shadow-sm p-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+                <h6 class="mb-0 text-muted">Actions rapides</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'patients:create' %}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-user-plus me-1"></i> Nouveau patient
+                    </a>
+                    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-success">
+                        <i class="fa-solid fa-calendar-plus me-1"></i> RDV
+                    </a>
+                    <a href="{% url 'patients:list' %}" class="btn btn-sm btn-info">
+                        <i class="fa-solid fa-stethoscope me-1"></i> Consultation ICD-10
+                    </a>
+                    <a href="{% url 'rehabilitation:create_select_patient' %}" class="btn btn-sm btn-warning">
+                        <i class="fa-solid fa-dumbbell me-1"></i> Plan rééducation
+                    </a>
+                    <a href="{% url 'vouchers:create' %}" class="btn btn-sm btn-dark">
+                        <i class="fa-solid fa-ticket me-1"></i> Bon de service
+                    </a>
+                </div>
+            </div>
+        </div>
+            </div>
+            </div>
+            
+<!-- Doctor Performance KPIs -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-green">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-child"></i>
+                </div>
+                <h6 class="kpi-title">Mes patients</h6>
+                </div>
+            <div class="kpi-value">{{ total_patients|default:24 }}</div>
+            <div class="kpi-context">{{ active_patients|default:21 }} patients actifs</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ patient_capacity|default:80 }}%"></div>
+                </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+3 ce mois</span>
+                <small>Capacité: 30 patients</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-yellow">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <h6 class="kpi-title">Consultations aujourd'hui</h6>
+            </div>
+            <div class="kpi-value">{{ appointments_today|default:8 }}<small>/{{ appointment_capacity|default:12 }}</small></div>
+            <div class="kpi-context">{{ completed_appointments|default:6 }} terminées</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ appointment_progress|default:67 }}%"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend stable">Planning normal</span>
+                <small>Prochaine: 14h30</small>
+            </div>
+        </div>
+            </div>
+            
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-red">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-heartbeat"></i>
+                </div>
+                <h6 class="kpi-title">Plans de réhabilitation</h6>
+                </div>
+            <div class="kpi-value">{{ active_rehab_plans|default:15 }}</div>
+            <div class="kpi-context">{{ rehab_progress|default:12 }} en bon progrès</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ rehab_success_rate|default:85 }}%"></div>
+                </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+2 nouveaux</span>
+                <small>Succès: 85%</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card mali-primary">
+            <div class="kpi-header">
+                <div class="kpi-icon">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <h6 class="kpi-title">Performance</h6>
+            </div>
+            <div class="kpi-value">{{ performance_score|default:92 }}<small>%</small></div>
+            <div class="kpi-context">Satisfaction patients</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: {{ performance_score|default:92 }}%"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+3% ce mois</span>
+                <small>Objectif: 90%</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TDR Enhancement: Hospitalization and Referral KPIs -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 4px solid #2196f3;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #2196f3;">
+                    <i class="fa-solid fa-bed-pulse"></i>
+                </div>
+                <h6 class="kpi-title">Hospitalisations</h6>
+            </div>
+            <div class="kpi-value">{{ current_hospitalizations|default:3 }}</div>
+            <div class="kpi-context">patients hospitalisés</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 60%; background: #2196f3;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend stable">Stable</span>
+                <small>Capacité: 5 lits</small>
+            </div>
+        </div>
+            </div>
+            
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left: 4px solid #9c27b0;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #9c27b0;">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </div>
+                <h6 class="kpi-title">Références en attente</h6>
+            </div>
+            <div class="kpi-value">{{ pending_referrals|default:2 }}</div>
+            <div class="kpi-context">références envoyées</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 20%; background: #9c27b0;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">+1 cette semaine</span>
+                <small>{{ completed_referrals|default:8 }} complétées</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border-left: 4px solid #4caf50;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #4caf50;">
+                    <i class="fa-solid fa-network-wired"></i>
+                </div>
+                <h6 class="kpi-title">Réseau Mali</h6>
+            </div>
+            <div class="kpi-value">{{ completed_referrals|default:8 }}</div>
+            <div class="kpi-context">références réussies</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 80%; background: #4caf50;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend up">Taux succès: 80%</span>
+                <small>Réseau actif</small>
+            </div>
+        </div>
+            </div>
+            
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card" style="background: linear-gradient(135deg, #fff3e0 0%, #ffcc80 100%); border-left: 4px solid #ff9800;">
+            <div class="kpi-header">
+                <div class="kpi-icon" style="background: #ff9800;">
+                    <i class="fa-solid fa-comments-medical"></i>
+                </div>
+                <h6 class="kpi-title">Communications</h6>
+            </div>
+            <div class="kpi-value">5</div>
+            <div class="kpi-context">inter-établissements</div>
+            <div class="kpi-progress">
+                <div class="progress-bar" style="width: 50%; background: #ff9800;"></div>
+            </div>
+            <div class="kpi-footer">
+                <span class="kpi-trend stable">Cette semaine</span>
+                <small>3 en attente</small>
+            </div>
+        </div>
+    </div>
+            </div>
+            
+<!-- Clinical Analytics Row -->
+<div class="row mb-4">
+    <!-- Patient Age Distribution -->
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-chart-pie me-2"></i>Répartition par âge</h5>
+                <div class="widget-actions">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <canvas id="ageDistributionChart" height="200"></canvas>
+                <div class="age-stats mt-3">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="age-group-item">
+                                <span class="age-label">0-2 ans</span>
+                                <span class="age-count">5 enfants</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="age-group-item">
+                                <span class="age-label">3-6 ans</span>
+                                <span class="age-count">9 enfants</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="age-group-item">
+                                <span class="age-label">7-10 ans</span>
+                                <span class="age-count">7 enfants</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="age-group-item">
+                                <span class="age-label">11-14 ans</span>
+                                <span class="age-count">3 enfants</span>
+                            </div>
+                        </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Consultation Trend -->
+    <div class="col-xl-4 col-lg-6 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-line-chart me-2"></i>Consultations hebdomadaires</h5>
+                <div class="widget-actions">
+                    <select class="form-select form-select-sm">
+                        <option>Cette semaine</option>
+                        <option>Semaine passée</option>
+                        <option>4 dernières semaines</option>
+                    </select>
+                </div>
+            </div>
+            <div class="widget-body">
+                <canvas id="weeklyConsultationsChart" height="200"></canvas>
+                <div class="consultation-metrics mt-3">
+                    <div class="row g-2">
+                        <div class="col-4 text-center">
+                            <div class="metric-value text-success">{{ avg_daily_consultations|default:6 }}</div>
+                            <div class="metric-label">Moyenne/jour</div>
+            </div>
+                        <div class="col-4 text-center">
+                            <div class="metric-value text-primary">{{ total_week_consultations|default:32 }}</div>
+                            <div class="metric-label">Cette semaine</div>
+            </div>
+                        <div class="col-4 text-center">
+                            <div class="metric-value text-warning">{{ consultation_growth|default:8 }}%</div>
+                            <div class="metric-label">Croissance</div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- My Diagnoses Breakdown -->
+    <div class="col-xl-4 col-lg-12 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-diagnoses me-2"></i>Mes diagnostics fréquents</h5>
+                <div class="widget-actions">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="diagnosis-list">
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-info">
+                            <span class="diagnosis-name">Paralysie cérébrale (G80)</span>
+                            <span class="diagnosis-count">7 patients</span>
+                        </div>
+                        <div class="diagnosis-bar">
+                            <div class="bar-fill" style="width: 35%; background-color: #0C7C59;"></div>
+                        </div>
+                    </div>
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-info">
+                            <span class="diagnosis-name">Retard mental (F70-F79)</span>
+                            <span class="diagnosis-count">5 patients</span>
+                        </div>
+                        <div class="diagnosis-bar">
+                            <div class="bar-fill" style="width: 25%; background-color: #14A97C;"></div>
+                        </div>
+                    </div>
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-info">
+                            <span class="diagnosis-name">Malnutrition (E43-E45)</span>
+                            <span class="diagnosis-count">4 patients</span>
+                        </div>
+                        <div class="diagnosis-bar">
+                            <div class="bar-fill" style="width: 20%; background-color: #FCD116;"></div>
+                        </div>
+                    </div>
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-info">
+                            <span class="diagnosis-name">Déficience auditive (H90)</span>
+                            <span class="diagnosis-count">3 patients</span>
+                        </div>
+                        <div class="diagnosis-bar">
+                            <div class="bar-fill" style="width: 15%; background-color: #CE1126;"></div>
+                        </div>
+                    </div>
+                    <div class="diagnosis-item">
+                        <div class="diagnosis-info">
+                            <span class="diagnosis-name">Autres diagnostics</span>
+                            <span class="diagnosis-count">5 patients</span>
+                        </div>
+                        <div class="diagnosis-bar">
+                            <div class="bar-fill" style="width: 25%; background-color: #6C757D;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Management Row -->
+<div class="row mb-4">
+    <!-- Today's Appointments -->
+    <div class="col-xl-8 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-calendar-day me-2"></i>Rendez-vous d'aujourd'hui</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'appointments:create' %}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-plus me-1"></i> Nouveau RDV
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Patient</th>
+                                <th>Heure</th>
+                                <th>Type</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in todays_appointments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            {{ appointment.patient.first_name|slice:":1" }}{{ appointment.patient.last_name|slice:":1" }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">{{ appointment.patient.first_name|default:"Ibrahim" }} {{ appointment.patient.last_name|default:"Koné" }}</div>
+                                            <small class="text-muted">{{ appointment.patient.age|default:7 }} ans • {{ appointment.patient.city|default:"Commune I" }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ appointment.appointment_time|default:"14:30" }}</td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ appointment.appointment_type|default:"Consultation" }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if appointment.status == 'confirmed' %}bg-success{% elif appointment.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                        {{ appointment.status|default:"Confirmé" }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'patients:detail' appointment.patient.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'patients:medical_record_create' appointment.patient.id %}" class="btn btn-sm btn-outline-success">
+                                            <i class="fa-solid fa-stethoscope"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            IK
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Ibrahim Koné</div>
+                                            <small class="text-muted">7 ans • Commune I</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>14:30</td>
+                                <td><span class="badge bg-light text-dark">Consultation</span></td>
+                                <td><span class="badge bg-success">Confirmé</span></td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-success">
+                                            <i class="fa-solid fa-stethoscope"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rehabilitation Progress -->
+    <div class="col-xl-4 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-chart-line me-2"></i>Progrès rééducation</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'rehabilitation:list' %}" class="btn btn-sm btn-outline-primary">
+                        Voir tout
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="rehab-progress-container">
+                    <canvas id="rehabProgressChart" height="200"></canvas>
+                </div>
+                <div class="rehab-summary mt-3">
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span class="label-text">Mobilité</span>
+                            <span class="label-value">{{ mobility_avg|default:78 }}%</span>
+                            </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bg-success" style="width: {{ mobility_avg|default:78 }}%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span class="label-text">Communication</span>
+                            <span class="label-value">{{ communication_avg|default:65 }}%</span>
+                            </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bg-warning" style="width: {{ communication_avg|default:65 }}%"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span class="label-text">Autonomie</span>
+                            <span class="label-value">{{ autonomy_avg|default:82 }}%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar bg-info" style="width: {{ autonomy_avg|default:82 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Patients & Critical Cases -->
+<div class="row">
+    <!-- Recent Patients -->
+    <div class="col-xl-8 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-users me-2"></i>Patients récents</h5>
+                <div class="widget-actions">
+                    <a href="{% url 'patients:list' %}" class="btn btn-sm btn-outline-primary">
+                        Voir tous
+                    </a>
+                </div>
+            </div>
+            <div class="widget-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Patient</th>
+                                <th>Diagnostic principal</th>
+                                <th>Dernière consultation</th>
+                                <th>Progrès</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for patient in recent_patients %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            {{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">{{ patient.first_name|default:"Fatoumata" }} {{ patient.last_name|default:"Diallo" }}</div>
+                                            <small class="text-muted">{{ patient.age|default:5 }} ans • {{ patient.guardian_name|default:"Mme Diallo" }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="diagnosis-tag">{{ patient.main_diagnosis|default:"Paralysie cérébrale" }}</span>
+                                </td>
+                                <td>{{ patient.last_consultation|default:"Il y a 3 jours" }}</td>
+                                <td>
+                                    <div class="progress-indicator">
+                                        <div class="progress-circle" data-progress="{{ patient.progress|default:75 }}">
+                                            <span>{{ patient.progress|default:75 }}%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="{% url 'patients:detail' patient.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'patients:medical_record_create' patient.id %}" class="btn btn-sm btn-outline-success">
+                                            <i class="fa-solid fa-stethoscope"></i>
+                                        </a>
+                                        <a href="{% url 'rehabilitation:create' patient_id=patient.id %}" class="btn btn-sm btn-outline-warning">
+                                            <i class="fa-solid fa-dumbbell"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm me-2 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
+                                            FD
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Fatoumata Diallo</div>
+                                            <small class="text-muted">5 ans • Mme Diallo</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="diagnosis-tag">Paralysie cérébrale</span></td>
+                                <td>Il y a 3 jours</td>
+                                <td>
+                                    <div class="progress-indicator">
+                                        <div class="progress-circle" data-progress="75">
+                                            <span>75%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="#" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-success">
+                                            <i class="fa-solid fa-stethoscope"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-outline-warning">
+                                            <i class="fa-solid fa-dumbbell"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Critical Cases & Alerts -->
+    <div class="col-xl-4 mb-4">
+        <div class="analytics-widget">
+            <div class="widget-header">
+                <h5><i class="fa-solid fa-exclamation-triangle me-2 text-warning"></i>Cas nécessitant attention</h5>
+                <div class="widget-actions">
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-refresh"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="alert-timeline">
+                    {% for alert in critical_cases %}
+                    <div class="alert-item">
+                        <div class="alert-marker bg-warning"></div>
+                        <div class="alert-content">
+                            <div class="alert-header">
+                                <span class="alert-title">{{ alert.title|default:"Suivi manqué" }}</span>
+                                <span class="alert-time">{{ alert.time|default:"Il y a 2 jours" }}</span>
+                </div>
+                            <div class="alert-description">{{ alert.description|default:"Mamadou Keita - Pas de consultation depuis 3 semaines" }}</div>
+                            <div class="alert-actions mt-2">
+                                <a href="#" class="btn btn-xs btn-outline-primary">Contacter</a>
+                                <a href="#" class="btn btn-xs btn-outline-success">Programmer</a>
+            </div>
+        </div>
+    </div>
+                    {% empty %}
+                    <div class="alert-item">
+                        <div class="alert-marker bg-warning"></div>
+                        <div class="alert-content">
+                            <div class="alert-header">
+                                <span class="alert-title">Suivi manqué</span>
+                                <span class="alert-time">Il y a 2 jours</span>
+</div>
+                            <div class="alert-description">Mamadou Keita - Pas de consultation depuis 3 semaines</div>
+                            <div class="alert-actions mt-2">
+                                <a href="#" class="btn btn-xs btn-outline-primary">Contacter</a>
+                                <a href="#" class="btn btn-xs btn-outline-success">Programmer</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-marker bg-danger"></div>
+                        <div class="alert-content">
+                            <div class="alert-header">
+                                <span class="alert-title">Détérioration</span>
+                                <span class="alert-time">Il y a 1 jour</span>
+                                </div>
+                            <div class="alert-description">Aminata Touré - Régression motrice signalée</div>
+                            <div class="alert-actions mt-2">
+                                <a href="#" class="btn btn-xs btn-outline-primary">Voir dossier</a>
+                                <a href="#" class="btn btn-xs btn-outline-danger">Urgence</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert-item">
+                        <div class="alert-marker bg-info"></div>
+                        <div class="alert-content">
+                            <div class="alert-header">
+                                <span class="alert-title">Progrès remarquable</span>
+                                <span class="alert-time">Il y a 1 heure</span>
+                            </div>
+                            <div class="alert-description">Seydou Traoré - Amélioration motricité +15%</div>
+                            <div class="alert-actions mt-2">
+                                <a href="#" class="btn btn-xs btn-outline-success">Voir progrès</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Age Distribution Chart
+    const ageCtx = document.getElementById('ageDistributionChart');
+    if (ageCtx) {
+        new Chart(ageCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['0-2 ans', '3-6 ans', '7-10 ans', '11-14 ans'],
+                datasets: [{
+                    data: [5, 9, 7, 3],
+                    backgroundColor: [
+                        '#0C7C59', '#14A97C', '#FCD116', '#CE1126'
+                    ],
+                    borderWidth: 0,
+                    cutout: '65%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    // Weekly Consultations Chart
+    const weeklyCtx = document.getElementById('weeklyConsultationsChart');
+    if (weeklyCtx) {
+        new Chart(weeklyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'],
+                datasets: [{
+                    label: 'Consultations',
+                    data: [6, 8, 5, 9, 7],
+                    borderColor: '#0C7C59',
+                    backgroundColor: 'rgba(12, 124, 89, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+        
+        // Rehabilitation Progress Chart
+    const rehabCtx = document.getElementById('rehabProgressChart');
+    if (rehabCtx) {
+        new Chart(rehabCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Mobilité', 'Communication', 'Cognition', 'Autonomie', 'Socialisation'],
+                datasets: [{
+                    label: 'Progrès moyen',
+                    data: [78, 65, 70, 82, 75],
+                    borderColor: '#0C7C59',
+                    backgroundColor: 'rgba(12, 124, 89, 0.2)',
+                    pointBackgroundColor: '#0C7C59',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { display: true },
+                        ticks: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+    });
+</script>
+{% endblock %} 

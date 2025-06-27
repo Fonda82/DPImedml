@@ -1,0 +1,340 @@
+{% extends 'base.html' %}
+
+{% block title %}Rendez-vous{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+    <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-calendar-check me-2"></i>Rendez-vous
+        </h1>
+                <p class="list-subtitle">Gestion des rendez-vous patients</p>
+    </div>
+            <div class="list-actions">
+                <span class="badge bg-light text-dark">{{ total_count }} RDV</span>
+                <a href="{% url 'appointments:create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Nouveau Rendez-vous
+        </a>
+    </div>
+</div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.scheduled_count|default:23 }}</div>
+            <div class="stats-card-label">Programmés</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.confirmed_count|default:18 }}</div>
+            <div class="stats-card-label">Confirmés</div>
+        </div>
+        
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.completed_count|default:45 }}</div>
+            <div class="stats-card-label">Terminés</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-calendar-day"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.today_count|default:8 }}</div>
+            <div class="stats-card-label">Aujourd'hui</div>
+                        </div>
+                    </div>
+                    
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" id="appointment-search" class="filter-input" 
+                       placeholder="Patient, motif..." 
+                       value="{{ filters.search_query }}">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Date</label>
+                <select id="date-filter" class="filter-select">
+                            <option value="">Toutes dates</option>
+                            <option value="today" {% if filters.date_filter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                            <option value="week" {% if filters.date_filter == 'week' %}selected{% endif %}>Cette semaine</option>
+                            <option value="month" {% if filters.date_filter == 'month' %}selected{% endif %}>Ce mois</option>
+                        </select>
+                    </div>
+                    
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select id="status-filter" class="filter-select">
+                            <option value="">Tous statuts</option>
+                            <option value="scheduled" {% if filters.status_filter == 'scheduled' %}selected{% endif %}>Programmé</option>
+                            <option value="confirmed" {% if filters.status_filter == 'confirmed' %}selected{% endif %}>Confirmé</option>
+                            <option value="completed" {% if filters.status_filter == 'completed' %}selected{% endif %}>Terminé</option>
+                            <option value="cancelled" {% if filters.status_filter == 'cancelled' %}selected{% endif %}>Annulé</option>
+                            <option value="no_show" {% if filters.status_filter == 'no_show' %}selected{% endif %}>Absent</option>
+                        </select>
+                    </div>
+                    
+            <div class="filter-group">
+                <label class="filter-label">Médecin</label>
+                <select id="doctor-filter" class="filter-select">
+                            <option value="">Tous médecins</option>
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}" {% if filters.doctor_filter == doctor.id|stringformat:"s" %}selected{% endif %}>
+                                Dr. {{ doctor.user.last_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                </div>
+                
+            <div class="filter-actions">
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-calendar-alt"></i>Calendrier
+                            </button>
+                <button type="button" class="btn-secondary">
+                    <i class="fa-solid fa-file-excel"></i>Export
+                        </button>
+    </div>
+</div>
+
+        <!-- Quick Filters -->
+        <div class="quick-filters">
+            <button type="button" class="quick-filter-btn" data-filter="today">
+                <i class="fa-solid fa-calendar-day"></i>Aujourd'hui
+            </button>
+            <button type="button" class="quick-filter-btn" data-filter="week">
+                <i class="fa-solid fa-calendar-week"></i>Cette semaine
+            </button>
+            <button type="button" class="quick-filter-btn" data-status="confirmed">
+                <i class="fa-solid fa-check-circle"></i>Confirmés
+                        </button>
+            <button type="button" class="quick-filter-btn" id="clear-all-filters">
+                <i class="fa-solid fa-times"></i>Effacer
+                        </button>
+                    </div>
+                </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Rendez-vous
+            </h6>
+                </div>
+                
+                    {% if appointments %}
+                    <div class="table-responsive">
+            <table class="list-table">
+                            <thead>
+                                <tr>
+                        <th>Date & Heure</th>
+                        <th>Patient</th>
+                        <th>Médecin</th>
+                        <th>Motif</th>
+                        <th>Statut</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointments-table-body">
+                                {% for appointment in appointments %}
+                                <tr data-appointment-id="{{ appointment.id }}">
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ appointment.appointment_date|date:"d/m/Y" }}</div>
+                                <div class="item-user-meta">{{ appointment.appointment_date|date:"H:i" }}</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ appointment.patient.first_name|slice:":1" }}{{ appointment.patient.last_name|slice:":1" }}
+                                            </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ appointment.patient.patient_id }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">Dr. {{ appointment.doctor.user.last_name }}</div>
+                                                {% if appointment.facility %}
+                                <div class="item-user-meta">{{ appointment.facility.name }}</div>
+                                                {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ appointment.reason|default:"Consultation générale" }}</div>
+                                        {% if appointment.notes %}
+                                <div class="item-user-meta">{{ appointment.notes|truncatechars:50 }}</div>
+                                        {% endif %}
+                            </div>
+                                    </td>
+                                    <td>
+                                            {% if appointment.status == 'scheduled' %}
+                            <span class="status-badge status-badge-info">
+                                <i class="fa-solid fa-clock"></i>Programmé
+                            </span>
+                                            {% elif appointment.status == 'confirmed' %}
+                            <span class="status-badge status-badge-warning">
+                                <i class="fa-solid fa-check"></i>Confirmé
+                            </span>
+                                            {% elif appointment.status == 'completed' %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check-circle"></i>Terminé
+                            </span>
+                                            {% elif appointment.status == 'cancelled' %}
+                            <span class="status-badge status-badge-danger">
+                                <i class="fa-solid fa-times-circle"></i>Annulé
+                            </span>
+                                            {% elif appointment.status == 'no_show' %}
+                            <span class="status-badge status-badge-secondary">
+                                <i class="fa-solid fa-user-slash"></i>Absent
+                            </span>
+                                            {% endif %}
+                                    </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'appointments:detail' appointment.id %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </a>
+                                <button class="action-btn" 
+                                        title="Modifier" 
+                                        onclick="showComingSoon('Modification de rendez-vous')">
+                                                <i class="fa-solid fa-pencil"></i>
+                                            </button>
+                                            {% if appointment.status == 'scheduled' %}
+                                <button class="action-btn action-btn-success" 
+                                        title="Confirmer" 
+                                        onclick="showComingSoon('Confirmation de rendez-vous')">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            {% endif %}
+                                <button class="action-btn action-btn-danger" 
+                                        title="Annuler" 
+                                        onclick="showComingSoon('Annulation de rendez-vous')">
+                                                <i class="fa-solid fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+            <h6 class="empty-state-title">Aucun rendez-vous trouvé</h6>
+            <p class="empty-state-description">
+                            {% if filters.search_query or filters.date_filter or filters.status_filter or filters.doctor_filter %}
+                                Aucun rendez-vous ne correspond aux critères de filtrage.
+                            {% else %}
+                                Il n'y a pas de rendez-vous prévus pour le moment.
+                            {% endif %}
+                        </p>
+            <a href="{% url 'appointments:create' %}" class="btn-primary">
+                <i class="fa-solid fa-plus"></i>Nouveau Rendez-vous
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    let filterTimeout;
+    
+    // DOM Elements
+    const $searchInput = $('#appointment-search');
+    const $dateFilter = $('#date-filter');
+    const $statusFilter = $('#status-filter');
+    const $doctorFilter = $('#doctor-filter');
+    
+    // Search Input Handler
+    $searchInput.on('input', function() {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(function() {
+            applyFilters();
+        }, 300);
+    });
+    
+    // Quick Filter Buttons
+    $('.quick-filter-btn').on('click', function() {
+        const $this = $(this);
+        const filter = $this.data('filter');
+        const status = $this.data('status');
+        
+        $('.quick-filter-btn').removeClass('active');
+        
+        if (filter) {
+            $dateFilter.val(filter);
+            $this.addClass('active');
+        } else if (status) {
+            $statusFilter.val(status);
+            $this.addClass('active');
+        }
+        
+        applyFilters();
+    });
+    
+    // Clear All Filters
+    $('#clear-all-filters').on('click', function() {
+        $searchInput.val('');
+        $dateFilter.val('');
+        $statusFilter.val('');
+        $doctorFilter.val('');
+        $('.quick-filter-btn').removeClass('active');
+        
+        window.location.href = window.location.pathname;
+    });
+    
+    // Apply filters function (simplified for now)
+    function applyFilters() {
+        console.log('Applying filters...');
+        // Filter logic will be implemented when backend is updated
+    }
+    
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
+// Coming soon placeholder
+function showComingSoon(feature) {
+    alert(`${feature} - Fonctionnalité en développement`);
+}
+</script>
+{% endblock %} 

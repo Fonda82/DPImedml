@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block title %}Références Patients{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-share-nodes me-2"></i>Références Patients
+                </h1>
+                <p class="list-subtitle">Gestion des références inter-établissements</p>
+            </div>
+            <div class="list-actions">
+                <a href="{% url 'referrals:create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Nouvelle Référence
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ total_referrals }}</div>
+            <div class="stats-card-label">Total Références</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ pending_referrals }}</div>
+            <div class="stats-card-label">En Attente</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ accepted_referrals }}</div>
+            <div class="stats-card-label">Acceptées</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-calendar"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ monthly_referrals }}</div>
+            <div class="stats-card-label">Ce Mois</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" class="filter-input" name="search" 
+                       value="{{ filters.search_query }}" 
+                       placeholder="Patient, établissement, spécialité...">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select class="filter-select" name="status">
+                    <option value="">Tous</option>
+                    <option value="pending">En attente</option>
+                    <option value="accepted">Acceptées</option>
+                    <option value="rejected">Refusées</option>
+                    <option value="completed">Complétées</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Priorité</label>
+                <select class="filter-select" name="priority">
+                    <option value="">Toutes</option>
+                    <option value="urgent">Urgente</option>
+                    <option value="high">Élevée</option>
+                    <option value="normal">Normale</option>
+                    <option value="low">Faible</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Établissement</label>
+                <select class="filter-select" name="facility">
+                    <option value="">Tous</option>
+                    {% for facility in facilities %}
+                    <option value="{{ facility.id }}">{{ facility.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-search"></i>Filtrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Références
+            </h6>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Établissement</th>
+                        <th>Spécialité</th>
+                        <th>Priorité</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referral in referrals %}
+                    <tr>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ referral.patient.first_name|first }}{{ referral.patient.last_name|first }}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ referral.patient.first_name }} {{ referral.patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ referral.patient.age }} ans</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ referral.receiving_facility.name }}</div>
+                                <div class="item-user-meta">{{ referral.receiving_facility.get_facility_type_display }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge status-badge-info">{{ referral.specialty_requested }}</span>
+                        </td>
+                        <td>
+                            {% if referral.priority == 'urgent' %}
+                            <span class="priority-badge priority-urgent">
+                                <i class="fa-solid fa-exclamation"></i>Urgente
+                            </span>
+                            {% elif referral.priority == 'high' %}
+                            <span class="priority-badge priority-high">
+                                <i class="fa-solid fa-arrow-up"></i>Élevée
+                            </span>
+                            {% elif referral.priority == 'normal' %}
+                            <span class="priority-badge priority-normal">
+                                <i class="fa-solid fa-minus"></i>Normale
+                            </span>
+                            {% else %}
+                            <span class="priority-badge priority-low">
+                                <i class="fa-solid fa-arrow-down"></i>Faible
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ referral.created_date|date:"d/m/Y" }}</div>
+                                <div class="item-user-meta">{{ referral.created_date|time:"H:i" }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if referral.status == 'pending' %}
+                            <span class="status-badge status-badge-warning">
+                                <i class="fa-solid fa-clock"></i>En attente
+                            </span>
+                            {% elif referral.status == 'accepted' %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check"></i>Acceptée
+                            </span>
+                            {% elif referral.status == 'rejected' %}
+                            <span class="status-badge status-badge-danger">
+                                <i class="fa-solid fa-times"></i>Refusée
+                            </span>
+                            {% elif referral.status == 'completed' %}
+                            <span class="status-badge status-badge-info">
+                                <i class="fa-solid fa-check-double"></i>Complétée
+                            </span>
+                            {% else %}
+                            <span class="status-badge status-badge-secondary">{{ referral.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'referrals:detail' referral.pk %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                {% if can_respond %}
+                                <a href="{% url 'referrals:respond' referral.pk %}" 
+                                   class="action-btn action-btn-success" 
+                                   title="Répondre">
+                                    <i class="fa-solid fa-reply"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </div>
+                                <h6 class="empty-state-title">Aucune référence trouvée</h6>
+                                <p class="empty-state-description">Commencez par créer votre première référence</p>
+                                <a href="{% url 'referrals:create' %}" class="btn-primary">
+                                    <i class="fa-solid fa-plus"></i>Nouvelle Référence
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

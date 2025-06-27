@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}Nouvelle Communication{% endblock %}
+{% block page_subtitle %}Envoyer un message inter-établissements{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'facilities:communications' %}">Communications</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Nouvelle</li>
+                        </ol>
+                    </nav>
+                    <h2 class="mb-1">Nouvelle Communication</h2>
+                    <p class="text-muted mb-0">Envoyer un message à un autre établissement du réseau</p>
+                </div>
+                <div>
+                    <a href="{% url 'facilities:communications' %}" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </div>
+
+            <!-- Communication Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Composer un Message
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            <!-- Recipient Section -->
+                            <div class="col-12">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fa-solid fa-building me-2"></i>Destinataire
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Établissement destinataire <span class="text-danger">*</span></label>
+                                                <select class="form-select" name="to_facility" required>
+                                                    <option value="">Sélectionnez un établissement...</option>
+                                                    {% for facility in facilities %}
+                                                    <option value="{{ facility.id }}" {% if form_data.to_facility == facility.id|stringformat:"s" %}selected{% endif %}>
+                                                        {{ facility.name }} ({{ facility.get_facility_type_display }})
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="form-text">Sélectionnez l'établissement du réseau Mali qui recevra ce message.</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Type de communication <span class="text-danger">*</span></label>
+                                                <select class="form-select" name="communication_type" required>
+                                                    <option value="">Sélectionnez le type...</option>
+                                                    {% for type_code, type_name in type_choices %}
+                                                    <option value="{{ type_code }}" {% if form_data.communication_type == type_code %}selected{% endif %}>
+                                                        {{ type_name }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="form-text">Indiquez la nature de votre communication.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Message Section -->
+                            <div class="col-12">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fa-solid fa-envelope me-2"></i>Message
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label">Sujet <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="subject" value="{{ form_data.subject }}" placeholder="Objet de votre message..." required>
+                                                <div class="form-text">Résumez brièvement l'objet de votre communication.</div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">Message <span class="text-danger">*</span></label>
+                                                <textarea class="form-control" name="message" rows="8" placeholder="Saisissez votre message..." required>{{ form_data.message }}</textarea>
+                                                <div class="form-text">Décrivez votre demande ou information en détail.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Options Section -->
+                            <div class="col-12">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fa-solid fa-cog me-2"></i>Options
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="is_urgent" id="isUrgent" {% if form_data.is_urgent %}checked{% endif %}>
+                                                    <label class="form-check-label" for="isUrgent">
+                                                        <strong class="text-danger">Message urgent</strong>
+                                                    </label>
+                                                    <div class="form-text">Cochez si ce message nécessite une attention immédiate.</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="requires_response" id="requiresResponse" {% if form_data.requires_response %}checked{% endif %}>
+                                                    <label class="form-check-label" for="requiresResponse">
+                                                        <strong>Réponse requise</strong>
+                                                    </label>
+                                                    <div class="form-text">Cochez si vous attendez une réponse à ce message.</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Examples Section -->
+                            <div class="col-12">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fa-solid fa-lightbulb me-2"></i>Exemples de Communications
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary">Référence Patient</h6>
+                                                <ul class="list-unstyled small">
+                                                    <li><i class="fa-solid fa-check text-success me-1"></i> Demande de référence spécialisée</li>
+                                                    <li><i class="fa-solid fa-check text-success me-1"></i> Transfert d'urgence</li>
+                                                    <li><i class="fa-solid fa-check text-success me-1"></i> Suivi post-transfert</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-success">Validation Bon</h6>
+                                                <ul class="list-unstyled small">
+                                                    <li><i class="fa-solid fa-check text-success me-1"></i> Vérification de bon</li>
+                                                    <li><i class="fa-solid fa-check text-success me-1"></i> Notification d'utilisation</li>
+                                                    <li><i class="fa-solid fa-check text-success me-1"></i> Problème de validation</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Section -->
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="text-muted small">
+                                        <i class="fa-solid fa-info-circle me-1"></i>
+                                        Le message sera envoyé immédiatement après validation.
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-secondary me-2" onclick="history.back()">
+                                            <i class="fa-solid fa-times me-2"></i>Annuler
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa-solid fa-paper-plane me-2"></i>Envoyer la Communication
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="card mt-4 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fa-solid fa-question-circle me-2"></i>Aide
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <h6 class="text-warning">Types de Communications</h6>
+                            <ul class="list-unstyled small">
+                                <li><strong>Référence patient:</strong> Transfert ou demande spécialisée</li>
+                                <li><strong>Validation bon:</strong> Vérification de bons de santé</li>
+                                <li><strong>Information:</strong> Demande d'informations générales</li>
+                                <li><strong>Urgence:</strong> Notifications d'urgence</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="text-warning">Bonnes Pratiques</h6>
+                            <ul class="list-unstyled small">
+                                <li>• Soyez clair et précis dans votre demande</li>
+                                <li>• Indiquez toutes les informations nécessaires</li>
+                                <li>• Utilisez "Urgent" uniquement si nécessaire</li>
+                                <li>• Vérifiez le destinataire avant envoi</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="text-warning">Réseau Mali</h6>
+                            <ul class="list-unstyled small">
+                                <li>• {{ facilities|length }} établissements connectés</li>
+                                <li>• Communications sécurisées</li>
+                                <li>• Traçabilité complète des échanges</li>
+                                <li>• Support 24h/7j disponible</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card.bg-light {
+    background-color: #f8f9fa !important;
+}
+.form-check-input:checked {
+    background-color: #0C7C59;
+    border-color: #0C7C59;
+}
+</style>
+{% endblock %} 

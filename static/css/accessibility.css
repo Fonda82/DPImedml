@@ -1,0 +1,411 @@
+/* =================================================================
+   DPIMEDML - DIGITAL ACCESSIBILITY CSS
+   WCAG 2.1 AA Compliance for Mali Healthcare System
+   ================================================================= */
+
+/* =================================================================
+   1. SKIP LINKS FOR SCREEN READERS
+   ================================================================= */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #0C7C59;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 10000;
+  transition: top 0.3s ease;
+}
+
+.skip-link:focus {
+  top: 6px;
+  outline: 2px solid #FCD116;
+  outline-offset: 2px;
+}
+
+/* =================================================================
+   2. FOCUS INDICATORS (WCAG AA COMPLIANT)
+   ================================================================= */
+/* Enhanced focus indicators with Mali colors */
+*:focus {
+  outline: 2px solid #0C7C59;
+  outline-offset: 2px;
+}
+
+/* Button focus states */
+.btn:focus,
+.btn-primary:focus,
+.btn-secondary:focus,
+.btn-primary-create:focus {
+  outline: 2px solid #0C7C59;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(12, 124, 89, 0.2);
+}
+
+/* Form control focus states */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: #0C7C59;
+  box-shadow: 0 0 0 0.2rem rgba(12, 124, 89, 0.25);
+  outline: 2px solid transparent;
+}
+
+/* Navigation focus states */
+.sidebar-nav a:focus,
+.nav-link:focus,
+.navbar-nav .nav-link:focus {
+  outline: 2px solid #0C7C59;
+  outline-offset: 2px;
+  background-color: rgba(12, 124, 89, 0.1);
+}
+
+/* Table focus states */
+.table tbody tr:focus {
+  outline: 2px solid #0C7C59;
+  background-color: rgba(12, 124, 89, 0.05);
+}
+
+/* Card focus states */
+.card:focus {
+  outline: 2px solid #0C7C59;
+  outline-offset: 2px;
+}
+
+/* =================================================================
+   3. COLOR CONTRAST IMPROVEMENTS (WCAG AA 4.5:1 RATIO)
+   ================================================================= */
+/* Primary text colors with improved contrast */
+.text-primary-accessible {
+  color: #0A5D43 !important; /* Darker Mali green for better contrast */
+}
+
+.text-secondary-accessible {
+  color: #495057 !important; /* Improved gray contrast */
+}
+
+/* Status badge contrast improvements */
+.status-badge-success {
+  background-color: #0A5D43;
+  color: white;
+  border: 1px solid #0A5D43;
+}
+
+.status-badge-warning {
+  background-color: #B45309;
+  color: white;
+  border: 1px solid #B45309;
+}
+
+.status-badge-danger {
+  background-color: #991B1B;
+  color: white;
+  border: 1px solid #991B1B;
+}
+
+/* Link contrast improvements */
+a {
+  color: #0A5D43;
+}
+
+a:hover {
+  color: #063A2E;
+}
+
+/* =================================================================
+   4. SCREEN READER SUPPORT
+   ================================================================= */
+/* Screen reader only text */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.sr-only-focusable:focus {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* =================================================================
+   5. KEYBOARD NAVIGATION IMPROVEMENTS
+   ================================================================= */
+/* Ensure all interactive elements are keyboard accessible */
+.keyboard-accessible {
+  cursor: pointer;
+}
+
+.keyboard-accessible:focus {
+  outline: 2px solid #0C7C59;
+  outline-offset: 2px;
+}
+
+/* Tab order improvements */
+[tabindex="-1"]:focus {
+  outline: none !important;
+}
+
+/* =================================================================
+   6. FORM ACCESSIBILITY ENHANCEMENTS
+   ================================================================= */
+/* Required field indicators */
+.required::after {
+  content: " *";
+  color: #DC2626;
+  font-weight: bold;
+  aria-label: "required";
+}
+
+/* Form help text */
+.form-help {
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-top: 0.25rem;
+}
+
+/* Error message styling */
+.error-message {
+  color: #991B1B;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.error-message::before {
+  content: "⚠ ";
+  font-weight: bold;
+}
+
+/* Success message styling */
+.success-message {
+  color: #0A5D43;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.success-message::before {
+  content: "✓ ";
+  font-weight: bold;
+}
+
+/* Form validation states */
+.form-control.is-invalid {
+  border-color: #DC2626;
+  box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25);
+}
+
+.form-control.is-valid {
+  border-color: #0A5D43;
+  box-shadow: 0 0 0 0.2rem rgba(10, 93, 67, 0.25);
+}
+
+/* =================================================================
+   7. TABLE ACCESSIBILITY
+   ================================================================= */
+/* Table headers */
+.table th {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Table row hover states for keyboard navigation */
+.table tbody tr:hover,
+.table tbody tr:focus {
+  background-color: rgba(12, 124, 89, 0.05);
+}
+
+/* =================================================================
+   8. MODAL ACCESSIBILITY
+   ================================================================= */
+/* Modal focus trap */
+.modal:focus {
+  outline: none;
+}
+
+.modal-header .btn-close:focus {
+  outline: 2px solid #0C7C59;
+  outline-offset: 2px;
+}
+
+/* =================================================================
+   9. NOTIFICATION ACCESSIBILITY
+   ================================================================= */
+/* Alert styling for screen readers */
+.alert {
+  border-left: 4px solid;
+}
+
+.alert-success {
+  border-left-color: #0A5D43;
+  background-color: #F0FDF4;
+  color: #0A5D43;
+}
+
+.alert-warning {
+  border-left-color: #B45309;
+  background-color: #FFFBEB;
+  color: #B45309;
+}
+
+.alert-danger {
+  border-left-color: #991B1B;
+  background-color: #FEF2F2;
+  color: #991B1B;
+}
+
+.alert-info {
+  border-left-color: #0A5D43;
+  background-color: #F0F9FF;
+  color: #0A5D43;
+}
+
+/* =================================================================
+   10. LOADING AND STATUS INDICATORS
+   ================================================================= */
+/* Loading spinner accessibility */
+.loading-spinner {
+  border: 2px solid #E5E7EB;
+  border-top: 2px solid #0C7C59;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.active {
+  background-color: #10B981;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.inactive {
+  background-color: #6B7280;
+}
+
+.status-dot.warning {
+  background-color: #F59E0B;
+}
+
+.status-dot.error {
+  background-color: #EF4444;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* =================================================================
+   11. RESPONSIVE ACCESSIBILITY
+   ================================================================= */
+/* Ensure touch targets are at least 44px for mobile */
+@media (max-width: 768px) {
+  .btn,
+  .form-control,
+  .nav-link,
+  .sidebar-nav a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger focus indicators on mobile */
+  *:focus {
+    outline-width: 3px;
+  }
+}
+
+/* =================================================================
+   12. HIGH CONTRAST MODE SUPPORT
+   ================================================================= */
+@media (prefers-contrast: high) {
+  .text-primary {
+    color: #000000 !important;
+  }
+  
+  .bg-primary {
+    background-color: #000000 !important;
+  }
+  
+  .border-primary {
+    border-color: #000000 !important;
+  }
+}
+
+/* =================================================================
+   13. REDUCED MOTION SUPPORT
+   ================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =================================================================
+   14. PRINT ACCESSIBILITY
+   ================================================================= */
+@media print {
+  .skip-link,
+  .sidebar,
+  .navbar,
+  .btn {
+    display: none !important;
+  }
+  
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+  
+  .table {
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #000;
+    padding: 0.5rem;
+  }
+} 

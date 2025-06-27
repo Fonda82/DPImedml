@@ -1,0 +1,455 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Prescriptions | DPImedml{% endblock %}
+
+{% block extra_css %}
+<style>
+.prescription-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.prescription-card:hover {
+    box-shadow: 0 4px 12px rgba(12, 124, 89, 0.1);
+    transform: translateY(-2px);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-draft { background-color: #6c757d; color: white; }
+.status-prescribed { background-color: #0dcaf0; color: white; }
+.status-validated { background-color: #198754; color: white; }
+.status-dispensed { background-color: #0c7c59; color: white; }
+.status-completed { background-color: #6f42c1; color: white; }
+.status-cancelled { background-color: #dc3545; color: white; }
+.status-expired { background-color: #fd7e14; color: white; }
+
+.priority-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 15px;
+    font-weight: 500;
+}
+
+.priority-low { background-color: #d1ecf1; color: #0c5460; }
+.priority-normal { background-color: #d4edda; color: #155724; }
+.priority-high { background-color: #fff3cd; color: #856404; }
+.priority-urgent { background-color: #f8d7da; color: #721c24; }
+
+.mali-header {
+    background: linear-gradient(135deg, #0C7C59 0%, #14A085 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.filter-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #0C7C59;
+}
+
+.medication-count {
+    background-color: #0C7C59;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Clean Header -->
+    <div class="list-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="list-title">
+                    <i class="fa-solid fa-prescription-bottle-alt me-2"></i>Prescriptions Électroniques
+                </h1>
+                <p class="list-subtitle">Système de prescription électronique Mali</p>
+            </div>
+            <div class="list-actions">
+                {% if request.user.profile.user_type in 'doctor,superadmin' %}
+                    <a href="{% url 'prescriptions:create' %}" class="btn-primary">
+                        <i class="fa-solid fa-plus"></i>Nouvelle Prescription
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Clean Stats Cards -->
+    <div class="stats-grid">
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-prescription-bottle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.total }}</div>
+            <div class="stats-card-label">Total</div>
+        </div>
+        
+        <div class="stats-card stats-card-info">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-file-prescription"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.draft }}</div>
+            <div class="stats-card-label">Brouillons</div>
+        </div>
+        
+        <div class="stats-card stats-card-primary">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.prescribed }}</div>
+            <div class="stats-card-label">Prescrits</div>
+        </div>
+        
+        <div class="stats-card stats-card-warning">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-handshake"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.dispensed }}</div>
+            <div class="stats-card-label">Délivrés</div>
+        </div>
+        
+        <div class="stats-card">
+            <div class="stats-card-header">
+                <div class="stats-card-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <div class="stats-card-number">{{ stats.expired }}</div>
+            <div class="stats-card-label">Expirés</div>
+        </div>
+    </div>
+
+    <!-- Clean Filter Section -->
+    <div class="filter-section">
+        <h6 class="filter-title">
+            <i class="fa-solid fa-search me-2"></i>Recherche et Filtres
+        </h6>
+        
+        <form method="get" class="filter-grid">
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" name="search" class="filter-input" 
+                       placeholder="ID, patient, diagnostic..." 
+                       value="{{ filters.search }}">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Statut</label>
+                <select name="status" class="filter-select">
+                    <option value="">Tous les statuts</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Priorité</label>
+                <select name="priority" class="filter-select">
+                    <option value="">Toutes priorités</option>
+                    {% for value, label in priority_choices %}
+                        <option value="{{ value }}" {% if filters.priority == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Période</label>
+                <select name="date_filter" class="filter-select">
+                    <option value="">Toutes dates</option>
+                    <option value="today" {% if filters.date_filter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                    <option value="week" {% if filters.date_filter == 'week' %}selected{% endif %}>Cette semaine</option>
+                    <option value="month" {% if filters.date_filter == 'month' %}selected{% endif %}>Ce mois</option>
+                </select>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fa-solid fa-search"></i>Filtrer
+                </button>
+                <a href="{% url 'prescriptions:list' %}" class="btn-secondary">
+                    <i class="fa-solid fa-times"></i>Effacer
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Clean Table -->
+    <div class="list-table-container">
+        <div class="list-table-header">
+            <h6 class="list-table-title">
+                <i class="fa-solid fa-list me-2"></i>Liste des Prescriptions
+            </h6>
+        </div>
+        
+        {% if prescriptions %}
+        <div class="table-responsive">
+            <table class="list-table">
+                <thead>
+                    <tr>
+                        <th>Prescription</th>
+                        <th>Patient</th>
+                        <th>Médecin / Établissement</th>
+                        <th>Diagnostic</th>
+                        <th>Médicaments</th>
+                        <th>Statut</th>
+                        <th>Priorité</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prescription in prescriptions %}
+                    <tr>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">
+                                    <a href="{% url 'prescriptions:detail' prescription.pk %}" 
+                                       class="text-decoration-none">
+                                        {{ prescription.prescription_id }}
+                                    </a>
+                                </div>
+                                <div class="item-user-meta">{{ prescription.prescribed_date|date:"d/m/Y H:i" }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user">
+                                <div class="item-avatar item-avatar-mali">
+                                    {{ prescription.patient.first_name|slice:":1" }}{{ prescription.patient.last_name|slice:":1" }}
+                                </div>
+                                <div class="item-user-info">
+                                    <div class="item-user-name">{{ prescription.patient.first_name }} {{ prescription.patient.last_name }}</div>
+                                    <div class="item-user-meta">{{ prescription.patient.patient_id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">
+                                    {% if prescription.prescribing_doctor %}
+                                        Dr. {{ prescription.prescribing_doctor.user.last_name }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                                <div class="item-user-meta">
+                                    {% if prescription.prescribing_facility %}
+                                        {{ prescription.prescribing_facility.name }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="item-user-info">
+                                <div class="item-user-name">{{ prescription.diagnosis|truncatechars:40 }}</div>
+                                {% if prescription.clinical_notes %}
+                                <div class="item-user-meta">{{ prescription.clinical_notes|truncatechars:50 }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span class="item-avatar" style="background: #0C7C59; color: white; width: 24px; height: 24px; font-size: 0.7rem;">
+                                    {{ prescription.get_total_medications }}
+                                </span>
+                                <small class="ms-1 text-muted">médicament{{ prescription.get_total_medications|pluralize }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            {% if prescription.status == 'draft' %}
+                            <span class="status-badge status-badge-secondary">
+                                <i class="fa-solid fa-file"></i>Brouillon
+                            </span>
+                            {% elif prescription.status == 'prescribed' %}
+                            <span class="status-badge status-badge-info">
+                                <i class="fa-solid fa-prescription"></i>Prescrit
+                            </span>
+                            {% elif prescription.status == 'validated' %}
+                            <span class="status-badge status-badge-success">
+                                <i class="fa-solid fa-check-circle"></i>Validé
+                            </span>
+                            {% elif prescription.status == 'dispensed' %}
+                            <span class="status-badge status-badge-primary">
+                                <i class="fa-solid fa-handshake"></i>Délivré
+                            </span>
+                            {% elif prescription.status == 'completed' %}
+                            <span class="status-badge status-badge-info">
+                                <i class="fa-solid fa-check-double"></i>Terminé
+                            </span>
+                            {% elif prescription.status == 'cancelled' %}
+                            <span class="status-badge status-badge-danger">
+                                <i class="fa-solid fa-times"></i>Annulé
+                            </span>
+                            {% elif prescription.status == 'expired' %}
+                            <span class="status-badge status-badge-warning">
+                                <i class="fa-solid fa-clock"></i>Expiré
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if prescription.priority == 'urgent' %}
+                            <span class="priority-badge priority-urgent">
+                                <i class="fa-solid fa-exclamation"></i>Urgent
+                            </span>
+                            {% elif prescription.priority == 'high' %}
+                            <span class="priority-badge priority-high">
+                                <i class="fa-solid fa-arrow-up"></i>Élevée
+                            </span>
+                            {% elif prescription.priority == 'normal' %}
+                            <span class="priority-badge priority-normal">
+                                <i class="fa-solid fa-minus"></i>Normale
+                            </span>
+                            {% else %}
+                            <span class="priority-badge priority-low">
+                                <i class="fa-solid fa-arrow-down"></i>Faible
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'prescriptions:detail' prescription.pk %}" 
+                                   class="action-btn action-btn-primary" 
+                                   title="Voir détails">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-center mt-3">
+            <nav aria-label="Pagination">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.priority %}&priority={{ filters.priority }}{% endif %}{% if filters.date_filter %}&date_filter={{ filters.date_filter }}{% endif %}">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.priority %}&priority={{ filters.priority }}{% endif %}{% if filters.date_filter %}&date_filter={{ filters.date_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filters.search %}&search={{ filters.search }}{% endif %}{% if filters.status %}&status={{ filters.status }}{% endif %}{% if filters.priority %}&priority={{ filters.priority }}{% endif %}{% if filters.date_filter %}&date_filter={{ filters.date_filter }}{% endif %}">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fa-solid fa-prescription-bottle-alt"></i>
+            </div>
+            <h6 class="empty-state-title">Aucune prescription trouvée</h6>
+            <p class="empty-state-description">
+                {% if filters.search or filters.status or filters.priority or filters.date_filter %}
+                    Aucune prescription ne correspond à vos critères de recherche.
+                {% else %}
+                    Commencez par créer votre première prescription.
+                {% endif %}
+            </p>
+            {% if request.user.profile.user_type in 'doctor,superadmin' %}
+                <a href="{% url 'prescriptions:create' %}" class="btn-primary">
+                    <i class="fa-solid fa-plus"></i>Créer une prescription
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-submit search form on status/priority change
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('select[name="status"], select[name="priority"], select[name="date_filter"]');
+    selects.forEach(select => {
+        select.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+    
+    // Search input debounce
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value.length >= 3 || this.value.length === 0) {
+                    this.form.submit();
+                }
+            }, 500);
+        });
+    }
+});
+</script>
+{% endblock %} 

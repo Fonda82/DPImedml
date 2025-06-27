@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Rapports système | DPImedML{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}{{ subtitle }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="widget">
+            <div class="widget-header">
+                <h5>Rapports système</h5>
+                <div class="widget-header-actions">
+                    <div class="widget-header-action" data-bs-toggle="tooltip" title="Exporter">
+                        <i class="fa-solid fa-download"></i>
+                    </div>
+                    <div class="widget-header-action" data-bs-toggle="tooltip" title="Actualiser">
+                        <i class="fa-solid fa-rotate"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-body">
+                <div class="alert alert-info">
+                    <i class="fa-solid fa-info-circle me-2"></i>
+                    Cette page est un placeholder pour la fonctionnalité de rapports système. Dans une version complète, des graphiques et tableaux détaillés seraient affichés ici.
+                </div>
+                
+                <div class="row g-4 mt-3">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">Patients par région</h6>
+                                <div class="placeholder-container" style="height: 300px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-chart-column fa-3x text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">Types de handicap</h6>
+                                <div class="placeholder-container" style="height: 300px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-chart-pie fa-3x text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">Performance par établissement</h6>
+                                <div class="placeholder-container" style="height: 300px; background-color: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fa-solid fa-table fa-3x text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

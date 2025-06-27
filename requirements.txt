@@ -1,0 +1,12 @@
+Django==5.2.3
+django-bootstrap5==24.2
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.2
+Pillow==10.4.0
+qrcode==8.0
+python-dateutil==2.9.0
+whitenoise==6.8.2
+gunicorn==23.0.0
+psycopg2-binary==2.9.9
+dj-database-url==2.2.0
+python-decouple==3.8 

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ajouter une Séance de Réadaptation | Système de Réhabilitation{% endblock %}
+
+{% block page_title %}Ajouter une Séance{% endblock %}
+{% block page_subtitle %}Planifier une séance de réadaptation pour {{ plan.patient.first_name }} {{ plan.patient.last_name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Détails de la Séance</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'rehabilitation:session_create' plan.id %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="session_date" class="form-label">Date <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="session_date" name="session_date" value="{{ tomorrow|date:'Y-m-d' }}" required>
+                                <div class="invalid-feedback">Veuillez sélectionner une date</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="session_time" class="form-label">Heure <span class="text-danger">*</span></label>
+                                <input type="time" class="form-control" id="session_time" name="session_time" value="09:00" required>
+                                <div class="invalid-feedback">Veuillez sélectionner une heure</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="session_type" class="form-label">Type de Séance <span class="text-danger">*</span></label>
+                                <select class="form-select" id="session_type" name="session_type" required>
+                                    <option value="">Sélectionner</option>
+                                    {% for type in session_types %}
+                                    <option value="{{ type }}">{{ type }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un type de séance</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="duration_minutes" class="form-label">Durée (minutes)</label>
+                                <input type="number" class="form-control" id="duration_minutes" name="duration_minutes" value="60" min="15" max="240" step="15">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="facility" class="form-label">Établissement</label>
+                                <select class="form-select" id="facility" name="facility">
+                                    <option value="">Sélectionner</option>
+                                    {% for facility in facilities %}
+                                    <option value="{{ facility.id }}">{{ facility.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="therapist" class="form-label">Thérapeute</label>
+                                <select class="form-select" id="therapist" name="therapist">
+                                    <option value="">Sélectionner</option>
+                                    {% for therapist in therapists %}
+                                    <option value="{{ therapist.id }}" {% if therapist.id == request.user.profile.id %}selected{% endif %}>Dr. {{ therapist.user.last_name }} {{ therapist.user.first_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="notes" class="form-label">Notes / Instructions</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'rehabilitation:detail' plan.id %}" class="btn btn-light">Annuler</a>
+                        <button type="submit" class="btn btn-primary">Enregistrer la Séance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    });
+</script>
+{% endblock %} 
