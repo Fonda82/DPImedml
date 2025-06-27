@@ -68,7 +68,9 @@
                     </li>
                     
                     {% if user.profile.user_type == 'superadmin' %}
-                    <!-- Super Admin Navigation -->
+                    <!-- Super Admin Navigation - Organized by Category -->
+                    
+                    <!-- System Administration -->
                     <li class="sidebar-menu-item">
                         <a href="{% url 'facilities:list' %}" class="sidebar-menu-link">
                             <i class="fa-solid fa-building-columns sidebar-menu-icon"></i>
@@ -82,15 +84,17 @@
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
+                        <a href="{% url 'reports:system' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-chart-pie sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Rapports Exécutifs</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Healthcare Operations -->
+                    <li class="sidebar-menu-item">
                         <a href="{% url 'patients:list' %}" class="sidebar-menu-link">
                             <i class="fa-solid fa-users-medical sidebar-menu-icon"></i>
                             <span class="sidebar-menu-text">Base de Données Patients</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="{% url 'vouchers:list' %}" class="sidebar-menu-link">
-                            <i class="fa-solid fa-ticket-simple sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Administration des Bons</span>
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
@@ -100,41 +104,13 @@
                         </a>
                     </li>
                     <li class="sidebar-menu-item">
-                        <a href="{% url 'reports:system' %}" class="sidebar-menu-link">
-                            <i class="fa-solid fa-chart-pie sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Rapports Exécutifs</span>
+                        <a href="{% url 'vouchers:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-ticket-simple sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Administration des Bons</span>
                         </a>
                     </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Réseau Inter-Établissements')">
-                            <i class="fa-solid fa-network-wired sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Réseau Inter-Établissements</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Références Système')">
-                            <i class="fa-solid fa-share-nodes sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Références Système</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link" onclick="showComingSoon('Configuration Système')">
-                            <i class="fa-solid fa-gear sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Configuration Système</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="{% url 'dashboard:security' %}" class="sidebar-menu-link">
-                            <i class="fa-solid fa-shield-halved sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Sécurité & Audit</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="{% url 'dashboard:gdpr' %}" class="sidebar-menu-link">
-                            <i class="fa-solid fa-user-shield sidebar-menu-icon"></i>
-                            <span class="sidebar-menu-text">Conformité RGPD</span>
-                        </a>
-                    </li>
+
+                    <!-- TDR Compliance Features -->
                     <li class="sidebar-menu-item">
                         <a href="{% url 'patients:hospitalizations' %}" class="sidebar-menu-link">
                             <i class="fa-solid fa-bed-pulse sidebar-menu-icon"></i>
@@ -151,6 +127,20 @@
                         <a href="{% url 'facilities:communications' %}" class="sidebar-menu-link">
                             <i class="fa-solid fa-comments-medical sidebar-menu-icon"></i>
                             <span class="sidebar-menu-text">Communication Réseau</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Security & Compliance -->
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'dashboard:security' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-shield-halved sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Sécurité & Audit</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'dashboard:gdpr' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-user-shield sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Conformité RGPD</span>
                         </a>
                     </li>
                     
