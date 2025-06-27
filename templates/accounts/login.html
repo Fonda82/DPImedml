@@ -11,741 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom Styles -->
-    <style>
-        :root {
-            --mali-green: #0C7C59;
-            --mali-yellow: #FCD116;
-            --mali-red: #CE1126;
-            --hi-blue: #0066CC;
-            --lux-blue: #002FA7;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Professional Header with Stakeholders */
-        .stakeholder-header {
-            background: linear-gradient(90deg, var(--mali-green) 0%, var(--hi-blue) 50%, var(--lux-blue) 100%);
-            color: white;
-            padding: 1rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stakeholder-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><path d="M0,10 Q25,0 50,10 T100,10 V20 H0 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-            background-size: 200px 20px;
-            animation: wave 8s ease-in-out infinite;
-        }
-
-        @keyframes wave {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(-100px); }
-        }
-
-        .stakeholder-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .project-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .project-subtitle {
-            display: flex;
-            justify-content: center;
-        }
-
-        .project-context {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .context-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 0.8rem;
-            background: rgba(255,255,255,0.15);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .context-item:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-
-        .context-item i {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .stakeholder-logos {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-
-
-        /* Main Login Container */
-        .login-container {
-            min-height: calc(100vh - 80px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            overflow: hidden;
-            max-width: 1200px;
-            width: 100%;
-            position: relative;
-            min-height: 600px;
-        }
-
-        .login-card .row {
-            min-height: 100%;
-        }
-
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--mali-green), var(--mali-yellow), var(--mali-red));
-        }
-
-        /* Left Panel - Project Information */
-        .project-panel {
-            background: linear-gradient(135deg, var(--mali-green) 0%, #14A085 100%);
-            color: white;
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .project-panel::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-            background-size: 50px 50px;
-            animation: float 20s linear infinite;
-        }
-
-        @keyframes float {
-            0% { transform: rotate(0deg) translateX(0); }
-            100% { transform: rotate(360deg) translateX(20px); }
-        }
-
-        .project-content {
-            position: relative;
-            z-index: 2;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .project-logo {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .project-logo img {
-            max-height: 80px;
-            filter: brightness(0) invert(1);
-            animation: pulse-glow 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
-            50% { filter: brightness(0) invert(1) drop-shadow(0 0 20px rgba(252,209,22,0.6)); }
-        }
-
-        .project-title-main {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .project-description {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .project-features {
-            list-style: none;
-            padding: 0;
-        }
-
-        .project-features li {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-        }
-
-        .project-features i {
-            color: var(--mali-yellow);
-            margin-right: 0.75rem;
-            width: 20px;
-        }
-
-        .funding-info {
-            background: rgba(255,255,255,0.15);
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .funding-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--mali-yellow);
-        }
-
-        .funding-partners {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .funding-partner {
-            text-align: center;
-            padding: 0.75rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .partner-logo {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .partner-name {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        /* Right Panel - Login Form */
-        .login-panel {
-            padding: 3rem;
-            background: white;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--mali-green);
-            margin-bottom: 0.5rem;
-        }
-
-        .login-subtitle {
-            color: #6c757d;
-            font-size: 1rem;
-        }
-
-        .form-floating {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .form-floating input {
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-floating input:focus {
-            border-color: var(--mali-green);
-            box-shadow: 0 0 0 0.25rem rgba(12, 124, 89, 0.15);
-        }
-
-        .form-floating label {
-            color: #6c757d;
-            font-weight: 500;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, var(--mali-green), #14A085);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 0.875rem 2rem;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            width: 100%;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
-        }
-
-        .btn-login:hover {
-            background: linear-gradient(135deg, #14A085, var(--mali-green));
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(12, 124, 89, 0.3);
-        }
-
-        /* Demo Access Section */
-        .demo-access {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .demo-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--mali-green);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .role-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-        }
-
-        .role-button {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 0.75rem;
-            text-align: center;
-            text-decoration: none;
-            color: #495057;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .role-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--mali-green), var(--mali-yellow));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .role-button:hover::before {
-            opacity: 0.1;
-        }
-
-        .role-button:hover {
-            border-color: var(--mali-green);
-            color: var(--mali-green);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(12, 124, 89, 0.2);
-        }
-
-        .role-icon {
-            font-size: 1.2rem;
-            margin-bottom: 0.25rem;
-            display: block;
-        }
-
-        /* System Status */
-        .system-status {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            border: 1px solid #e9ecef;
-            margin-top: 2rem;
-        }
-
-        .status-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--mali-green);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .status-item {
-            text-align: center;
-            padding: 0.75rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
-        }
-
-        .status-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--mali-green);
-            margin-bottom: 0.25rem;
-        }
-
-        .status-label {
-            font-size: 0.8rem;
-            color: #6c757d;
-            font-weight: 500;
-        }
-
-        .status-icon {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #28a745;
-            margin-right: 0.5rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        /* Footer */
-        .login-footer {
-            text-align: center;
-            padding: 1rem;
-            color: #6c757d;
-            font-size: 0.9rem;
-            border-top: 1px solid #e9ecef;
-            background: #f8f9fa;
-        }
-
-        .footer-links {
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-links a {
-            color: var(--mali-green);
-            text-decoration: none;
-            margin: 0 1rem;
-            font-weight: 500;
-        }
-
-        /* Responsive Design */
-        
-        /* Medium Desktop Login - Optimized for 19"-20" screens */
-        @media (min-width: 992px) and (max-width: 1199.98px) {
-            .stakeholder-header {
-                padding: 1rem 0; /* Reduced from default */
-            }
-            
-            .project-title {
-                font-size: 1rem; /* More compact */
-                margin-bottom: 0.75rem;
-            }
-            
-            .context-item {
-                padding: 0.3rem 0.6rem; /* More compact */
-                font-size: 0.8rem;
-            }
-            
-            .project-panel {
-                padding: 1.5rem; /* Reduced from 3rem */
-                min-height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .login-panel {
-                padding: 1.5rem; /* Reduced from 3rem */
-            }
-            
-            .project-title-main {
-                font-size: 1.25rem; /* Reduced from 1.5rem */
-                margin-bottom: 0.75rem;
-            }
-            
-            .project-description {
-                font-size: 0.9rem; /* Reduced from 1rem */
-                line-height: 1.5;
-                margin-bottom: 1.5rem;
-            }
-            
-            .project-features li {
-                font-size: 0.8rem; /* Reduced */
-                margin-bottom: 0.5rem;
-            }
-            
-            .funding-info {
-                padding: 1rem; /* Reduced from 1.5rem */
-                margin-top: 1.5rem;
-            }
-            
-            .funding-title {
-                font-size: 0.8rem;
-                margin-bottom: 0.75rem;
-            }
-            
-            .funding-partner {
-                padding: 0.5rem; /* Reduced from 0.75rem */
-            }
-            
-            .partner-name {
-                font-size: 0.7rem; /* Reduced from 0.8rem */
-            }
-            
-            .login-title {
-                font-size: 1.5rem; /* Reduced from 1.8rem */
-            }
-            
-            .login-subtitle {
-                font-size: 0.9rem; /* Reduced from 1rem */
-            }
-            
-            .form-floating {
-                margin-bottom: 1rem; /* Reduced from 1.5rem */
-            }
-            
-            .form-floating input {
-                padding: 0.75rem; /* Reduced from 1rem */
-                font-size: 0.9rem;
-            }
-            
-            .btn-login {
-                padding: 0.75rem 1.5rem; /* Reduced from 0.875rem 2rem */
-                font-size: 1rem;
-            }
-            
-            .demo-access {
-                padding: 1rem; /* Reduced from 1.5rem */
-                margin: 1.5rem 0;
-            }
-            
-            .demo-title {
-                font-size: 1rem; /* Reduced from 1.1rem */
-                margin-bottom: 0.75rem;
-            }
-            
-            .role-button {
-                padding: 0.5rem; /* Reduced from 0.75rem */
-                font-size: 0.8rem;
-            }
-            
-            .role-icon {
-                font-size: 1rem; /* Reduced from 1.2rem */
-            }
-            
-            .system-status {
-                padding: 1rem; /* Reduced from 1.5rem */
-                margin-top: 1.5rem;
-            }
-            
-            .status-title {
-                font-size: 0.9rem; /* Reduced from 1rem */
-                margin-bottom: 0.75rem;
-            }
-            
-            .status-item {
-                padding: 0.5rem; /* Reduced from 0.75rem */
-            }
-            
-            .status-value {
-                font-size: 1rem; /* Reduced from 1.2rem */
-            }
-            
-            .status-label {
-                font-size: 0.7rem; /* Reduced from 0.8rem */
-            }
-        }
-        
-        /* Standard Desktop Login - Balanced for 21"-22" screens */
-        @media (min-width: 1200px) and (max-width: 1399.98px) {
-            .project-panel {
-                padding: 2.25rem;
-                min-height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .login-panel {
-                padding: 2.25rem;
-            }
-            
-            .project-title-main {
-                font-size: 1.375rem;
-            }
-            
-            .login-title {
-                font-size: 1.65rem;
-            }
-        }
-        
-        /* Large Desktop Login - Generous for 24"+ screens */
-        @media (min-width: 1400px) {
-            .stakeholder-header {
-                padding: 1.5rem 0;
-            }
-            
-            .project-panel {
-                padding: 3.5rem;
-                min-height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .login-panel {
-                padding: 3.5rem;
-            }
-            
-            .project-title-main {
-                font-size: 1.75rem;
-            }
-            
-            .project-description {
-                font-size: 1.125rem;
-                line-height: 1.7;
-            }
-            
-            .login-title {
-                font-size: 2rem;
-            }
-            
-            .form-floating input {
-                padding: 1.125rem;
-                font-size: 1.125rem;
-            }
-            
-            .btn-login {
-                padding: 1rem 2.5rem;
-                font-size: 1.25rem;
-            }
-        }
-
-        @media (max-width: 991px) {
-            .project-context {
-                gap: 1rem;
-            }
-            
-            .context-item {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.8rem;
-            }
-            
-            .project-panel {
-                padding: 2rem;
-                min-height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .login-panel {
-                padding: 2rem;
-            }
-            
-            .role-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .stakeholder-header {
-                padding: 0.75rem 0;
-            }
-            
-            .project-title {
-                font-size: 1rem;
-            }
-            
-            .project-context {
-                gap: 0.5rem;
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .context-item {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.75rem;
-            }
-            
-            .funding-partners {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <!-- Custom Login Styles -->
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
 </head>
 <body>
     <!-- Professional Project Header -->
@@ -783,9 +50,9 @@
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="project-panel">
                         <div class="project-content">
-                                                    <div class="project-logo">
-                            <img src="{% static 'img/logo.png' %}" alt="DPI-R-ML ModuleRehab Logo">
-                        </div>
+                            <div class="project-logo">
+                                <img src="/media/logo/logo.png" alt="DPI-R-ML ModuleRehab Logo">
+                            </div>
                             
                             <h2 class="project-title-main">Démonstration Technique</h2>
                             <p class="project-description">
@@ -809,13 +76,13 @@
                                 <div class="funding-partners">
                                     <div class="funding-partner">
                                         <div class="partner-logo">
-                                            <img src="{% static 'img/humanite.png' %}" alt="Humanité & Inclusion Logo" style="max-height: 40px; max-width: 80px; object-fit: contain;">
+                                            <img src="/media/logo/humanite.png" alt="Humanité & Inclusion Logo">
                                         </div>
                                         <div class="partner-name">Humanité & Inclusion<br><small>Opérateur Technique</small></div>
                                     </div>
                                     <div class="funding-partner">
                                         <div class="partner-logo">
-                                            <img src="{% static 'img/lux.png' %}" alt="MAE Luxembourg Logo" style="max-height: 40px; max-width: 80px; object-fit: contain;">
+                                            <img src="/media/logo/lux.png" alt="MAE Luxembourg Logo">
                                         </div>
                                         <div class="partner-name">MAE Luxembourg<br><small>Financement 2023-2027</small></div>
                                     </div>
@@ -831,7 +98,7 @@
                         <div class="login-header">
                             <h1 class="login-title">Connexion</h1>
                             <p class="login-subtitle">Accès sécurisé au système de réhabilitation</p>
-                    </div>
+                        </div>
                         
                         {% if messages %}
                         <div class="alert alert-danger" role="alert">
@@ -890,21 +157,21 @@
                             <div class="status-title">
                                 <span class="status-icon"></span>
                                 État du Système
-                                        </div>
+                            </div>
                             <div class="status-grid">
-                                    <div class="status-item">
-                                            <div class="status-value" id="active-facilities">12</div>
-                                            <div class="status-label">Centres Actifs</div>
-                                        </div>
+                                <div class="status-item">
+                                    <div class="status-value" id="active-facilities">12</div>
+                                    <div class="status-label">Centres Actifs</div>
+                                </div>
                                 <div class="status-item">
                                     <div class="status-value" id="online-users">47</div>
                                     <div class="status-label">Utilisateurs</div>
                                 </div>
-                                    <div class="status-item">
+                                <div class="status-item">
                                     <div class="status-value">99.9%</div>
                                     <div class="status-label">Disponibilité</div>
                                 </div>
-                                    <div class="status-item">
+                                <div class="status-item">
                                     <div class="status-value">Sécurisé</div>
                                     <div class="status-label">État Sécurité</div>
                                 </div>
@@ -932,19 +199,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Animate elements on load
             animateOnLoad();
-            
-            // Enhanced form interactions
             enhanceFormInteractions();
-            
-            // System status updates
             updateSystemStatus();
             setInterval(updateSystemStatus, 15000);
         });
 
         function animateOnLoad() {
-            // Animate login card entrance
             const loginCard = document.querySelector('.login-card');
             if (loginCard) {
                 loginCard.style.opacity = '0';
@@ -956,19 +217,6 @@
                 }, 200);
             }
 
-            // Animate stakeholder logos
-            const logos = document.querySelectorAll('.stakeholder-logo');
-            logos.forEach((logo, index) => {
-                logo.style.opacity = '0';
-                logo.style.transform = 'translateY(-20px)';
-                setTimeout(() => {
-                    logo.style.transition = 'all 0.6s ease';
-                    logo.style.opacity = '1';
-                    logo.style.transform = 'translateY(0)';
-                }, 100 + (index * 150));
-            });
-
-            // Animate project features
             const features = document.querySelectorAll('.project-features li');
             features.forEach((feature, index) => {
                 feature.style.opacity = '0';
@@ -986,29 +234,28 @@
             const submitBtn = form.querySelector('.btn-login');
             
             form.addEventListener('submit', function(e) {
-                        submitBtn.innerHTML = `
+                submitBtn.innerHTML = `
                     <span class="spinner-border spinner-border-sm me-2"></span>
-                            Connexion en cours...
-                        `;
-                        submitBtn.disabled = true;
+                    Connexion en cours...
+                `;
+                submitBtn.disabled = true;
             });
 
-            // Enhanced input interactions
-             const inputs = document.querySelectorAll('.form-control');
-             inputs.forEach(input => {
-                 input.addEventListener('focus', function() {
-                     this.parentElement.style.transform = 'scale(1.02)';
-                 });
-                 
-                 input.addEventListener('blur', function() {
-                     this.parentElement.style.transform = 'scale(1)';
-                 });
-             });
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
         }
 
         function updateSystemStatus() {
-            const facilities = Math.floor(Math.random() * 3) + 11; // 11-13
-            const users = Math.floor(Math.random() * 15) + 40; // 40-54
+            const facilities = Math.floor(Math.random() * 3) + 11;
+            const users = Math.floor(Math.random() * 15) + 40;
             
             document.getElementById('active-facilities').textContent = facilities;
             document.getElementById('online-users').textContent = users;
@@ -1026,10 +273,9 @@
                 const usernameField = document.getElementById('username');
                 const passwordField = document.getElementById('password');
                 
-                // Animate credential filling
                 typeWriter(usernameField, credentials[role].username, () => {
                     typeWriter(passwordField, credentials[role].password, () => {
-                                setTimeout(() => {
+                        setTimeout(() => {
                             document.getElementById('loginForm').submit();
                         }, 500);
                     });
