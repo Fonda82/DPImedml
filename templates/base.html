@@ -135,6 +135,24 @@
                             <span class="sidebar-menu-text">Conformité RGPD</span>
                         </a>
                     </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'patients:hospitalizations' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-bed-pulse sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Hospitalisations</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'referrals:list' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-share-nodes sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Références Patients</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-menu-item">
+                        <a href="{% url 'facilities:communications' %}" class="sidebar-menu-link">
+                            <i class="fa-solid fa-comments-medical sidebar-menu-icon"></i>
+                            <span class="sidebar-menu-text">Communication Réseau</span>
+                        </a>
+                    </li>
                     
                     {% elif user.profile.user_type == 'facility_admin' %}
                     <!-- Facility Admin Navigation -->

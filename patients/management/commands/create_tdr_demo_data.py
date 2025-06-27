@@ -14,7 +14,7 @@ class Command(BaseCommand):
     
     def add_arguments(self, parser):
         parser.add_argument('--clean', action='store_true', help='Clean existing TDR data before creating')
-    
+
     def handle(self, *args, **options):
         if options['clean']:
             self.clean_tdr_data()
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         if not facilities or not doctors or not patients:
             self.stdout.write(self.style.ERROR('❌ No base data found. Run enhanced_mali_demo_data first.'))
             return
-        
+            
         # Create TDR features
         self.stdout.write('🏥 Creating TDR Hospitalization Data...')
         hospitalizations = self.create_hospitalizations(patients, doctors, facilities)
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 discharge_date = admission_date + datetime.timedelta(days=random.randint(3, 21))
                 status = 'discharged'
             else:
-                discharge_date = None
+            discharge_date = None
                 status = 'admitted'
             
             hospitalization = Hospitalization.objects.create(
@@ -126,10 +126,10 @@ class Command(BaseCommand):
                     )
                 else:
                     note_date = start_date
-                
-                HospitalizationProgressNote.objects.create(
-                    hospitalization=hospitalization,
-                    date=note_date,
+            
+            HospitalizationProgressNote.objects.create(
+                hospitalization=hospitalization,
+                date=note_date,
                     doctor=random.choice(doctors),
                     clinical_notes=f"Évolution favorable du patient {hospitalization.patient.first_name}. Progression dans le programme de réadaptation.",
                     vital_signs_notes=f"Signes vitaux stables. Température: {random.uniform(36.5, 37.2):.1f}°C, FC: {random.randint(80, 120)}/min",
@@ -188,9 +188,9 @@ class Command(BaseCommand):
                 receiving_doctors = [d for d in doctors if d.facility == referral.receiving_facility]
                 if receiving_doctors:
                     receiving_doctor = random.choice(receiving_doctors)
-                    
-                    ReferralResponse.objects.create(
-                        referral=referral,
+        
+        ReferralResponse.objects.create(
+            referral=referral,
                         responding_doctor=receiving_doctor,
                         response_date=referral.referral_date + datetime.timedelta(days=random.randint(1, 7)),
                         response_status='accepted' if referral.status == 'accepted' else 'completed',
