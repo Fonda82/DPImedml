@@ -392,14 +392,19 @@ class Command(BaseCommand):
         ]
         
         icd10_codes = []
+        created_count = 0
         for icd_data in icd10_data:
             icd10_code, created = ICD10Code.objects.get_or_create(
                 code=icd_data['code'],
                 defaults=icd_data
             )
+            icd10_codes.append(icd10_code)  # Always add to list
             if created:
-                icd10_codes.append(icd10_code)
+                created_count += 1
                 self.stdout.write(f'🏷️ Created ICD-10: {icd10_code.code} - {icd10_code.title}')
+        
+        if created_count == 0:
+            self.stdout.write(f'🏷️ ICD-10 codes already exist ({len(icd10_codes)} codes available)')
         
         return icd10_codes
     
