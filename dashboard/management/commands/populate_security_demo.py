@@ -225,14 +225,17 @@ class Command(BaseCommand):
 
     def generate_suspicious_ip(self):
         """Generate suspicious IP addresses for failed login attempts"""
-        suspicious_ranges = [
-            '185.220.',  # TOR exit nodes
-            '91.134.',   # VPN ranges
-            '45.61.',
-            '192.168.1.'  # Internal network (misconfig)
+        suspicious_patterns = [
+            ('185.220.', 2),  # TOR exit nodes - needs 2 more octets
+            ('91.134.', 2),   # VPN ranges - needs 2 more octets  
+            ('45.61.', 2),    # Suspicious range - needs 2 more octets
+            ('192.168.', 2)   # Internal network (misconfig) - needs 2 more octets
         ]
-        base = random.choice(suspicious_ranges)
-        return f"{base}{random.randint(1, 254)}.{random.randint(1, 254)}"
+        base, octets_needed = random.choice(suspicious_patterns)
+        if octets_needed == 2:
+            return f"{base}{random.randint(1, 254)}.{random.randint(1, 254)}"
+        else:
+            return f"{base}{random.randint(1, 254)}"
 
     def get_legal_basis(self, consent_type):
         """Get appropriate legal basis for each consent type under GDPR"""

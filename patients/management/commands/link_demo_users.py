@@ -93,12 +93,12 @@ class Command(BaseCommand):
                             voucher = Voucher.objects.create(
                                 patient=demo_patient,
                                 issuing_facility=facilities[i % len(facilities)],
-                                facility=facilities[i % len(facilities)],
+                                target_facility=facilities[i % len(facilities)],
                                 service_type=service_type,
                                 status='issued',
                                 issue_date=timezone.now().date(),
                                 expiry_date=(timezone.now() + timedelta(days=30)).date(),
-                                issued_by=patient_profile
+                                issuing_doctor=patient_profile
                             )
                             self.stdout.write(f"✅ Created voucher: {voucher}")
                 
