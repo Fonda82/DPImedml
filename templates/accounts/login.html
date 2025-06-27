@@ -11,8 +11,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom Login Styles -->
+    <!-- Custom Login Styles (Load AFTER Bootstrap to override) -->
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <!-- Responsive CSS Override -->
+    <style>
+        /* Force responsive styles to override Bootstrap */
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            .login-card { max-width: 960px !important; }
+            .project-panel, .login-panel { padding: 2rem !important; }
+            .project-title-main { font-size: 1.3rem !important; }
+            .login-title { font-size: 1.5rem !important; }
+        }
+        
+        @media (min-width: 1200px) and (max-width: 1399.98px) {
+            .login-card { max-width: 1140px !important; }
+            .project-panel, .login-panel { padding: 2.5rem !important; }
+            .login-title { font-size: 1.65rem !important; }
+        }
+        
+        @media (min-width: 1600px) {
+            .login-card { max-width: 1320px !important; }
+            .project-panel, .login-panel { padding: 3.5rem !important; }
+            .login-title { font-size: 2rem !important; }
+            .project-title-main { font-size: 1.75rem !important; }
+        }
+    </style>
 </head>
 <body>
     <!-- Professional Project Header -->
@@ -51,7 +74,7 @@
                     <div class="project-panel">
                         <div class="project-content">
                             <div class="project-logo">
-                                <img src="/media/logo/logo.png" alt="DPI-R-ML ModuleRehab Logo">
+                                <img src="{% static 'img/logo.png' %}" alt="DPI-R-ML ModuleRehab Logo">
                             </div>
                             
                             <h2 class="project-title-main">Démonstration Technique</h2>
@@ -76,13 +99,13 @@
                                 <div class="funding-partners">
                                     <div class="funding-partner">
                                         <div class="partner-logo">
-                                            <img src="/media/logo/humanite.png" alt="Humanité & Inclusion Logo">
+                                            <img src="{% static 'img/humanite.png' %}" alt="Humanité & Inclusion Logo">
                                         </div>
                                         <div class="partner-name">Humanité & Inclusion<br><small>Opérateur Technique</small></div>
                                     </div>
                                     <div class="funding-partner">
                                         <div class="partner-logo">
-                                            <img src="/media/logo/lux.png" alt="MAE Luxembourg Logo">
+                                            <img src="{% static 'img/lux.png' %}" alt="MAE Luxembourg Logo">
                                         </div>
                                         <div class="partner-name">MAE Luxembourg<br><small>Financement 2023-2027</small></div>
                                     </div>
