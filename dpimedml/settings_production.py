@@ -33,6 +33,16 @@ ALLOWED_HOSTS = [
     '.railway.app',
 ]
 
+# CSRF trusted origins for production deployments
+CSRF_TRUSTED_ORIGINS = [
+    'https://dpimedml.onrender.com',
+    'https://dpimedml.up.railway.app',
+    'https://dpimedml.railway.app',
+    'http://dpimedml.up.railway.app',  # HTTP fallback for Railway
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 # Debug print to confirm production settings are loaded
 print(f"🚀 Production settings loaded - ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 print(f"🔧 DEBUG mode: {DEBUG}")
