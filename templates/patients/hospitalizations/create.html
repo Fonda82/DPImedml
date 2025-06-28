@@ -1,139 +1,289 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
-{% block title %}Nouvelle Hospitalisation{% endblock %}
+{% block title %}Nouvelle Hospitalisation | Système Hospitalier Mali{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="h3 mb-1">Nouvelle Hospitalisation</h1>
-                    <p class="text-muted">Admettre un patient dans l'établissement</p>
-                </div>
-                <div>
-                    <a href="{% url 'patients:hospitalizations' %}" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-arrow-left me-2"></i>Retour
-                    </a>
-                </div>
+    <!-- Clean Header -->
+    <div class="create-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="create-title">
+                    <i class="fa-solid fa-hospital me-2"></i>Nouvelle Hospitalisation
+                </h1>
+                <p class="create-subtitle">Admettre un patient pédiatrique dans l'établissement</p>
             </div>
+            <div class="create-actions">
+                <a href="{% url 'patients:hospitalizations' %}" class="btn-secondary-create">
+                    <i class="fa-solid fa-arrow-left"></i>Retour
+                </a>
+            </div>
+        </div>
+    </div>
 
-            <form method="post" class="row">
+    <div class="row">
+        <!-- Main Form Column -->
+        <div class="col-lg-8">
+            <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
                 
-                <!-- Patient Selection -->
-                <div class="col-12 mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fa-solid fa-user me-2"></i>Sélection Patient
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label">Patient <span class="text-danger">*</span></label>
-                                    <select class="form-select" name="patient" required>
-                                        <option value="">Choisir un patient</option>
-                                        {% for patient in patients %}
-                                        <option value="{{ patient.id }}">
-                                            {{ patient.first_name }} {{ patient.last_name }} - {{ patient.age }} ans
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Médecin responsable</label>
-                                    <select class="form-select" name="attending_doctor">
-                                        <option value="">Assigner un médecin</option>
-                                        {% for doctor in doctors %}
-                                        <option value="{{ doctor.id }}">
-                                            Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
+                <!-- Patient Selection Card -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-user form-section-icon"></i>
+                        <h5 class="form-section-title">Sélection Patient</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Patient</label>
+                                <select class="form-control" name="patient" required>
+                                    <option value="">Choisir un patient</option>
+                                    {% for patient in patients %}
+                                    <option value="{{ patient.id }}">
+                                        {{ patient.first_name }} {{ patient.last_name }} - {{ patient.age }} ans ({{ patient.patient_id }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">Veuillez sélectionner un patient</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Médecin responsable</label>
+                                <select class="form-control" name="attending_doctor">
+                                    <option value="">Auto-assignation (vous)</option>
+                                    {% for doctor in doctors %}
+                                    <option value="{{ doctor.id }}">
+                                        Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="text-muted">Laissez vide pour vous auto-assigner</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Admission Details -->
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fa-solid fa-clipboard-list me-2"></i>Détails d'Admission
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="form-label">Service/Chambre <span class="text-danger">*</span></label>
-                                <select class="form-select" name="room_number" required>
+                <!-- Admission Details Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-clipboard-list form-section-icon"></i>
+                        <h5 class="form-section-title">Détails d'Admission</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label required">Service/Pavillon</label>
+                                <select class="form-control" name="room_number" required>
                                     <option value="">Choisir un service</option>
                                     {% for room_code, room_name in room_choices %}
                                     <option value="{{ room_code }}">{{ room_name }}</option>
                                     {% endfor %}
                                 </select>
+                                <div class="invalid-feedback">Veuillez choisir un service</div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Numéro de lit <span class="text-danger">*</span></label>
+                            <div class="col-md-6">
+                                <label class="form-label required">Numéro de lit</label>
                                 <input type="text" class="form-control" name="bed_number" 
-                                       placeholder="ex: A01, B12" required>
+                                       placeholder="ex: A01, B12, P-003" required>
+                                <div class="invalid-feedback">Veuillez indiquer le numéro de lit</div>
                             </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Motif d'admission <span class="text-danger">*</span></label>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
+                                <label class="form-label required">Motif d'admission</label>
                                 <textarea class="form-control" name="admission_reason" rows="3" 
-                                          placeholder="Raison de l'hospitalisation" required></textarea>
+                                          placeholder="Raison de l'hospitalisation (contexte pédiatrique Mali)" required></textarea>
+                                <div class="invalid-feedback">Veuillez indiquer le motif d'admission</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Medical Information -->
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">
-                                <i class="fa-solid fa-stethoscope me-2"></i>Informations Médicales
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label class="form-label">Diagnostic d'admission <span class="text-danger">*</span></label>
+                <!-- Medical Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-stethoscope form-section-icon"></i>
+                        <h5 class="form-section-title">Informations Médicales</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label required">Diagnostic d'admission</label>
                                 <input type="text" class="form-control" name="admission_diagnosis" 
-                                       placeholder="Diagnostic principal" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Notes cliniques</label>
-                                <textarea class="form-control" name="clinical_notes" rows="4" 
-                                          placeholder="Observations médicales à l'admission"></textarea>
+                                       placeholder="Diagnostic principal selon ICD-10 (focus pédiatrique)" required>
+                                <div class="invalid-feedback">Veuillez saisir le diagnostic d'admission</div>
+                                <small class="text-muted">Utiliser les codes ICD-10 pour les pathologies pédiatriques courantes au Mali</small>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Submit Buttons -->
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <a href="{% url 'patients:hospitalizations' %}" class="btn btn-outline-secondary">
-                                    <i class="fa-solid fa-times me-2"></i>Annuler
-                                </a>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fa-solid fa-hospital me-2"></i>Admettre le Patient
-                                </button>
-                            </div>
-                        </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'patients:hospitalizations' %}" class="btn-secondary-create">
+                            <i class="fa-solid fa-times"></i>Annuler
+                        </a>
+                        <button type="submit" class="btn-primary-create">
+                            <i class="fa-solid fa-hospital"></i>Admettre le Patient
+                        </button>
                     </div>
                 </div>
             </form>
         </div>
+        
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-tasks form-section-icon"></i>
+                    <h5 class="form-section-title">Actions Rapides</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn-outline-create" onclick="alert('Recherche patient par ID ou nom')">
+                            <i class="fa-solid fa-search"></i>Rechercher Patient
+                        </button>
+                        <button type="button" class="btn-outline-create" onclick="alert('Voir disponibilité des lits par service')">
+                            <i class="fa-solid fa-bed"></i>Disponibilité Lits
+                        </button>
+                        <button type="button" class="btn-outline-create" onclick="alert('Créer nouveau patient si nécessaire')">
+                            <i class="fa-solid fa-user-plus"></i>Nouveau Patient
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hospital Guidelines -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-book-medical form-section-icon"></i>
+                    <h5 class="form-section-title">Guide Hospitalisation</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-child"></i>
+                            Contexte Pédiatrique Mali
+                        </div>
+                        <div class="form-info-content">
+                            Focus sur les pathologies courantes: <strong>malnutrition, paludisme, infections respiratoires, malformations congénitales</strong>.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-family"></i>
+                            Accompagnement Familial
+                        </div>
+                        <div class="form-info-content">
+                            Prévoir l'hébergement d'un parent/tuteur selon les coutumes locales Mali.
+                        </div>
+                    </div>
+                    
+                    <div class="form-info">
+                        <div class="form-info-header">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                            TDR Compliance
+                        </div>
+                        <div class="form-info-content">
+                            Documentation complète requise pour suivi inter-établissements et rapport bailleurs.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services Disponibles -->
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fa-solid fa-hospital form-section-icon"></i>
+                    <h5 class="form-section-title">Services Hospitaliers</h5>
+                </div>
+                <div class="form-section-body">
+                    <div class="entity-info-card">
+                        <div class="h6 text-primary mb-1">Pédiatrie A & B</div>
+                        <div class="text-muted small">Médecine générale pédiatrique</div>
+                    </div>
+                    
+                    <div class="entity-info-card">
+                        <div class="h6 text-success mb-1">Réadaptation</div>
+                        <div class="text-muted small">Rééducation fonctionnelle</div>
+                    </div>
+                    
+                    <div class="entity-info-card">
+                        <div class="h6 text-warning mb-1">Chirurgie Pédiatrique</div>
+                        <div class="text-muted small">Interventions spécialisées</div>
+                    </div>
+                    
+                    <div class="entity-info-card">
+                        <div class="h6 text-danger mb-1">Soins Intensifs</div>
+                        <div class="text-muted small">Cas critiques</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        
+        // Patient selection enhancement
+        const patientSelect = document.querySelector('select[name="patient"]');
+        if (patientSelect) {
+            patientSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.value) {
+                    // Could add AJAX call to get patient details
+                    console.log('Patient sélectionné:', selectedOption.text);
+                }
+            });
+        }
+        
+        // Service selection guidance
+        const serviceSelect = document.querySelector('select[name="room_number"]');
+        if (serviceSelect) {
+            serviceSelect.addEventListener('change', function() {
+                const bedInput = document.querySelector('input[name="bed_number"]');
+                const service = this.value;
+                
+                // Provide bed numbering guidance based on service
+                if (service === 'pediatrie_A') {
+                    bedInput.placeholder = 'ex: PA-01, PA-15';
+                } else if (service === 'pediatrie_B') {
+                    bedInput.placeholder = 'ex: PB-01, PB-20';
+                } else if (service === 'readaptation') {
+                    bedInput.placeholder = 'ex: R-01, R-12';
+                } else if (service === 'chirurgie') {
+                    bedInput.placeholder = 'ex: C-01, C-08';
+                } else if (service === 'soins_intensifs') {
+                    bedInput.placeholder = 'ex: SI-01, SI-06';
+                } else {
+                    bedInput.placeholder = 'ex: A01, B12';
+                }
+            });
+        }
+        
+        console.log('Enhanced hospitalization form initialized with Mali context');
+    });
+</script>
 {% endblock %} 
