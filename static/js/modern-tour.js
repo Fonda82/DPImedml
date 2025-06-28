@@ -209,7 +209,7 @@ class ModernTour {
     showStep(stepIndex) {
         const steps = this.tourSteps[this.userRole];
         if (!steps || stepIndex >= steps.length) {
-            this.endTour();
+            // Don't call endTour directly - let nextStep() handle completion
             return;
         }
         
@@ -309,6 +309,14 @@ class ModernTour {
     
     nextStep() {
         this.currentStep++;
+        const steps = this.tourSteps[this.userRole];
+        
+        // Check if this was the last step
+        if (this.currentStep >= steps.length) {
+            this.completeTour();
+            return;
+        }
+        
         this.showStep(this.currentStep);
     }
     
@@ -320,12 +328,54 @@ class ModernTour {
     }
     
     closeTour() {
+        this.markAsCompleted(); // Mark as completed when manually closed
         this.endTour();
+    }
+    
+    completeTour() {
+        this.markAsCompleted(); // Mark as completed when all steps finished
+        this.endTour();
+        
+        // Show completion message
+        this.showCompletionMessage();
     }
     
     skipTour() {
         this.endTour();
         this.markAsCompleted();
+    }
+    
+    showCompletionMessage() {
+        const completionModal = document.createElement('div');
+        completionModal.className = 'modern-tour-completion';
+        completionModal.innerHTML = `
+            <div class="modern-tour-completion-content">
+                <div class="modern-tour-completion-header">
+                    <i class="fa-solid fa-check-circle text-success"></i>
+                    <h3>Visite guidée terminée !</h3>
+                </div>
+                <div class="modern-tour-completion-body">
+                    <p>Vous pouvez maintenant utiliser DPIMedML en toute autonomie. 
+                    Vous pouvez relancer la visite à tout moment en cliquant sur le bouton de reprise.</p>
+                    <button class="modern-tour-btn" onclick="this.parentElement.parentElement.parentElement.remove()">
+                        <i class="fa-solid fa-check"></i> Compris
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(completionModal);
+        
+        setTimeout(() => {
+            completionModal.classList.add('active');
+        }, 100);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (completionModal.parentElement) {
+                completionModal.remove();
+            }
+        }, 5000);
     }
     
     endTour() {
@@ -339,7 +389,12 @@ class ModernTour {
         });
         
         this.elements = {};
-        this.showReplayButton();
+        
+        // Only show replay button if tour was completed
+        const userRole = this.detectUserRole();
+        if (userRole && this.isCompleted(userRole)) {
+            this.showReplayButton();
+        }
     }
     
     startTour(userRole) {
@@ -460,6 +515,7 @@ class ModernTour {
         replayBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
         replayBtn.title = 'Revoir la visite guidée';
         replayBtn.onclick = () => {
+            this.resetTourStatus();
             replayBtn.remove();
             this.showWelcomeModal();
         };
@@ -481,6 +537,35 @@ class ModernTour {
     
     isCompleted(userRole) {
         return localStorage.getItem(`tour_completed_${userRole}`) === 'true';
+    }
+    
+    resetTourStatus() {
+        const userRole = this.detectUserRole();
+        if (userRole) {
+            localStorage.removeItem(`tour_completed_${userRole}`);
+            localStorage.removeItem(`tour_completed_date_${userRole}`);
+        }
+    }
+    
+    // Debug method to check tour status
+    debugTourStatus() {
+        const userRole = this.detectUserRole();
+        const isCompleted = this.isCompleted(userRole);
+        const completedDate = localStorage.getItem(`tour_completed_date_${userRole}`);
+        
+        console.log('=== TOUR DEBUG INFO ===');
+        console.log('User Role:', userRole);
+        console.log('Is Completed:', isCompleted);
+        console.log('Completed Date:', completedDate);
+        console.log('LocalStorage Keys:', Object.keys(localStorage).filter(key => key.includes('tour_')));
+        console.log('=======================');
+        
+        return {
+            userRole,
+            isCompleted,
+            completedDate,
+            allTourKeys: Object.keys(localStorage).filter(key => key.includes('tour_'))
+        };
     }
     
     autoStart() {
