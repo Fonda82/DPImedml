@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-key-for-demo-only'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'dpimedml.up.railway.app',  # Railway deployment domain
+    'dpimedml.onrender.com',    # Render deployment domain
+]
 
 
 # Application definition

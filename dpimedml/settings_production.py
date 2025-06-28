@@ -28,7 +28,15 @@ ALLOWED_HOSTS = [
     '*.up.railway.app',
     'dpimedml.up.railway.app',  # Your actual Railway URL
     'dpimedml-production.up.railway.app',  # Alternative URL format
+    # Additional Railway patterns just in case
+    'dpimedml.railway.app',
+    '.railway.app',
 ]
+
+# Debug print to confirm production settings are loaded
+print(f"🚀 Production settings loaded - ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print(f"🔧 DEBUG mode: {DEBUG}")
+print(f"🌐 Environment DATABASE_URL exists: {'DATABASE_URL' in os.environ}")
 
 # Application definition
 INSTALLED_APPS = [
