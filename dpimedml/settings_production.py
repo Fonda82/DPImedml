@@ -26,7 +26,8 @@ ALLOWED_HOSTS = [
     # Railway deployment domains
     '*.railway.app',
     '*.up.railway.app',
-    'dpimedml-production.up.railway.app',  # Your likely Railway URL
+    'dpimedml.up.railway.app',  # Your actual Railway URL
+    'dpimedml-production.up.railway.app',  # Alternative URL format
 ]
 
 # Application definition
