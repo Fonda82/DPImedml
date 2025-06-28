@@ -1281,7 +1281,7 @@ def hospitalization_detail(request, pk):
         return redirect('patients:hospitalizations')
     
     # Get related data
-    progress_notes = hospitalization.progress_notes.all().order_by('-date_time')
+    progress_notes = hospitalization.progress_notes.all().order_by('-date', '-time')
     discharge_report = getattr(hospitalization, 'discharge_report', None)
     
     context = {
