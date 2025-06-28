@@ -75,36 +75,157 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <label for="diagnosis" class="form-label required">Diagnostic</label>
-                                <input type="text" class="form-control" id="diagnosis" name="diagnosis" required>
+                                <input type="text" class="form-control" id="diagnosis" name="diagnosis" required placeholder="Diagnostic principal ou condition à traiter">
                                 <div class="invalid-feedback">Veuillez saisir un diagnostic</div>
                             </div>
                         </div>
                         
                         <div class="row g-3 mt-2">
                             <div class="col-md-12">
-                                <label for="goals" class="form-label required">Objectifs</label>
-                                <textarea class="form-control" id="goals" name="goals" rows="4" required placeholder="Décrivez les objectifs spécifiques du plan de réadaptation..."></textarea>
+                                <label for="goals" class="form-label required">Objectifs Généraux</label>
+                                <textarea class="form-control" id="goals" name="goals" rows="3" required placeholder="Décrivez les objectifs généraux du plan de réadaptation..."></textarea>
                                 <div class="invalid-feedback">Veuillez définir les objectifs du plan</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Timeline Section -->
+
+                <!-- TDR Enhanced Assessment Section -->
                 <div class="form-section">
                     <div class="form-section-header">
-                        <i class="fa-solid fa-calendar-alt form-section-icon"></i>
-                        <h5 class="form-section-title">Calendrier</h5>
+                        <i class="fa-solid fa-chart-line form-section-icon"></i>
+                        <h5 class="form-section-title">Évaluation Fonctionnelle TDR</h5>
+                        <small class="text-muted">Évaluation initiale des domaines fonctionnels (0 = Très limité, 5 = Excellent)</small>
                     </div>
                     <div class="form-section-body">
                         <div class="row g-3">
                             <div class="col-md-6">
+                                <label for="mobility_score" class="form-label">Mobilité</label>
+                                <select class="form-control" id="mobility_score" name="mobility_score">
+                                    <option value="0">0 - Très limité</option>
+                                    <option value="1">1 - Sévèrement limité</option>
+                                    <option value="2">2 - Modérément limité</option>
+                                    <option value="3" selected>3 - Légèrement limité</option>
+                                    <option value="4">4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="communication_score" class="form-label">Communication</label>
+                                <select class="form-control" id="communication_score" name="communication_score">
+                                    <option value="0">0 - Très limité</option>
+                                    <option value="1">1 - Sévèrement limité</option>
+                                    <option value="2">2 - Modérément limité</option>
+                                    <option value="3" selected>3 - Légèrement limité</option>
+                                    <option value="4">4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cognitive_score" class="form-label">Cognition</label>
+                                <select class="form-control" id="cognitive_score" name="cognitive_score">
+                                    <option value="0">0 - Très limité</option>
+                                    <option value="1">1 - Sévèrement limité</option>
+                                    <option value="2">2 - Modérément limité</option>
+                                    <option value="3" selected>3 - Légèrement limité</option>
+                                    <option value="4">4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="social_score" class="form-label">Socialisation</label>
+                                <select class="form-control" id="social_score" name="social_score">
+                                    <option value="0">0 - Très limité</option>
+                                    <option value="1">1 - Sévèrement limité</option>
+                                    <option value="2">2 - Modérément limité</option>
+                                    <option value="3" selected>3 - Légèrement limité</option>
+                                    <option value="4">4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Target Goals Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-bullseye form-section-icon"></i>
+                        <h5 class="form-section-title">Objectifs Cibles TDR</h5>
+                        <small class="text-muted">Définir les scores cibles à atteindre</small>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="target_mobility" class="form-label">Mobilité (Objectif)</label>
+                                <select class="form-control" id="target_mobility" name="target_mobility">
+                                    <option value="3">3 - Légèrement limité</option>
+                                    <option value="4" selected>4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="target_communication" class="form-label">Communication (Objectif)</label>
+                                <select class="form-control" id="target_communication" name="target_communication">
+                                    <option value="3">3 - Légèrement limité</option>
+                                    <option value="4" selected>4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="target_cognitive" class="form-label">Cognition (Objectif)</label>
+                                <select class="form-control" id="target_cognitive" name="target_cognitive">
+                                    <option value="3">3 - Légèrement limité</option>
+                                    <option value="4" selected>4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="target_social" class="form-label">Socialisation (Objectif)</label>
+                                <select class="form-control" id="target_social" name="target_social">
+                                    <option value="3">3 - Légèrement limité</option>
+                                    <option value="4" selected>4 - Bon</option>
+                                    <option value="5">5 - Excellent</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline & Family Involvement Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <i class="fa-solid fa-calendar-alt form-section-icon"></i>
+                        <h5 class="form-section-title">Calendrier et Famille</h5>
+                    </div>
+                    <div class="form-section-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
                                 <label for="start_date" class="form-label">Date de début</label>
                                 <input type="date" class="form-control" id="start_date" name="start_date" value="{{ today|date:'Y-m-d' }}">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="expected_duration_weeks" class="form-label required">Durée prévue (semaines)</label>
+                                <input type="number" class="form-control" id="expected_duration_weeks" name="expected_duration_weeks" value="12" min="1" max="52" required>
+                                <div class="invalid-feedback">Veuillez indiquer la durée prévue</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="family_involvement_score" class="form-label required">Implication Famille (1-5)</label>
+                                <select class="form-control" id="family_involvement_score" name="family_involvement_score" required>
+                                    <option value="1">1 - Très faible</option>
+                                    <option value="2">2 - Faible</option>
+                                    <option value="3" selected>3 - Modérée</option>
+                                    <option value="4">4 - Forte</option>
+                                    <option value="5">5 - Très forte</option>
+                                </select>
+                                <div class="invalid-feedback">Veuillez évaluer l'implication familiale</div>
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-12">
                                 <label for="end_date" class="form-label">Date de fin estimée</label>
-                                <input type="date" class="form-control" id="end_date" name="end_date">
+                                <input type="date" class="form-control" id="end_date" name="end_date" readonly>
+                                <small class="text-muted">Calculée automatiquement selon la durée prévue</small>
                             </div>
                         </div>
                     </div>
@@ -232,7 +353,45 @@
             }, false);
         })();
         
-        console.log('Rehabilitation create form initialized with unified design');
+        // Auto-calculate end date based on start date and duration
+        function calculateEndDate() {
+            const startDate = document.getElementById('start_date').value;
+            const durationWeeks = parseInt(document.getElementById('expected_duration_weeks').value);
+            
+            if (startDate && durationWeeks) {
+                const start = new Date(startDate);
+                const end = new Date(start.getTime() + (durationWeeks * 7 * 24 * 60 * 60 * 1000));
+                document.getElementById('end_date').value = end.toISOString().split('T')[0];
+            }
+        }
+        
+        // Add event listeners for auto-calculation
+        document.getElementById('start_date').addEventListener('change', calculateEndDate);
+        document.getElementById('expected_duration_weeks').addEventListener('change', calculateEndDate);
+        
+        // Initial calculation
+        calculateEndDate();
+        
+        // Enhanced goal validation - ensure targets are >= baseline
+        function validateTargets() {
+            const domains = ['mobility', 'communication', 'cognitive', 'social'];
+            
+            domains.forEach(domain => {
+                const baseline = parseInt(document.getElementById(`${domain}_score`).value);
+                const target = parseInt(document.getElementById(`target_${domain}`).value);
+                
+                if (target < baseline) {
+                    document.getElementById(`target_${domain}`).value = baseline;
+                }
+            });
+        }
+        
+        // Add target validation listeners
+        document.querySelectorAll('[id$="_score"]').forEach(el => {
+            el.addEventListener('change', validateTargets);
+        });
+        
+        console.log('Enhanced TDR rehabilitation form initialized');
     });
 </script>
 {% endblock %} 

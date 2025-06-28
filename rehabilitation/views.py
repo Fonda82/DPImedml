@@ -223,22 +223,60 @@ def rehabilitation_create(request, patient_id):
         return redirect('dashboard:index')
     
     if request.method == 'POST':
-        # Create a new rehabilitation plan
+        # Extract enhanced TDR fields
+        diagnosis = request.POST.get('diagnosis', '')
+        goals = request.POST.get('goals', '')
+        start_date = request.POST.get('start_date') or timezone.now().date()
+        end_date = request.POST.get('end_date')
+        expected_duration_weeks = int(request.POST.get('expected_duration_weeks', 12))
+        family_involvement_score = int(request.POST.get('family_involvement_score', 3))
+        
+        # Build baseline assessment JSON
+        baseline_assessment = {
+            'mobility': int(request.POST.get('mobility_score', 3)),
+            'communication': int(request.POST.get('communication_score', 3)),
+            'cognitive': int(request.POST.get('cognitive_score', 3)),
+            'social': int(request.POST.get('social_score', 3)),
+            'assessment_date': str(timezone.now().date())
+        }
+        
+        # Build target goals JSON
+        target_goals = {
+            'mobility': int(request.POST.get('target_mobility', 4)),
+            'communication': int(request.POST.get('target_communication', 4)),
+            'cognitive': int(request.POST.get('target_cognitive', 4)),
+            'social': int(request.POST.get('target_social', 4)),
+            'target_date': str(end_date) if end_date else ''
+        }
+        
+        # Create enhanced rehabilitation plan
         new_plan = RehabilitationPlan(
             patient=patient,
             prescribing_doctor=request.user.profile,
-            start_date=timezone.now().date(),
-            diagnosis=request.POST.get('diagnosis', ''),
-            goals=request.POST.get('goals', ''),
-            status='active'
+            start_date=start_date,
+            end_date=end_date,
+            diagnosis=diagnosis,
+            goals=goals,
+            status='active',
+            baseline_assessment=baseline_assessment,
+            expected_duration_weeks=expected_duration_weeks,
+            family_involvement_score=family_involvement_score,
+            target_goals=target_goals
         )
         
-        # Set end date if provided
-        end_date = request.POST.get('end_date')
-        if end_date:
-            new_plan.end_date = end_date
-            
         new_plan.save()
+        
+        # Add system activity for enhanced tracking
+        try:
+            from dashboard.models import SystemActivity
+            SystemActivity.objects.create(
+                user=request.user,
+                action='Plan de réadaptation TDR créé',
+                description=f'Plan TDR créé pour {patient.first_name} {patient.last_name} - Durée: {expected_duration_weeks} semaines',
+                action_type='create'
+            )
+        except ImportError:
+            pass
         
         messages.success(request, 'Plan de réadaptation créé avec succès!')
         return redirect('rehabilitation:detail', pk=new_plan.pk)
