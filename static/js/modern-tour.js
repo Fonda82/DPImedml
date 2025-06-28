@@ -37,7 +37,7 @@ class ModernTour {
                 position: 'top'
             },
             {
-                element: '.sidebar-menu-link[href*="patients"]',
+                element: 'a[href*="/patients/"]',
                 title: 'Base de Données Patients Réseau',
                 content: 'Accédez à la base centralisée de tous les enfants du réseau. Surveillez les nouvelles admissions et le suivi inter-établissements.',
                 position: 'right'
@@ -49,13 +49,13 @@ class ModernTour {
                 position: 'bottom'
             },
             {
-                element: '.sidebar-menu-link[href*="hospitalizations"]',
+                element: 'a[href*="hospitalizations"]',
                 title: 'Hospitalisations Pédiatriques',
                 content: 'Supervisez toutes les hospitalisations d\'enfants dans le réseau. Indicateur TDR clé pour la qualité des soins pédiatriques.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="referrals"]',
+                element: 'a[href*="referrals"]',
                 title: 'Références Inter-Établissements',
                 content: 'Coordonnez le transfert des enfants vers les centres spécialisés. Essentiel pour assurer la continuité des soins pédiatriques.',
                 position: 'right'
@@ -77,25 +77,25 @@ class ModernTour {
                 position: 'bottom'
             },
             {
-                element: '.sidebar-menu-link[href*="patients"]',
+                element: 'a[href*="/patients/"]',
                 title: 'Gestion des Patients',
                 content: 'Registre complet de vos jeunes patients : admissions, suivis, dossiers médicaux et plans de réhabilitation personnalisés.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="appointments"]',
+                element: 'a[href*="/appointments/"]',
                 title: 'Planning des Consultations',
                 content: 'Organisez les rendez-vous pour optimiser le temps de consultation. Réduisez les temps d\'attente pour les familles (objectif : <15min).',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="vouchers"]',
+                element: 'a[href*="/vouchers/"]',
                 title: 'Bons de Soins pour Familles',
                 content: 'Supervisez l\'émission des bons électroniques. Facilitez l\'accès aux soins pour les familles à faibles revenus.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="hospitalizations"]',
+                element: 'a[href*="hospitalizations"]',
                 title: 'Hospitalisations de votre Centre',
                 content: 'Gérez les admissions d\'enfants nécessitant une hospitalisation. Suivez la durée de séjour et la qualité des soins.',
                 position: 'right'
@@ -111,31 +111,31 @@ class ModernTour {
                 position: 'bottom'
             },
             {
-                element: '.sidebar-menu-link[href*="patients"]',
+                element: 'a[href*="/patients/"]',
                 title: 'Mes Patients Assignés',
                 content: 'Accédez aux dossiers complets de vos patients : historique médical, évaluations, et progrès de réhabilitation.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="rehabilitation"]',
+                element: 'a[href*="/rehabilitation/"]',
                 title: 'Plans de Réhabilitation Pédiatrique',
                 content: 'Créez et ajustez les programmes personnalisés : kinésithérapie, orthophonie, soutien psychologique adaptés à chaque enfant.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="appointments"]',
+                element: 'a[href*="/appointments/"]',
                 title: 'Consultations et Suivis',
                 content: 'Planifiez les consultations régulières. Suivez l\'évolution de chaque enfant et ajustez les traitements selon les progrès.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="vouchers"]',
+                element: 'a[href*="/vouchers/"]',
                 title: 'Émission de Bons Médicaux',
                 content: 'Émettez des bons pour rendre les soins accessibles aux familles. Incluez médicaments, thérapies et équipements spécialisés.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="prescriptions"]',
+                element: 'a[href*="/prescriptions/"]',
                 title: 'Prescriptions Électroniques',
                 content: 'Rédigez les ordonnances adaptées aux besoins pédiatriques : dosages appropriés et recommandations pour les parents.',
                 position: 'right'
@@ -151,25 +151,25 @@ class ModernTour {
                 position: 'bottom'
             },
             {
-                element: '.sidebar-menu-link[href*="medical_profile"]',
+                element: 'a[href*="medical_profile"]',
                 title: 'Mon Dossier Médical Personnel',
                 content: 'Votre dossier complet : diagnostics, traitements, examens et évolution. Partagé en sécurité avec votre équipe médicale.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="appointments"]',
+                element: 'a[href*="/appointments/"]',
                 title: 'Mes Rendez-vous Médicaux',
                 content: 'Consultez vos prochains RDV et l\'historique. N\'oubliez jamais une consultation importante pour votre santé.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="patient_exercises"]',
+                element: 'a[href*="patient_exercises"]',
                 title: 'Mon Programme de Réhabilitation',
                 content: 'Exercices personnalisés prescrits par votre médecin. Suivez vos progrès et marquez les exercices accomplis.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="vouchers"]',
+                element: 'a[href*="/vouchers/"]',
                 title: 'Mes Bons de Soins',
                 content: 'Bons émis par votre médecin pour faciliter l\'accès aux soins. Vérifiez leur validité et utilisation.',
                 position: 'right'
