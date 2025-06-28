@@ -532,27 +532,42 @@ def add_document(request, pk):
         return redirect('dashboard:index')
     
     if request.method == 'POST':
+        print("POST request received for document upload")  # Debug
         title = request.POST.get('title')
         category = request.POST.get('category')
         description = request.POST.get('description')
         document_date = request.POST.get('date')
         document_file = request.FILES.get('document')
         
+        print(f"Form data - Title: {title}, Category: {category}, File: {document_file}")  # Debug
+        
         if title and document_file:
-            document = Document(
-                patient=patient,
-                title=title,
-                category=category,
-                description=description,
-                file=document_file,
-                uploaded_by=request.user.profile,
-                document_date=document_date if document_date else timezone.now().date()
-            )
-            document.save()
-            messages.success(request, "Document ajouté avec succès.")
-            return redirect('patients:documents', pk=patient.pk)
+            try:
+                document = Document(
+                    patient=patient,
+                    title=title,
+                    category=category,
+                    description=description,
+                    file=document_file,
+                    uploaded_by=request.user.profile,
+                    document_date=document_date if document_date else timezone.now().date()
+                )
+                document.save()
+                print(f"Document saved successfully: {document.id}")  # Debug
+                messages.success(request, f"Document '{title}' ajouté avec succès.")
+                return redirect('patients:documents', pk=patient.pk)
+            except Exception as e:
+                print(f"Error saving document: {str(e)}")  # Debug
+                messages.error(request, f"Erreur lors de l'ajout du document: {str(e)}")
         else:
-            messages.error(request, "Veuillez fournir un titre et un fichier.")
+            missing_fields = []
+            if not title:
+                missing_fields.append("titre")
+            if not document_file:
+                missing_fields.append("fichier")
+            error_msg = f"Veuillez fournir: {', '.join(missing_fields)}"
+            print(f"Validation error: {error_msg}")  # Debug
+            messages.error(request, error_msg)
     
     return redirect('patients:documents', pk=patient.pk)
 

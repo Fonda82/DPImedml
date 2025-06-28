@@ -73,9 +73,9 @@
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="project-panel">
                         <div class="project-content">
-                            <div class="project-logo">
+                                                    <div class="project-logo">
                                 <img src="{% static 'img/logo.png' %}" alt="DPI-R-ML ModuleRehab Logo">
-                            </div>
+                        </div>
                             
                             <h2 class="project-title-main">Démonstration Technique</h2>
                             <p class="project-description">
@@ -121,7 +121,7 @@
                         <div class="login-header">
                             <h1 class="login-title">Connexion</h1>
                             <p class="login-subtitle">Accès sécurisé au système de réhabilitation</p>
-                        </div>
+                    </div>
                         
                         {% if messages %}
                         <div class="alert alert-danger" role="alert">
@@ -180,21 +180,21 @@
                             <div class="status-title">
                                 <span class="status-icon"></span>
                                 État du Système
-                            </div>
+                                        </div>
                             <div class="status-grid">
-                                <div class="status-item">
-                                    <div class="status-value" id="active-facilities">12</div>
-                                    <div class="status-label">Centres Actifs</div>
-                                </div>
+                                    <div class="status-item">
+                                            <div class="status-value" id="active-facilities">12</div>
+                                            <div class="status-label">Centres Actifs</div>
+                                        </div>
                                 <div class="status-item">
                                     <div class="status-value" id="online-users">47</div>
                                     <div class="status-label">Utilisateurs</div>
                                 </div>
-                                <div class="status-item">
+                                    <div class="status-item">
                                     <div class="status-value">99.9%</div>
                                     <div class="status-label">Disponibilité</div>
                                 </div>
-                                <div class="status-item">
+                                    <div class="status-item">
                                     <div class="status-value">Sécurisé</div>
                                     <div class="status-label">État Sécurité</div>
                                 </div>
@@ -257,23 +257,23 @@
             const submitBtn = form.querySelector('.btn-login');
             
             form.addEventListener('submit', function(e) {
-                submitBtn.innerHTML = `
+                        submitBtn.innerHTML = `
                     <span class="spinner-border spinner-border-sm me-2"></span>
-                    Connexion en cours...
-                `;
-                submitBtn.disabled = true;
+                            Connexion en cours...
+                        `;
+                        submitBtn.disabled = true;
             });
 
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'scale(1.02)';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'scale(1)';
-                });
-            });
+             const inputs = document.querySelectorAll('.form-control');
+             inputs.forEach(input => {
+                 input.addEventListener('focus', function() {
+                     this.parentElement.style.transform = 'scale(1.02)';
+                 });
+                 
+                 input.addEventListener('blur', function() {
+                     this.parentElement.style.transform = 'scale(1)';
+                 });
+             });
         }
 
         function updateSystemStatus() {
@@ -298,7 +298,7 @@
                 
                 typeWriter(usernameField, credentials[role].username, () => {
                     typeWriter(passwordField, credentials[role].password, () => {
-                        setTimeout(() => {
+                                setTimeout(() => {
                             document.getElementById('loginForm').submit();
                         }, 500);
                     });

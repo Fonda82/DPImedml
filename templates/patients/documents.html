@@ -23,9 +23,9 @@
                 <button type="button" class="btn-primary-create" data-bs-toggle="modal" data-bs-target="#addDocumentModal">
                     <i class="fa-solid fa-plus"></i>Ajouter Document
                 </button>
-            </div>
         </div>
     </div>
+</div>
 
     <div class="row">
         <div class="col-12">
@@ -36,7 +36,7 @@
                     <h5 class="form-section-title">Gestion des Documents</h5>
                 </div>
                 <div class="form-section-body">
-                    <!-- Filter Section -->
+                <!-- Filter Section -->
                     <div class="form-info mb-4">
                         <div class="form-info-header">
                             <i class="fa-solid fa-filter"></i>
@@ -47,30 +47,30 @@
                                 <div class="filter-buttons d-flex flex-wrap gap-2">
                                     <button type="button" class="btn btn-sm btn-outline-primary active" data-filter="all">
                                         <i class="fa-solid fa-list me-1"></i>Tous
-                                    </button>
+                                </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-filter="report">
                                         <i class="fa-solid fa-file-alt me-1"></i>Rapports
-                                    </button>
+                                </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-filter="prescription">
                                         <i class="fa-solid fa-prescription me-1"></i>Prescriptions
-                                    </button>
+                                </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-filter="imaging">
                                         <i class="fa-solid fa-x-ray me-1"></i>Imagerie
-                                    </button>
+                                </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-filter="lab">
                                         <i class="fa-solid fa-flask me-1"></i>Laboratoire
-                                    </button>
+                                </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-filter="other">
                                         <i class="fa-solid fa-file me-1"></i>Autres
-                                    </button>
-                                </div>
+                                </button>
+                            </div>
                                 <div class="text-muted">
                                     <i class="fa-solid fa-file me-1"></i>
                                     {{ documents|length }} document{{ documents|length|pluralize }}
                                 </div>
-                            </div>
                         </div>
                     </div>
+                </div>
                     
                     <!-- Documents Grid -->
                     <div class="row g-3" id="documents-container">
@@ -90,19 +90,19 @@
                                             <i class="fa-solid fa-file-alt fa-3x text-secondary"></i>
                                         {% endif %}
                                     </div>
-                                    
+                                        
                                     <div class="mb-2">
-                                        {% if document.category == 'REPORT' %}
+                                            {% if document.category == 'REPORT' %}
                                             <span class="status-badge status-badge-info">Rapport</span>
-                                        {% elif document.category == 'PRESCRIPTION' %}
+                                            {% elif document.category == 'PRESCRIPTION' %}
                                             <span class="status-badge status-badge-success">Prescription</span>
-                                        {% elif document.category == 'IMAGING' %}
+                                            {% elif document.category == 'IMAGING' %}
                                             <span class="status-badge status-badge-warning">Imagerie</span>
-                                        {% elif document.category == 'LAB' %}
+                                            {% elif document.category == 'LAB' %}
                                             <span class="status-badge status-badge-secondary">Laboratoire</span>
-                                        {% else %}
+                                            {% else %}
                                             <span class="status-badge status-badge-secondary">Autre</span>
-                                        {% endif %}
+                                            {% endif %}
                                     </div>
                                     
                                     <h6 class="entity-name mb-2" title="{{ document.title }}">{{ document.title|truncatechars:30 }}</h6>
@@ -124,15 +124,15 @@
                                     
                                     <div class="action-buttons">
                                         <button class="action-btn action-btn-primary preview-btn" data-bs-toggle="modal" data-bs-target="#previewModal" 
-                                                data-title="{{ document.title }}" 
-                                                data-file="{{ document.file.url }}" 
+                                                    data-title="{{ document.title }}" 
+                                                    data-file="{{ document.file.url }}" 
                                                 data-type="{{ document.file_type }}"
                                                 title="Aperçu">
                                             <i class="fa-solid fa-eye"></i>
-                                        </button>
+                                            </button>
                                         <a href="{{ document.file.url }}" download class="action-btn action-btn-secondary" title="Télécharger">
                                             <i class="fa-solid fa-download"></i>
-                                        </a>
+                                            </a>
                                     </div>
                                 </div>
                             </div>
@@ -206,15 +206,15 @@
                                 <div class="upload-area text-center py-4" id="documentDropzone" style="border: 2px dashed #dee2e6; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
                                     <i class="fa-solid fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
                                     <p class="mb-2">Déposez votre fichier ici ou cliquez pour sélectionner</p>
-                                    <p class="text-muted small">Formats acceptés: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX (Max: 10MB)</p>
+                            <p class="text-muted small">Formats acceptés: PDF, JPG, PNG, DOC, DOCX, XLS, XLSX (Max: 10MB)</p>
                                     <input type="file" name="document" id="document" class="d-none" required 
                                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx">
-                                </div>
-                                <div id="file-preview" class="mt-3 d-none">
+                        </div>
+                        <div id="file-preview" class="mt-3 d-none">
                                     <div class="alert alert-success d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="fa-solid fa-check-circle me-2"></i>
-                                            <span id="file-name"></span>
+                                <span id="file-name"></span>
                                         </div>
                                         <button type="button" class="btn-close" id="remove-file" aria-label="Remove file"></button>
                                     </div>
@@ -430,6 +430,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })();
     
     console.log('Documents page initialized with unified design');
-});
+    });
 </script>
 {% endblock %} 
