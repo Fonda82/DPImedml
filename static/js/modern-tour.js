@@ -22,120 +22,156 @@ class ModernTour {
     }
     
     initializeTourSteps() {
-        // SuperAdmin Tour - Focus on key management features
+        // SuperAdmin Tour - Focus on patient oversight and system-wide patient management
         this.tourSteps.superadmin = [
             {
-                element: '.quick-actions-bar',
-                title: 'Bienvenue Super Admin!',
-                content: 'Utilisez cette barre d\'actions rapides pour accéder aux fonctions principales : créer des établissements, ajouter du personnel et voir les rapports.',
-                position: 'bottom'
-            },
-            {
                 element: '.kpi-card:first-child',
-                title: 'Indicateurs TDR',
-                content: 'Surveillez les indicateurs clés de performance conformes aux exigences du TDR : taux de prise en charge, temps d\'attente et fidélisation.',
+                title: 'Enfants Pris en Charge - Mali',
+                content: 'Voici le cœur du système : le nombre total d\'enfants de 0-14 ans pris en charge dans tout le réseau malien. Objectif TDR : 95% de taux de prise en charge.',
                 position: 'bottom'
             },
             {
                 element: '.analytics-widget:first-child',
-                title: 'Analytics Géographiques',
-                content: 'Visualisez la distribution géographique des patients par commune de Bamako pour optimiser les ressources.',
+                title: 'Distribution Géographique des Patients',
+                content: 'Visualisez où vivent vos jeunes patients à Bamako. Essentiel pour planifier l\'accessibilité des soins et optimiser les ressources par commune.',
                 position: 'top'
             },
             {
-                element: '.sidebar-menu-link[href*="facilities"]',
-                title: 'Gestion Multi-Établissements',
-                content: 'Gérez tous les établissements du réseau depuis cette interface centralisée.',
+                element: '.sidebar-menu-link[href*="patients"]',
+                title: 'Base de Données Patients Réseau',
+                content: 'Accédez à la base centralisée de tous les enfants du réseau. Surveillez les nouvelles admissions et le suivi inter-établissements.',
                 position: 'right'
             },
-            {
-                element: '.sidebar-menu-link[href*="security"]',
-                title: 'Sécurité & Conformité',
-                content: 'Accédez aux tableaux de bord de sécurité et de conformité RGPD pour superviser la protection des données.',
-                position: 'right'
-            }
-        ];
-        
-        // Facility Admin Tour - Focus on facility management
-        this.tourSteps.facility_admin = [
             {
                 element: '.quick-actions-bar',
-                title: 'Bienvenue Admin Structure!',
-                content: 'Gérez votre établissement efficacement avec ces actions rapides pour les patients, le personnel et les rapports.',
+                title: 'Actions Rapides Patient-Centrées',
+                content: 'Créez rapidement de nouveaux établissements pour rapprocher les soins des familles, ajoutez du personnel médical, et générez des rapports TDR patient-centrés.',
                 position: 'bottom'
             },
             {
-                element: '.kpi-card:first-child',
-                title: 'Performances de votre Établissement',
-                content: 'Suivez les métriques de votre établissement : patients pris en charge, temps d\'attente et taux de fidélisation.',
-                position: 'bottom'
-            },
-            {
-                element: '.sidebar-menu-link[href*="staff"]',
-                title: 'Gestion du Personnel',
-                content: 'Administrez votre équipe médicale et non-médicale depuis cette section.',
+                element: '.sidebar-menu-link[href*="hospitalizations"]',
+                title: 'Hospitalisations Pédiatriques',
+                content: 'Supervisez toutes les hospitalisations d\'enfants dans le réseau. Indicateur TDR clé pour la qualité des soins pédiatriques.',
                 position: 'right'
             },
             {
-                element: '.sidebar-menu-link[href*="appointments"]',
-                title: 'Planning des Rendez-vous',
-                content: 'Coordonnez tous les rendez-vous de votre établissement en temps réel.',
+                element: '.sidebar-menu-link[href*="referrals"]',
+                title: 'Références Inter-Établissements',
+                content: 'Coordonnez le transfert des enfants vers les centres spécialisés. Essentiel pour assurer la continuité des soins pédiatriques.',
                 position: 'right'
             }
         ];
         
-        // Doctor Tour - Focus on patient care
-        this.tourSteps.doctor = [
+        // Facility Admin Tour - Focus on patient management at facility level
+        this.tourSteps.facility_admin = [
             {
                 element: '.kpi-card:first-child',
-                title: 'Bienvenue Docteur!',
-                content: 'Voici un aperçu de votre charge de travail et des patients sous votre responsabilité.',
+                title: 'Patients de Votre Établissement',
+                content: 'Nombre d\'enfants actuellement pris en charge dans votre structure. Surveillez l\'évolution et les nouvelles admissions quotidiennes.',
+                position: 'bottom'
+            },
+            {
+                element: '.kpi-card:nth-child(2)',
+                title: 'Rendez-vous Patients du Jour',
+                content: 'Consultations programmées aujourd\'hui. Veillez à ce qu\'aucun enfant ne manque son RDV - chaque consultation compte pour leur développement.',
                 position: 'bottom'
             },
             {
                 element: '.sidebar-menu-link[href*="patients"]',
-                title: 'Mes Patients',
-                content: 'Accédez rapidement à vos patients assignés et leurs dossiers médicaux complets.',
-                position: 'right'
-            },
-            {
-                element: '.sidebar-menu-link[href*="rehabilitation"]',
-                title: 'Plans de Réhabilitation',
-                content: 'Créez et suivez les plans de réhabilitation personnalisés pour vos jeunes patients.',
-                position: 'right'
-            },
-            {
-                element: '.sidebar-menu-link[href*="vouchers"]',
-                title: 'Émission de Bons',
-                content: 'Émettez des bons de soins électroniques pour faciliter l\'accès aux services pour vos patients.',
-                position: 'right'
-            }
-        ];
-        
-        // Patient Tour - Focus on personal healthcare
-        this.tourSteps.patient = [
-            {
-                element: '.kpi-card:first-child',
-                title: 'Bienvenue!',
-                content: 'Voici votre tableau de bord personnel avec vos prochains rendez-vous et informations de santé.',
-                position: 'bottom'
-            },
-            {
-                element: '.sidebar-menu-link[href*="medical_profile"]',
-                title: 'Mon Dossier Médical',
-                content: 'Consultez votre dossier médical complet, prescriptions et résultats d\'examens.',
+                title: 'Gestion des Patients',
+                content: 'Registre complet de vos jeunes patients : admissions, suivis, dossiers médicaux et plans de réhabilitation personnalisés.',
                 position: 'right'
             },
             {
                 element: '.sidebar-menu-link[href*="appointments"]',
-                title: 'Mes Rendez-vous',
-                content: 'Gérez vos rendez-vous : consultez l\'historique et les prochains RDV.',
+                title: 'Planning des Consultations',
+                content: 'Organisez les rendez-vous pour optimiser le temps de consultation. Réduisez les temps d\'attente pour les familles (objectif : <15min).',
                 position: 'right'
             },
             {
                 element: '.sidebar-menu-link[href*="vouchers"]',
-                title: 'Mes Bons de Santé',
-                content: 'Suivez vos bons de soins émis par votre médecin et leur statut d\'utilisation.',
+                title: 'Bons de Soins pour Familles',
+                content: 'Supervisez l\'émission des bons électroniques. Facilitez l\'accès aux soins pour les familles à faibles revenus.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="hospitalizations"]',
+                title: 'Hospitalisations de votre Centre',
+                content: 'Gérez les admissions d\'enfants nécessitant une hospitalisation. Suivez la durée de séjour et la qualité des soins.',
+                position: 'right'
+            }
+        ];
+        
+        // Doctor Tour - Focus on direct patient care and rehabilitation
+        this.tourSteps.doctor = [
+            {
+                element: '.kpi-card:first-child',
+                title: 'Vos Jeunes Patients',
+                content: 'Enfants sous votre responsabilité médicale. Chaque patient a un parcours unique de réhabilitation adapté à ses besoins spécifiques.',
+                position: 'bottom'
+            },
+            {
+                element: '.sidebar-menu-link[href*="patients"]',
+                title: 'Mes Patients Assignés',
+                content: 'Accédez aux dossiers complets de vos patients : historique médical, évaluations, et progrès de réhabilitation.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="rehabilitation"]',
+                title: 'Plans de Réhabilitation Pédiatrique',
+                content: 'Créez et ajustez les programmes personnalisés : kinésithérapie, orthophonie, soutien psychologique adaptés à chaque enfant.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="appointments"]',
+                title: 'Consultations et Suivis',
+                content: 'Planifiez les consultations régulières. Suivez l\'évolution de chaque enfant et ajustez les traitements selon les progrès.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="vouchers"]',
+                title: 'Émission de Bons Médicaux',
+                content: 'Émettez des bons pour rendre les soins accessibles aux familles. Incluez médicaments, thérapies et équipements spécialisés.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="prescriptions"]',
+                title: 'Prescriptions Électroniques',
+                content: 'Rédigez les ordonnances adaptées aux besoins pédiatriques : dosages appropriés et recommandations pour les parents.',
+                position: 'right'
+            }
+        ];
+        
+        // Patient Tour - Focus on personal healthcare journey
+        this.tourSteps.patient = [
+            {
+                element: '.kpi-card:first-child',
+                title: 'Mon Parcours de Soins',
+                content: 'Bienvenue sur votre espace personnel ! Ici vous retrouvez tous vos rendez-vous et le suivi de votre progression.',
+                position: 'bottom'
+            },
+            {
+                element: '.sidebar-menu-link[href*="medical_profile"]',
+                title: 'Mon Dossier Médical Personnel',
+                content: 'Votre dossier complet : diagnostics, traitements, examens et évolution. Partagé en sécurité avec votre équipe médicale.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="appointments"]',
+                title: 'Mes Rendez-vous Médicaux',
+                content: 'Consultez vos prochains RDV et l\'historique. N\'oubliez jamais une consultation importante pour votre santé.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="patient_exercises"]',
+                title: 'Mon Programme de Réhabilitation',
+                content: 'Exercices personnalisés prescrits par votre médecin. Suivez vos progrès et marquez les exercices accomplis.',
+                position: 'right'
+            },
+            {
+                element: '.sidebar-menu-link[href*="vouchers"]',
+                title: 'Mes Bons de Soins',
+                content: 'Bons émis par votre médecin pour faciliter l\'accès aux soins. Vérifiez leur validité et utilisation.',
                 position: 'right'
             }
         ];
@@ -361,18 +397,24 @@ class ModernTour {
             'patient': 'Patient'
         };
         
+        const welcomeMessages = {
+            'superadmin': 'Découvrez comment superviser la prise en charge des enfants dans tout le réseau malien et optimiser la qualité des soins pédiatriques.',
+            'facility_admin': 'Apprenez à gérer efficacement les patients de votre établissement et coordonner leurs parcours de soins.',
+            'doctor': 'Explorez les outils pour créer des plans de réhabilitation personnalisés et suivre l\'évolution de vos jeunes patients.',
+            'patient': 'Familiarisez-vous avec votre espace personnel pour suivre votre parcours de soins et votre progression.'
+        };
+        
         const modal = document.createElement('div');
         modal.className = 'modern-tour-welcome';
         modal.innerHTML = `
             <div class="modern-tour-welcome-content">
                 <div class="modern-tour-welcome-header">
                     <h2 class="modern-tour-welcome-title">Bienvenue dans DPIMedML</h2>
-                    <p class="modern-tour-welcome-subtitle">${roleNames[userRole]}</p>
+                    <p class="modern-tour-welcome-subtitle">${roleNames[userRole]} - Système de Réhabilitation Pédiatrique</p>
                 </div>
                 <div class="modern-tour-welcome-body">
                     <p class="modern-tour-welcome-text">
-                        Souhaitez-vous découvrir les fonctionnalités principales du système 
-                        à travers une visite guidée interactive ?
+                        ${welcomeMessages[userRole]} Souhaitez-vous une visite guidée interactive ?
                     </p>
                     <div class="modern-tour-welcome-actions">
                         <button class="modern-tour-btn" onclick="modernTour.startWelcomeTour('${userRole}')">
