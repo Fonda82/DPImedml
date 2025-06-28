@@ -23,6 +23,10 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.render.com',
+    # Railway deployment domains
+    '*.railway.app',
+    '*.up.railway.app',
+    'dpimedml-production.up.railway.app',  # Your likely Railway URL
 ]
 
 # Application definition
