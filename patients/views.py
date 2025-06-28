@@ -1378,11 +1378,15 @@ def add_progress_note(request, pk):
         vital_signs = request.POST.get('vital_signs', '')
         
         if note_content:
+            from datetime import datetime
+            now = datetime.now()
             HospitalizationProgressNote.objects.create(
                 hospitalization=hospitalization,
-                doctor=user_profile,
-                note_content=note_content,
-                vital_signs=vital_signs
+                author=user_profile,
+                date=now.date(),
+                time=now.time(),
+                progress_note=note_content,
+                treatment_administered=vital_signs
             )
             messages.success(request, "Note de progression ajoutée avec succès.")
         else:

@@ -124,15 +124,15 @@
                             <div class="border rounded p-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
-                                        <strong>Dr. {{ note.doctor.user.last_name }}</strong>
-                                        <span class="text-muted">{{ note.doctor.user.first_name }}</span>
+                                        <strong>Dr. {{ note.author.user.last_name }}</strong>
+                                        <span class="text-muted">{{ note.author.user.first_name }}</span>
                                     </div>
-                                    <small class="text-muted">{{ note.date_time|date:"d/m/Y H:i" }}</small>
+                                    <small class="text-muted">{{ note.date|date:"d/m/Y" }} {{ note.time|time:"H:i" }}</small>
                                 </div>
-                                <p>{{ note.note_content }}</p>
-                                {% if note.vital_signs %}
+                                <p>{{ note.progress_note }}</p>
+                                {% if note.treatment_administered %}
                                 <div class="bg-light p-2 rounded">
-                                    <strong>Signes vitaux:</strong> {{ note.vital_signs }}
+                                    <strong>Traitements administrés:</strong> {{ note.treatment_administered }}
                                 </div>
                                 {% endif %}
                             </div>
@@ -200,9 +200,9 @@
                                   placeholder="Observations médicales..." required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Signes vitaux</label>
+                        <label class="form-label">Traitements administrés</label>
                         <textarea class="form-control" name="vital_signs" rows="2" 
-                                  placeholder="TA, pouls, température, etc."></textarea>
+                                  placeholder="Médicaments, soins, observations, etc."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
