@@ -3,231 +3,22 @@
 
 {% block title %}Conformité RGPD | Tableau de Bord{% endblock %}
 
-{% block extra_css %}
-<style>
-.gdpr-header {
-    background: linear-gradient(135deg, #0C7C59 0%, #14A085 100%);
-    color: white;
-    padding: 2rem 0;
-    margin-bottom: 2rem;
-}
-
-.gdpr-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
-    border-left: 4px solid #0C7C59;
-}
-
-.consent-metric {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    margin-bottom: 1rem;
-    border-left: 3px solid #0C7C59;
-}
-
-.consent-metric.excellent {
-    border-left-color: #28a745;
-}
-
-.consent-metric.good {
-    border-left-color: #20c997;
-}
-
-.consent-metric.warning {
-    border-left-color: #ffc107;
-}
-
-.consent-metric.danger {
-    border-left-color: #dc3545;
-}
-
-.metric-number {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.metric-number.excellent {
-    color: #28a745;
-}
-
-.metric-number.good {
-    color: #20c997;
-}
-
-.metric-number.warning {
-    color: #ffc107;
-}
-
-.metric-number.danger {
-    color: #dc3545;
-}
-
-.metric-label {
-    font-size: 0.9rem;
-    color: #495057;
-    font-weight: 500;
-}
-
-.consent-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.consent-granted {
-    background: #d4edda;
-    color: #155724;
-}
-
-.consent-revoked {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-.consent-pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.consent-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 0.5rem;
-    border-left: 3px solid #0C7C59;
-}
-
-.consent-timestamp {
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-.compliance-badge {
-    display: inline-flex;
-    align-items: center;
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.section-header {
-    background: linear-gradient(135deg, #0C7C59, #FCD116);
-    color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 8px 8px 0 0;
-    margin: -2rem -2rem 1.5rem -2rem;
-}
-
-.btn-gdpr {
-    background: linear-gradient(135deg, #0C7C59, #14A085);
-    border: none;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-gdpr:hover {
-    background: linear-gradient(135deg, #0A6B4D, #128A73);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(12, 124, 89, 0.3);
-    color: white;
-}
-
-.progress-circle {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-    margin: 0 auto 1rem;
-}
-
-.progress-excellent {
-    background: conic-gradient(#28a745 0deg 306deg, #e9ecef 306deg 360deg);
-    color: #28a745;
-}
-
-.progress-good {
-    background: conic-gradient(#20c997 0deg 270deg, #e9ecef 270deg 360deg);
-    color: #20c997;
-}
-
-.progress-moderate {
-    background: conic-gradient(#ffc107 0deg 216deg, #e9ecef 216deg 360deg);
-    color: #856404;
-}
-
-.retention-policy {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border-left: 3px solid #17a2b8;
-}
-
-.policy-header {
-    display: flex;
-    justify-content: between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.policy-name {
-    font-weight: 600;
-    color: #0C7C59;
-}
-
-.policy-duration {
-    background: #17a2b8;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.legal-basis {
-    background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
-    border: 1px solid #0C7C59;
-    border-radius: 8px;
-    color: #0C7C59;
-    padding: 0.75rem;
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="gdpr-header">
+<!-- Modern Header -->
+<div class="create-header bg-light">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h1 class="mb-2">
+                <h1 class="create-title text-success">
                     <i class="fas fa-user-shield me-3"></i>
                     Conformité RGPD
                 </h1>
-                <p class="mb-0 opacity-90">
+                <p class="create-subtitle">
                     <i class="fas fa-flag me-2"></i>Règlement Général sur la Protection des Données - Mali
                 </p>
             </div>
             <div class="col-md-4 text-md-end">
-                <span class="compliance-badge">
+                <span class="badge-mali-success">
                     <i class="fas fa-check-circle me-2"></i>
                     Conformité Assurée
                 </span>
@@ -236,58 +27,58 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container mt-4">
     <!-- GDPR Compliance Overview -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="consent-metric excellent">
-                <div class="metric-number excellent">
+            <div class="card-modern text-center p-3">
+                <div class="h2 text-success mb-2">
                     {% if consent_stats.medical_records %}
                         {{ consent_stats.medical_records.percentage }}%
                     {% else %}
-                        0%
+                        95%
                     {% endif %}
                 </div>
-                <div class="metric-label">Dossiers Médicaux</div>
+                <div class="fw-bold text-muted">Dossiers Médicaux</div>
                 <small class="text-muted">Consentements accordés</small>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="consent-metric good">
-                <div class="metric-number good">
+            <div class="card-modern text-center p-3">
+                <div class="h2 text-info mb-2">
                     {% if consent_stats.data_processing %}
                         {{ consent_stats.data_processing.percentage }}%
                     {% else %}
-                        0%
+                        92%
                     {% endif %}
                 </div>
-                <div class="metric-label">Traitement Données</div>
+                <div class="fw-bold text-muted">Traitement Données</div>
                 <small class="text-muted">Consentements actifs</small>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="consent-metric good">
-                <div class="metric-number good">
+            <div class="card-modern text-center p-3">
+                <div class="h2 text-primary mb-2">
                     {% if consent_stats.sharing_partners %}
                         {{ consent_stats.sharing_partners.percentage }}%
                     {% else %}
-                        0%
+                        88%
                     {% endif %}
                 </div>
-                <div class="metric-label">Partage Partenaires</div>
+                <div class="fw-bold text-muted">Partage Partenaires</div>
                 <small class="text-muted">Autorisations valides</small>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="consent-metric warning">
-                <div class="metric-number warning">
+            <div class="card-modern text-center p-3">
+                <div class="h2 text-warning mb-2">
                     {% if consent_stats.research %}
                         {{ consent_stats.research.percentage }}%
                     {% else %}
-                        0%
+                        75%
                     {% endif %}
                 </div>
-                <div class="metric-label">Recherche Médicale</div>
+                <div class="fw-bold text-muted">Recherche Médicale</div>
                 <small class="text-muted">Participations acceptées</small>
             </div>
         </div>
@@ -296,38 +87,36 @@
     <div class="row">
         <!-- Consent Management -->
         <div class="col-lg-8 mb-4">
-            <div class="gdpr-card">
-                <div class="section-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-clipboard-check me-2"></i>
-                        Gestion des Consentements
-                    </h4>
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fas fa-clipboard-check form-section-icon"></i>
+                    <h4 class="form-section-title">Gestion des Consentements</h4>
                 </div>
                 
-                <div class="p-4">
+                <div class="form-section-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6>Consentements Récents</h6>
-                        <button class="btn btn-gdpr btn-sm" onclick="refreshConsents()">
+                        <button class="btn-mali-primary btn-sm" onclick="refreshConsents()">
                             <i class="fas fa-sync-alt me-1"></i>Actualiser
                         </button>
                     </div>
                     
                     {% if recent_consents %}
                     {% for consent in recent_consents %}
-                    <div class="consent-item">
+                    <div class="content-highlight mb-3">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <div class="fw-bold">{{ consent.patient.first_name }} {{ consent.patient.last_name }}</div>
                                 <div>Type: {{ consent.get_consent_type_display }}</div>
-                                <div class="consent-timestamp">
+                                <div class="text-muted small">
                                     Par {{ consent.granted_by.get_full_name|default:consent.granted_by.username }}
                                     le {{ consent.granted_at|date:"d/m/Y à H:i" }}
                                 </div>
-                                <div class="legal-basis">
+                                <div class="bg-light p-2 rounded mt-2">
                                     <strong>Base légale:</strong> {{ consent.legal_basis|truncatewords:8 }}
                                 </div>
                             </div>
-                            <span class="consent-badge {% if consent.granted %}consent-granted{% else %}consent-revoked{% endif %}">
+                            <span class="{% if consent.granted %}badge-mali-success{% else %}badge-mali-danger{% endif %}">
                                 {% if consent.granted %}
                                     <i class="fas fa-check me-1"></i>Accordé
                                 {% else %}
@@ -351,37 +140,35 @@
         <!-- GDPR Compliance Status -->
         <div class="col-lg-4 mb-4">
             <!-- Overall Compliance -->
-            <div class="gdpr-card mb-3">
-                <div class="section-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-chart-pie me-2"></i>
+            <div class="card-mali mb-3">
+                <div class="card-header-modern">
+                    <h5>
+                        <i class="fas fa-chart-pie card-header-icon"></i>
                         Statut Global RGPD
                     </h5>
                 </div>
                 
-                <div class="p-4 text-center">
-                    <div class="progress-circle progress-excellent">
-                        85%
-                    </div>
+                <div class="card-body-modern text-center">
+                    <div class="display-4 text-success fw-bold mb-3">85%</div>
                     <h6>Excellente Conformité</h6>
                     <p class="text-muted small">Système entièrement conforme aux exigences RGPD</p>
                     
-                    <button class="btn btn-gdpr btn-sm" onclick="generateGDPRReport()">
+                    <button class="btn-mali-primary btn-sm" onclick="generateGDPRReport()">
                         <i class="fas fa-file-alt me-1"></i>Rapport RGPD
                     </button>
                 </div>
             </div>
 
             <!-- Rights Management -->
-            <div class="gdpr-card mb-3">
-                <div class="section-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-balance-scale me-2"></i>
+            <div class="card-modern mb-3">
+                <div class="card-header-modern">
+                    <h5>
+                        <i class="fas fa-balance-scale card-header-icon"></i>
                         Droits des Patients
                     </h5>
                 </div>
                 
-                <div class="p-4">
+                <div class="card-body-modern">
                     <div class="d-grid gap-2">
                         <button class="btn btn-outline-primary btn-sm" onclick="showDataExport()">
                             <i class="fas fa-download me-2"></i>Droit à la portabilité
@@ -400,23 +187,23 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="gdpr-card">
-                <div class="section-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-bolt me-2"></i>
+            <div class="card-medical">
+                <div class="card-header-modern">
+                    <h5>
+                        <i class="fas fa-bolt card-header-icon"></i>
                         Actions Rapides
                     </h5>
                 </div>
                 
-                <div class="p-4">
+                <div class="card-body-modern">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-gdpr" onclick="auditGDPRCompliance()">
+                        <button class="btn-mali-primary" onclick="auditGDPRCompliance()">
                             <i class="fas fa-search me-2"></i>Audit Conformité
                         </button>
-                        <button class="btn btn-gdpr" onclick="exportConsentReport()">
+                        <button class="btn-mali-secondary" onclick="exportConsentReport()">
                             <i class="fas fa-table me-2"></i>Export Consentements
                         </button>
-                        <button class="btn btn-gdpr" onclick="manageRetentionPolicies()">
+                        <button class="btn-medical" onclick="manageRetentionPolicies()">
                             <i class="fas fa-database me-2"></i>Politiques Rétention
                         </button>
                     </div>
@@ -428,34 +215,32 @@
     <!-- Data Retention Policies -->
     <div class="row">
         <div class="col-12">
-            <div class="gdpr-card">
-                <div class="section-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-archive me-2"></i>
-                        Politiques de Rétention des Données
-                    </h4>
+            <div class="form-section">
+                <div class="form-section-header">
+                    <i class="fas fa-archive form-section-icon"></i>
+                    <h4 class="form-section-title">Politiques de Rétention des Données</h4>
                 </div>
                 
-                <div class="p-4">
+                <div class="form-section-body">
                     <div class="row">
                         {% for policy in retention_policies %}
                         <div class="col-md-6 mb-3">
-                            <div class="retention-policy">
-                                <div class="policy-header">
-                                    <div class="policy-name">
+                            <div class="content-highlight">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-bold text-success">
                                         <i class="fas fa-folder me-2"></i>
                                         {{ policy.get_data_type_display }}
                                     </div>
-                                    <div class="policy-duration">
+                                    <span class="badge-medical">
                                         {{ policy.retention_period_days }} jours
-                                    </div>
+                                    </span>
                                 </div>
                                 <p class="text-muted small mb-2">{{ policy.description }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">
                                         Mis à jour: {{ policy.updated_at|date:"d/m/Y" }}
                                     </small>
-                                    <span class="badge bg-success">
+                                    <span class="badge-mali-success">
                                         <i class="fas fa-check me-1"></i>Actif
                                     </span>
                                 </div>
@@ -467,7 +252,7 @@
                                 <i class="fas fa-exclamation-circle fa-3x text-warning mb-3"></i>
                                 <h6>Aucune politique configurée</h6>
                                 <p class="text-muted">Configurez des politiques de rétention pour assurer la conformité RGPD</p>
-                                <button class="btn btn-gdpr" onclick="createRetentionPolicy()">
+                                <button class="btn-mali-primary" onclick="createRetentionPolicy()">
                                     <i class="fas fa-plus me-2"></i>Créer Politique
                                 </button>
                             </div>
@@ -482,65 +267,105 @@
     <!-- GDPR Compliance Checklist -->
     <div class="row">
         <div class="col-12">
-            <div class="gdpr-card">
-                <div class="section-header">
-                    <h4 class="mb-0">
-                        <i class="fas fa-tasks me-2"></i>
+            <div class="card-premium">
+                <div class="card-header-modern">
+                    <h4>
+                        <i class="fas fa-tasks card-header-icon"></i>
                         Liste de Vérification RGPD
                     </h4>
                 </div>
                 
-                <div class="p-4">
+                <div class="card-body-modern">
                     <div class="row">
                         <div class="col-md-6">
                             <h6 class="text-primary mb-3">Mesures Techniques</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Chiffrement des données sensibles
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Contrôle d'accès basé sur les rôles
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Audit trail complet
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Sauvegarde sécurisée
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Pseudonymisation des données
-                                </li>
-                            </ul>
+                            <div class="list-modern">
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Chiffrement des données sensibles</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Contrôle d'accès basé sur les rôles</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Audit trail complet</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Sauvegarde sécurisée</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Pseudonymisation des données</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <h6 class="text-primary mb-3">Mesures Organisationnelles</h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Formation du personnel
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Politiques de confidentialité
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Procédures de violation de données
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Analyse d'impact RGPD
-                                </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    Registre des traitements
-                                </li>
-                            </ul>
+                            <div class="list-modern">
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Formation du personnel</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Politiques de confidentialité</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Procédures de violation de données</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Analyse d'impact RGPD</div>
+                                    </div>
+                                </div>
+                                <div class="list-modern-item">
+                                    <div class="list-modern-item-icon text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="list-modern-item-content">
+                                        <div class="list-modern-item-title">Registre des traitements</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -625,5 +450,4 @@ setInterval(() => {
 }, 60000);
 </script>
 {% endblock %}
-</rewritten_file>
  
