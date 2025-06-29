@@ -3,6 +3,69 @@
 
 {% block title %}Conformité RGPD | Tableau de Bord{% endblock %}
 
+{% block extra_css %}
+<style>
+/* Remove ALL hover effects for GDPR page */
+.card-modern:hover,
+.card-mali:hover,
+.card-medical:hover,
+.card-premium:hover {
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+    border-color: initial !important;
+}
+
+.card-modern::before,
+.card-mali::before,
+.card-medical::before,
+.card-premium::before {
+    display: none !important;
+}
+
+.card-mali::after {
+    display: none !important;
+}
+
+.content-highlight:hover {
+    background: #f8f9fa !important;
+    transform: none !important;
+    border-left-color: #0C7C59 !important;
+}
+
+.list-modern-item:hover {
+    background: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border-left: none !important;
+    padding-left: 1rem !important;
+}
+
+.btn-mali-primary:hover,
+.btn-mali-secondary:hover,
+.btn-medical:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: initial !important;
+}
+
+/* Static styling for all cards */
+.card-modern,
+.card-mali,
+.card-medical,
+.card-premium {
+    transition: none !important;
+}
+
+.list-modern-item {
+    transition: none !important;
+}
+
+.content-highlight {
+    transition: none !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Modern Header -->
 <div class="create-header bg-light">
