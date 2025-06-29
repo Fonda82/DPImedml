@@ -3,6 +3,119 @@
 
 {% block title %}Sécurité & Conformité | Tableau de Bord{% endblock %}
 
+{% block extra_css %}
+<style>
+/* COMPLETELY REMOVE ALL HOVER EFFECTS - NO EXCEPTIONS */
+
+/* All Cards - Zero hover effects */
+.card-modern:hover,
+.card-mali:hover,
+.card-medical:hover,
+.card-premium:hover,
+.form-section:hover {
+    transform: none !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+    border-color: initial !important;
+    background: initial !important;
+}
+
+/* Remove all pseudo-elements completely */
+.card-modern::before,
+.card-mali::before,
+.card-medical::before,
+.card-premium::before,
+.card-modern::after,
+.card-mali::after,
+.card-medical::after,
+.card-premium::after {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Content highlight sections - COMPLETELY STATIC */
+.content-highlight:hover {
+    background: #f8f9fa !important;
+    transform: none !important;
+    border-left-color: #0C7C59 !important;
+    border-left-width: 4px !important;
+    padding-left: 1rem !important;
+}
+
+/* List items - COMPLETELY STATIC */
+.list-modern-item:hover {
+    background: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border-left: none !important;
+    padding-left: 1rem !important;
+    padding-right: 1.25rem !important;
+}
+
+/* Buttons - COMPLETELY STATIC */
+.btn-mali-primary:hover,
+.btn-mali-secondary:hover,
+.btn-medical:hover,
+.btn:hover,
+.btn-sm:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: initial !important;
+    border-color: initial !important;
+}
+
+/* Table rows - COMPLETELY STATIC */
+.table-modern tbody tr:hover {
+    background: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Icons - COMPLETELY STATIC */
+.list-modern-item-icon:hover,
+.form-section-icon:hover,
+.card-header-icon:hover {
+    transform: none !important;
+    background: initial !important;
+    color: initial !important;
+}
+
+/* Remove ALL transitions and animations */
+.card-modern,
+.card-mali,
+.card-medical,
+.card-premium,
+.list-modern-item,
+.content-highlight,
+.form-section,
+.btn-mali-primary,
+.btn-mali-secondary,
+.btn-medical,
+.list-modern-item-icon,
+.badge-mali-success,
+.badge-medical,
+.table-modern tbody tr {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Force static state on everything */
+* {
+    transition: none !important;
+}
+
+/* Remove any cursor pointer effects */
+.card-modern,
+.card-mali,
+.card-medical,
+.card-premium,
+.content-highlight,
+.list-modern-item {
+    cursor: default !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Modern Header -->
 <div class="create-header bg-light">

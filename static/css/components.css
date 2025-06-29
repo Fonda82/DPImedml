@@ -21,9 +21,7 @@
 }
 
 .btn-mali-primary:hover {
-  background: #0A6B4D;
-  box-shadow: 0 2px 4px rgba(12, 124, 89, 0.2);
-  color: white;
+  /* NO HOVER EFFECTS */
 }
 
 .btn-mali-secondary {
@@ -42,9 +40,7 @@
 }
 
 .btn-mali-secondary:hover {
-  background: #E6A500;
-  box-shadow: 0 2px 4px rgba(252, 209, 22, 0.2);
-  color: #2C3E50;
+  /* NO HOVER EFFECTS */
 }
 
 .btn-medical {
@@ -63,9 +59,7 @@
 }
 
 .btn-medical:hover {
-  background: #2980b9;
-  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
-  color: white;
+  /* NO HOVER EFFECTS */
 }
 
 /* Button Sizes */
@@ -89,7 +83,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: none;
   position: relative;
 }
 
@@ -102,15 +96,15 @@
   height: 3px;
   background: #0C7C59;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: none;
 }
 
 .card-modern:hover::before {
-  opacity: 1;
+  /* NO HOVER EFFECTS */
 }
 
 .card-modern:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* NO HOVER EFFECTS */
 }
 
 .card-mali {
@@ -119,7 +113,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(12, 124, 89, 0.08);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: none;
   position: relative;
 }
 
@@ -128,7 +122,7 @@
 }
 
 .card-mali:hover {
-  box-shadow: 0 4px 8px rgba(12, 124, 89, 0.15);
+  /* NO HOVER EFFECTS */
 }
 
 .card-medical {
@@ -137,7 +131,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(52, 152, 219, 0.08);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: none;
   position: relative;
 }
 
@@ -153,7 +147,7 @@
 }
 
 .card-medical:hover {
-  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.15);
+  /* NO HOVER EFFECTS */
 }
 
 /* Enhanced Card Parts */
@@ -201,7 +195,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(12, 124, 89, 0.1);
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
+  transition: none;
   position: relative;
 }
 
@@ -217,7 +211,7 @@
 }
 
 .card-premium:hover {
-  box-shadow: 0 6px 12px rgba(12, 124, 89, 0.15);
+  /* NO HOVER EFFECTS */
 }
 
 /* REMOVE INTERACTIVE CARD FEATURES */
@@ -249,12 +243,11 @@
   padding: 1rem;
   border-radius: 0 4px 4px 0;
   margin: 1rem 0;
-  transition: background-color 0.2s ease;
+  transition: none;
 }
 
 .content-highlight:hover {
-  background: #e9ecef;
-  /* Remove translate effect */
+  /* NO HOVER EFFECTS */
 }
 
 /* ========================================
@@ -415,7 +408,7 @@
 .sidebar-menu-link-enhanced.active {
   color: white;
   background: #0C7C59;
-  box-shadow: 0 2px 4px rgba(12, 124, 89, 0.2);
+  /* NO HOVER EFFECTS */
 }
 
 .sidebar-menu-link-enhanced::before {
@@ -432,7 +425,7 @@
 
 .sidebar-menu-link-enhanced:hover::before,
 .sidebar-menu-link-enhanced.active::before {
-  transform: scaleY(1);
+  /* NO HOVER EFFECTS */
 }
 
 .sidebar-menu-icon-enhanced {
@@ -721,7 +714,7 @@
 .list-modern-item {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid #f1f3f4;
-  transition: background-color 0.2s ease;
+  transition: none;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -733,9 +726,7 @@
 }
 
 .list-modern-item:hover {
-  background: #f8f9fa;
-  border-left: 3px solid #0C7C59;
-  padding-left: 1.125rem;
+  /* NO HOVER EFFECTS */
 }
 
 .list-modern-item-icon {
@@ -890,12 +881,12 @@
 }
 
 .table-modern tbody tr {
-  transition: background-color 0.2s ease;
+  transition: none;
   border-bottom: 1px solid #f1f3f4;
 }
 
 .table-modern tbody tr:hover {
-  background: #f8f9fa;
+  /* NO HOVER EFFECTS */
 }
 
 .table-modern tbody td {
